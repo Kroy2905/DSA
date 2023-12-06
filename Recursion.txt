@@ -1,0 +1,46 @@
+Recursion is used to solve iterative problems by calling same function again and again 
+properties : 
+1- perform same problem with different inputs 
+2- in every step we try smaller inputs to make the problem smaller 
+3 - Base condition is needed to stop  the recursion , otherwise it enters infinite loop 
+
+When to use Recursion : 
+if you can divide the problem into similar sub probs ( Sub problems should not be complex)
+If the question starts with : 
+- Design an algorithm to compute nth .. 
+- WAP to list the n ... 
+- implement a method to compute all 
+Usage of recursion in DS like trees and graphs 
+recursion is used other algos like greedy , D&C and DP 
+
+
+Normal syntax of recursion :
+static String recursionMethod(String [] parms){
+    if(exit from condition satisfied){
+        return some value
+    }else{
+        recursionMethod(modified parms)
+    }
+}
+
+IMPORTANT :: Every recursive call is stored in stack memory (LIFO)
+
+Recursion vs Interation : 
+No stack memory required in case of iteration whereas every recursive call adds a stack layer i.e. recursion is not space efficient 
+In case of recursion , system needs more time for pop and push elements to stack memory i.e. recursion is not time efficient 
+Recursion is way easier to code than iteration
+
+Recursion is mostly used in D&C cases where iteration becomes very heavy 
+
+Use recursion : 
+when we can easily breakdown a problem into similar subproblem 
+when we are fine with extra overhead that comes with it 
+traversing a tree 
+memoisation in DP
+
+******How to write recursionMethod****** 
+1- Identify the recursive case : for factorial it is n(n-1)!= f(n) = n*f(n-1)
+2 - Base condition
+3- Corner & unintentional check ( f(-1) not possible 
+)
+

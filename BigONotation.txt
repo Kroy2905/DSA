@@ -1,0 +1,4 @@
+BIG O NOTATION -  it is  metric in CS to measure the efficireny of an algo (maximum time of execution )
+BIG OMEGA NOTATION -  it is  metric in CS to measure the efficireny of an algo (minimum time time of execution )
+BIG THETA NOTATION -  it is  metric in CS to measure the efficireny of an algo (boundry of execution time  )
+

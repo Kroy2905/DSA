@@ -1,0 +1,39 @@
+Linklist is a form of sequential collection and it does not have to be in order . 
+A linked list is made up of independent nodes that may contain any type of data and each 
+node has a reference to the next node in the link.
+-- A link lost is not contiguous in memory
+e.g. - nodes are compartments of train 
+A link list has a head and a tail 
+the physical location of the next node is stored in the pointer of the previous note 
+
+Arrays vs LinkedList 
+- variable length or size 
+- single elements / node can exist on its own 
+- LinkedList is used for insertion and deletion optimisation whereas Array is used  for accessing 
+
+Types of LinkedList :
+1- Single LinkedList ,2 Circular-LinkedList ,3-Doubly LinkedList, 4-Circular Doubly LinkedList
+
+Single LinkedList : [0,001]->[1,111]->[2,222]->[3,null]         
+                     ^          ^         ^         ^
+                     |          |         |         |
+     head[0,000]    000        001       111        222         tail [3,222]  
+    Head points to the starting node , tail points to the last node , head  and tail are just pointers 
+    and not part of the LinkedList, they are just used  for indication 
+
+Circular Single LinkedList - Its similar to single linked list where the  last node address is not null but 
+points to the first node / head 
+e.g.- giving opportunity to each ludo player ,  when we reach to last player  next it  should point to first player 
+
+Doubly LinkedList :     [null,0,001]<->[000,1,111]<->[001,2,222]<->[111,3,null]         
+                             ^                ^         ^             ^
+                             |                |         |             |
+ head[0,000]                 000             001       111            222      tail [3,222] 
+ e.g.  - used in music app 
+
+ Circular Doubly Linked List - its a Doubly LinkedList where the previous  reference of 1st node is the
+ last node and last node's next reference is 1st node
+ e.g. - check recent apps in mobile 
+
+ How LinkedList are stored in memory : 
+ They are not located contiguously . Memory allocation is random 
