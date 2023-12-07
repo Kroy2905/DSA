@@ -37,3 +37,8 @@ Doubly LinkedList :     [null,0,001]<->[000,1,111]<->[001,2,222]<->[111,3,null]
 
  How LinkedList are stored in memory : 
  They are not located contiguously . Memory allocation is random 
+
+ Creation of Single LinkedList : 
+ 1- create a blank head and tail pointer
+ 2- create a node 
+ 3- point head to the 1st node and the tail to the last node 
