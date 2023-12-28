@@ -1,3 +1,4 @@
+package LinkList.SingleLinkList;
 
 /* Name of the class has to be "Main" only if the class is public. */
 public  class SingleLinkList
@@ -40,7 +41,7 @@ public  class SingleLinkList
 				pos++;
 				if(pos==loc){  // changing the value 
 					prev.next=node;
-					node.next=tmp.next;
+					node.next=tmp;
 					break;
 				}else{
 					prev=tmp;
@@ -60,7 +61,7 @@ public  class SingleLinkList
 		if(head==null){
 			System.out.println("No element to delete !!");
 		}
-		else if( size ==1){   // deleting if only 1 leemnt present 
+		else if( size ==1){   // deleting if only 1 element present 
 			head = null;
 			tail = null;
 		}
