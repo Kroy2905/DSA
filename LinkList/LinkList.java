@@ -3,6 +3,8 @@ package LinkList;
 
 import LinkList.CirccularLinkedList.CNode;
 import LinkList.CirccularLinkedList.CircularLinkList;
+import LinkList.DoubleLinkedList.DNode;
+import LinkList.DoubleLinkedList.DoubleLinkList;
 import LinkList.SingleLinkList.Node;
 import LinkList.SingleLinkList.SingleLinkList;
 
@@ -12,6 +14,7 @@ public class LinkList {
 	{
 	 SingleLinkList sll = new SingleLinkList();
      CircularLinkList cll = new CircularLinkList();
+     DoubleLinkList dll = new DoubleLinkList();
      LinkList ll = new LinkList();
 //         sll.createSingleLinkedListnode(10);
 //     ll.displaySingleLinkList(sll.size,sll.head);
@@ -37,31 +40,47 @@ public class LinkList {
 
           // Circular linked List Section 
 
-         cll.createCircularLinkedListnode(10);
-        //  System.out.println(cll.head.value);
-        //  System.out.println(cll.head.next.value);
-        //  System.out.println(cll.head.prev.value);
-         cll.push(30, 0);
+//          cll.createCircularLinkedListnode(10);
+     
+//          cll.push(30, 0);
 
-         cll.push(40, 3);
-          cll.push(50, 4);
-           cll.push(80, 5);
-            cll.push(90, 6);
-             cll.push(100, 4);
+//          cll.push(40, 3);
+//           cll.push(50, 4);
+//            cll.push(80, 5);
+//             cll.push(90, 6);
+//              cll.push(100, 4);
 
 
-  ll.displayCircularLinkList(cll.size,cll.head);
+//   ll.displayCircularLinkList(cll.size,cll.head);
 
-        cll.pop(0);
+//         cll.pop(0);
          
-           cll.pop(6);
+//            cll.pop(6);
             
-              cll.pop(2);
+//               cll.pop(2);
                
         
 
-         ll.displayCircularLinkList(cll.size,cll.head);
+//          ll.displayCircularLinkList(cll.size,cll.head);
     
+
+//    Double Link List Section  
+            dll.createDoubleLinkedListnode(10);
+           // ll.displayDoubleLinkList(dll.size,dll.head);
+
+                   
+     
+         dll.push(30, 0);
+
+         dll.push(40, 3);
+          dll.push(50, 4);
+           dll.push(80, 5);
+            dll.push(90, 6);
+             dll.push(100, 4);
+
+
+              ll.displayDoubleLinkList(dll.size,dll.tail);
+   
         
 
 
@@ -93,6 +112,21 @@ public class LinkList {
              System.out.print(start.value+"-");
           
             start=start.next;
+            ct++;
+            
+        }
+        System.out.println();
+    }
+
+    public void  displayDoubleLinkList(int size,DNode start){
+      
+        int ct = 0;
+         
+       
+        while(ct<size){
+             System.out.print(start.value+"-");
+          
+            start=start.prev;
             ct++;
             
         }

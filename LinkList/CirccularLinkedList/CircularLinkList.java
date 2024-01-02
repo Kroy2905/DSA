@@ -26,7 +26,7 @@ public class CircularLinkList {
 		else if(loc == 0){   // inserting in the beginning 
 			node.next=head;  // new node inserted before head 
 			head=node;      // head points to new node 
-			tail.next = head;
+			tail.next = head; // creating the circular path 
 
 		
 		}
