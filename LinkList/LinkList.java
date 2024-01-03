@@ -80,6 +80,42 @@ public class LinkList {
 
 
               ll.displayDoubleLinkList(dll.size,dll.tail);
+
+              dll.pop(4);
+                ll.displayDoubleLinkList(dll.size,dll.tail);
+                 dll.pop(4);
+                ll.displayDoubleLinkList(dll.size,dll.tail);
+                 dll.pop(4);
+                ll.displayDoubleLinkList(dll.size,dll.tail);
+                 dll.pop(4);
+                ll.displayDoubleLinkList(dll.size,dll.tail);
+                 dll.pop(4);
+                ll.displayDoubleLinkList(dll.size,dll.tail);
+                 dll.pop(4);
+                ll.displayDoubleLinkList(dll.size,dll.tail);
+                 dll.pop(4);
+                ll.displayDoubleLinkList(dll.size,dll.tail);
+                dll.pop(4);
+                ll.displayDoubleLinkList(dll.size,dll.tail);
+                dll.pop(4);
+                ll.displayDoubleLinkList(dll.size,dll.tail);
+
+
+
+
+
+
+
+
+
+                      
+         
+        //    dll.pop(6);
+            
+        //       dll.pop(2);
+
+              
+
    
         
 

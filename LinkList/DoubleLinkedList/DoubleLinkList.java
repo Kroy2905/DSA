@@ -66,4 +66,59 @@ public class DoubleLinkList {
 	}
 
 
+	public void  pop(int loc){
+
+
+		if(head==null){
+			System.out.println("No element to delete !!");
+		}
+		else if( size ==1){   // deleting if only 1 element present 
+			head = null;
+			tail = null;
+		}
+		else if (loc==0){   //deleting from beginning 
+			head = head.next;
+			head.prev=null;
+		}
+		else if(loc>=size){  // deleting from end 
+		tail = tail.prev;
+		tail.next=null;
+	
+			
+
+		}
+		else {			// deleting from middle in the middle 
+			int pos =0;
+			DNode prev =head;
+			DNode tmp = head;
+			while(pos<size-1){
+				pos++;
+				if(pos==loc){  // changing the value 
+					prev.next=tmp.next;
+					tmp.next.prev=prev;
+					break;
+				}else{
+					prev=tmp;
+					tmp=tmp.next;
+				}
+			}
+
+
+		}
+		size--;
+	}
+	public void deleteDoubleLinkList(){
+		DNode tmp = head;
+		int pos =0;
+		while(pos<size){
+			tmp.prev=null;
+			tmp=tmp.next;
+			pos++;
+		}
+		head = null;
+		tail= null;
+		size=0;
+	}
+
+
 }

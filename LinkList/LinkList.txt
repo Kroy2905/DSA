@@ -5,6 +5,7 @@ node has a reference to the next node in the link.
 e.g. - nodes are compartments of train 
 A link list has a head and a tail 
 the physical location of the next node is stored in the pointer of the previous note 
+-**- When a node is not referenced by another node , it enters the garbage collection and gets deleted from memory 
 
 Arrays vs LinkedList 
 - variable length or size 
