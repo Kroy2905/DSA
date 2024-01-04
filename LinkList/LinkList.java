@@ -3,6 +3,8 @@ package LinkList;
 
 import LinkList.CirccularLinkedList.CNode;
 import LinkList.CirccularLinkedList.CircularLinkList;
+import LinkList.CircularDoubleLinkList.CDNode;
+import LinkList.CircularDoubleLinkList.CircularDoubleLinkedList;
 import LinkList.DoubleLinkedList.DNode;
 import LinkList.DoubleLinkedList.DoubleLinkList;
 import LinkList.SingleLinkList.Node;
@@ -15,6 +17,7 @@ public class LinkList {
 	 SingleLinkList sll = new SingleLinkList();
      CircularLinkList cll = new CircularLinkList();
      DoubleLinkList dll = new DoubleLinkList();
+     CircularDoubleLinkedList cdll = new CircularDoubleLinkedList();
      LinkList ll = new LinkList();
 //         sll.createSingleLinkedListnode(10);
 //     ll.displaySingleLinkList(sll.size,sll.head);
@@ -64,41 +67,41 @@ public class LinkList {
 //          ll.displayCircularLinkList(cll.size,cll.head);
     
 
-//    Double Link List Section  
-            dll.createDoubleLinkedListnode(10);
-           // ll.displayDoubleLinkList(dll.size,dll.head);
+// //    Double Link List Section  
+//             dll.createDoubleLinkedListnode(10);
+//            // ll.displayDoubleLinkList(dll.size,dll.head);
 
                    
      
-         dll.push(30, 0);
+//          dll.push(30, 0);
 
-         dll.push(40, 3);
-          dll.push(50, 4);
-           dll.push(80, 5);
-            dll.push(90, 6);
-             dll.push(100, 4);
+//          dll.push(40, 3);
+//           dll.push(50, 4);
+//            dll.push(80, 5);
+//             dll.push(90, 6);
+//              dll.push(100, 4);
 
 
-              ll.displayDoubleLinkList(dll.size,dll.tail);
+//               ll.displayDoubleLinkList(dll.size,dll.tail);
 
-              dll.pop(4);
-                ll.displayDoubleLinkList(dll.size,dll.tail);
-                 dll.pop(4);
-                ll.displayDoubleLinkList(dll.size,dll.tail);
-                 dll.pop(4);
-                ll.displayDoubleLinkList(dll.size,dll.tail);
-                 dll.pop(4);
-                ll.displayDoubleLinkList(dll.size,dll.tail);
-                 dll.pop(4);
-                ll.displayDoubleLinkList(dll.size,dll.tail);
-                 dll.pop(4);
-                ll.displayDoubleLinkList(dll.size,dll.tail);
-                 dll.pop(4);
-                ll.displayDoubleLinkList(dll.size,dll.tail);
-                dll.pop(4);
-                ll.displayDoubleLinkList(dll.size,dll.tail);
-                dll.pop(4);
-                ll.displayDoubleLinkList(dll.size,dll.tail);
+//               dll.pop(4);
+//                 ll.displayDoubleLinkList(dll.size,dll.tail);
+//                  dll.pop(4);
+//                 ll.displayDoubleLinkList(dll.size,dll.tail);
+//                  dll.pop(4);
+//                 ll.displayDoubleLinkList(dll.size,dll.tail);
+//                  dll.pop(4);
+//                 ll.displayDoubleLinkList(dll.size,dll.tail);
+//                  dll.pop(4);
+//                 ll.displayDoubleLinkList(dll.size,dll.tail);
+//                  dll.pop(4);
+//                 ll.displayDoubleLinkList(dll.size,dll.tail);
+//                  dll.pop(4);
+//                 ll.displayDoubleLinkList(dll.size,dll.tail);
+//                 dll.pop(4);
+//                 ll.displayDoubleLinkList(dll.size,dll.tail);
+//                 dll.pop(4);
+//                 ll.displayDoubleLinkList(dll.size,dll.tail);
 
 
 
@@ -114,6 +117,45 @@ public class LinkList {
             
         //       dll.pop(2);
 
+
+        // *** Circular DOuble Linked List *****
+
+        cdll.createCircularDoubleLinkedList(10);
+       // ll.displayCircularDoubleLinkList(cdll.size, cdll.head);
+
+                 cdll.push(30, 0);
+
+         cdll.push(40, 3);
+          cdll.push(50, 4);
+           cdll.push(80, 5);
+         cdll.push(90, 6);
+             cdll.push(100, 4);
+
+
+             ll.displayCircularDoubleLinkList(cdll.size, cdll.tail);
+
+
+
+              cdll.pop(4);
+              ll.displayCircularDoubleLinkList(cdll.size, cdll.tail);
+                 cdll.pop(4);
+                ll.displayCircularDoubleLinkList(cdll.size, cdll.tail);
+                 cdll.pop(4);
+              ll.displayCircularDoubleLinkList(cdll.size, cdll.tail);
+                 cdll.pop(4);
+                ll.displayCircularDoubleLinkList(cdll.size, cdll.tail);
+                 cdll.pop(4);
+                ll.displayCircularDoubleLinkList(cdll.size, cdll.tail);
+                 cdll.pop(4);
+               ll.displayCircularDoubleLinkList(cdll.size, cdll.tail);
+                 cdll.pop(4);
+               ll.displayCircularDoubleLinkList(cdll.size, cdll.tail);
+                cdll.pop(4);
+         ll.displayCircularDoubleLinkList(cdll.size, cdll.tail);
+
+
+
+
               
 
    
@@ -124,6 +166,20 @@ public class LinkList {
         
 	}
 
+    public void  displayCircularDoubleLinkList(int size,CDNode start){
+        CDNode tmp = start ;
+        int ct = 0;
+         
+       
+        while(ct<size){
+             System.out.print(start.value+"-");
+          
+            start=start.prev;
+            ct++;
+            
+        }
+        System.out.println();
+    }
 
     public void displaySingleLinkList(int size ,Node start){
 
