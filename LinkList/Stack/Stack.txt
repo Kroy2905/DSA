@@ -1,0 +1,8 @@
+Stack follows LIFO .. 
+live example - back button in any browser follows stack property 
+Stack functions 
+- push - pop - isEmpty - peek - isFull - deleteStack 
+peek - method returns last element from the stack 
+Stack using LinkList vs  Array 
+Array - easy implementation , but limited size 
+LinkList - difficult to implement but variable size 
