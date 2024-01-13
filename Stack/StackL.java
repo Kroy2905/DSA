@@ -1,4 +1,4 @@
-package LinkList.Stack;
+package Stack;
 
 import LinkList.SingleLinkList.Node;
 /**

@@ -6,3 +6,4 @@ peek - method returns last element from the stack
 Stack using LinkList vs  Array 
 Array - easy implementation , but limited size 
 LinkList - difficult to implement but variable size 
+All operations take O(1)

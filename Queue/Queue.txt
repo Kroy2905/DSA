@@ -1,0 +1,12 @@
+Its a linear data structure which follows FIFO
+ex - orders in a restaurant 
+operations : enqueue , dequeue , peek , isEmpty, isFull, deleteQueue
+note - peek returns the 1st element
+
+All operations take O(1) , in case of array implement , it takes O(n) for dequeue
+if dequeue needs to be done in O (1), then the cells of array will be unused ,
+e..g  7-8-9-10 is a queue 
+now dequeue will give  - 8-9-10 , but if we are using an array then the element 7 is still 
+there but the beginning pointer moves forward , hence one cell is wasted 
+
+To avoid this we have the circular queue ..
