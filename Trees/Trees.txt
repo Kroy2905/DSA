@@ -149,3 +149,14 @@ Postorder traversal - left subtree ->right subtree -> root
 
 Level order traversal - here  the traversal is  level wise 
             N1,N2,N3,N4,N5,N6,N7,N8,N9
+
+Insertion of node in a binary tree : 
+conditions to satisfy :  1 ) root must be null 2)the tree exists and we have to look for 1st vacant place 
+
+Deletion of a node in tree using level order traversal : 
+1- Find the node 
+2-Find the deepest node 
+3- replace the node to be deleted with deepest node 
+4-Delete the deepest node ;  
+
+Deleting  the entire tree , means set the root to null ; 

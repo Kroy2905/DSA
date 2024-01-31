@@ -62,10 +62,15 @@ public class Tree {
         n4.left=n8;
         n4.right=n9;
         binaryTree.root=n1;
+        binaryTree.insert("n10");
+        binaryTree.insert("n11");
         //binaryTree.preOrder(binaryTree.root);
        // binaryTree.inOrder(binaryTree.root);
       // binaryTree.postOrder(binaryTree.root);
       binaryTree.levelOrder();
+      binaryTree.deleteNode("n15");
+      binaryTree.levelOrder();
+
 
        
 
