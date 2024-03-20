@@ -24,55 +24,60 @@ public class Tree {
 
         // System.out.println(drinks.print(1));
 
-        BinaryTreeLL binaryTree = new BinaryTreeLL();
-        BTNode n1 = new BTNode();
-        n1.value = "n1";
+    //     BinaryTreeLL binaryTree = new BinaryTreeLL();
+    //     BTNode n1 = new BTNode();
+    //     n1.value = "n1";
 
-        // Create and initialize n2 through n9
-        BTNode n2 = new BTNode();
-        n2.value = "n2";
+    //     // Create and initialize n2 through n9
+    //     BTNode n2 = new BTNode();
+    //     n2.value = "n2";
 
-        BTNode n3 = new BTNode();
-        n3.value = "n3";
+    //     BTNode n3 = new BTNode();
+    //     n3.value = "n3";
 
-        BTNode n4 = new BTNode();
-        n4.value = "n4";
+    //     BTNode n4 = new BTNode();
+    //     n4.value = "n4";
 
-        BTNode n5 = new BTNode();
-        n5.value = "n5";
+    //     BTNode n5 = new BTNode();
+    //     n5.value = "n5";
 
-        BTNode n6 = new BTNode();
-        n6.value = "n6";
+    //     BTNode n6 = new BTNode();
+    //     n6.value = "n6";
 
-        BTNode n7 = new BTNode();
-        n7.value = "n7";
+    //     BTNode n7 = new BTNode();
+    //     n7.value = "n7";
 
-        BTNode n8 = new BTNode();
-        n8.value = "n8";
+    //     BTNode n8 = new BTNode();
+    //     n8.value = "n8";
 
-        BTNode n9 = new BTNode();
-        n9.value = "n9";
+    //     BTNode n9 = new BTNode();
+    //     n9.value = "n9";
 
-        n1.left =n2;
-        n1.right=n3;
-        n2.left=n4;
-        n2.right=n5;
-        n3.left=n6;
-        n3.right=n7;
-        n4.left=n8;
-        n4.right=n9;
-        binaryTree.root=n1;
-        binaryTree.insert("n10");
-        binaryTree.insert("n11");
-        //binaryTree.preOrder(binaryTree.root);
-       // binaryTree.inOrder(binaryTree.root);
-      // binaryTree.postOrder(binaryTree.root);
-      binaryTree.levelOrder();
-      binaryTree.deleteNode("n15");
-      binaryTree.levelOrder();
-
-
-       
+    //     n1.left =n2;
+    //     n1.right=n3;
+    //     n2.left=n4;
+    //     n2.right=n5;
+    //     n3.left=n6;
+    //     n3.right=n7;
+    //     n4.left=n8;
+    //     n4.right=n9;
+    //     binaryTree.root=n1;
+    //     binaryTree.insert("n10");
+    //     binaryTree.insert("n11");
+    //     //binaryTree.preOrder(binaryTree.root);
+    //    // binaryTree.inOrder(binaryTree.root);
+    //   // binaryTree.postOrder(binaryTree.root);
+    //   binaryTree.levelOrder();
+    //   binaryTree.deleteNode("n15");
+    //   binaryTree.levelOrder();
+    BinaryTreeAA binaryTreeAA = new BinaryTreeAA(10);
+    for(int i = 1;i<=9;i++){
+        String s = "n"+i;
+        binaryTreeAA.insert(s);
+    }
+    binaryTreeAA.levelOrder();   
+    binaryTreeAA.deleteNode("n5");
+    binaryTreeAA.levelOrder();  
 
     }
    

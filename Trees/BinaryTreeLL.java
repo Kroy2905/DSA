@@ -2,6 +2,9 @@ package Trees;
 
 import java.util.LinkedList;
 import java.util.Queue;
+/**
+ * This is binary tree  implementation  using array 
+ */
 
 public class BinaryTreeLL {
     BTNode root;

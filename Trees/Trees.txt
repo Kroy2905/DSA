@@ -1,4 +1,4 @@
-A tree is non linear data structure with heirarchical relationships between the leements without having any 
+A tree is non linear data structure with heirarchical relationships between the elments without having any 
 cycle , it is basically a reversed form of a real life tree 
 e.g.                                 Drink 
                                     /     \
@@ -15,10 +15,12 @@ form of its parents .
 -Each node has two components - data  and link to its sub category 
 -There can be as many sub categor below the base category 
 
-Why tea data structures :
- - Being a non linear Data structure , accessing elements takes less time so comptational time reduces overall 
-- Store heirarchical structure suchs - folder system ,organisation heirarchy
+Why tree data structures :
+ - Being a non linear Data structure , accessing elements takes less time so computational time reduces overall 
+- Store heirarchical structure such as - folder system ,organisation heirarchy
 
+
+                        
 
 
                                             N1
