@@ -1,0 +1,281 @@
+AVL tree (Adelson, Velskii, and Landis) - is a self balancing binary search tree where the differnces between heights 
+of left and right subtrees cannot be more than one for all nodes.
+                                                              10
+                                                            /    \
+                                                        5        15
+                                                       / \      /  \
+                                                      3   7    12   20
+                                                                /    \
+                                                              11      25
+example of not an AVL tree -          10
+                                    /    \
+                                5        15
+                               / \      /  \
+                              3   7    12   20
+                            /          /      \
+                           2             11      25
+                           /
+                           1
+The above bst needs a rotation to convert it to a balanced bst i.e. AVL tree 
+Why need AVL tree? - Lets say we need to insert 10,20,30,40,50,60,70 to a BST , the resulant tree will look like : 
+
+                                                10
+                                                \
+                                                 20
+                                                  \
+                                                  30
+                                                   \
+                                                   40
+                                                    \
+                                                    50
+                                                      \
+                                                       60
+                                                        \
+                                                         70
+
+                                                        
+    All the nodes are inserted to the right subtree , although this is a correct BST but when we will search a node , it will takes
+    O(n) instead of O(log n), thats why a self balancing mechanism is needed.
+    
+
+    Insertion in AVL tree : If insertion doesnt disbalances the tree then no need of rotation . In case AVL tree is disbalanced , then 
+    self rotation occurs using rotations : LL,LR,RR,RL 
+    Steps to identify rotation : 
+    1 - Find if there is any disbalanced node 
+    2- Find the grand child of the disbalanced node with greater height 
+    3 - Which condition it is LL,LR,RR,RL 
+
+    LL condition - Go for right rotation   *mark is the disbalanced node 
+
+                                      70
+                                    /    \
+                                50       90
+                               / \      /  \
+                           * 30   60   80   100
+                            /          
+                           20             
+                           /
+                           10
+                           After right rotation 
+
+                                      70
+                                    /    \
+                                50       90
+                               / \      /  \
+                             20   60   80   100
+                            /  \        
+                           10  30           
+                           
+Example 2 ;                          
+                                     *70
+                                    /    \
+                                50       90
+                               / \              
+                            30   60   
+                            /          
+                           20             
+                There are 2 grandchildren , but 30 height is greater than 60 so we select LL rototation 
+
+                                  After LL rotation
+
+                                      50
+                                    /    \
+                                30       70
+                               /       /    \
+                             20        60    90
+
+Algorithm
+ :     rotateRight(disbalancedNode){
+   newRoot = disbalancedNode.leftChild 
+   disbalancedNode.leftChild = disbalancedNode.leftChild.rightChild
+   newRoot.rightChild = disbalancedNode
+   update height of disbalancedNode and newRoot
+   return newRoot
+}  O(1) , Space - O(1)
+                           
+
+LR rotation  : First we do left rotation on left child of disbalanced node then we go for right rotation on disbalanced node 
+                  70                                       
+                /    \
+            50       90
+            / \      /  \     
+        * 30   60   80   100     
+        /          
+        20             
+        \ 
+          25
+                  |
+                  |
+                  | L rotation on left child of disbalanced node
+                 \_/
+
+                  70 
+                /    \
+            50       90
+            / \      /  \    
+        * 30   60   80   100    
+        /          
+      25            
+     /
+    20
+                  |
+                  |
+                  | R rotation on disbalanced node
+                 \_/
+
+                  70
+                /    \                   Balanced AVL tree 
+            50       90
+            / \      /  \    
+          25   60   80   100    
+        /   \      
+      20    30        
+
+
+      Algorithm - 
+
+      Step1 - rotate LEFT disbalancedNode.leftChild
+      Step2 - rotate RIGHT disbalancedNode
+
+
+             rotateLeft(disbalancedNode){  // Here the disbalanced node passed is the leftChild of the actual disbalancedNode
+   newRoot = disbalancedNode.rightChild 
+   disbalancedNode.right = disbalancedNode.rightChild.leftChild
+   newRoot.leftChild = disbalancedNode
+   update height of disbalancedNode and newRoot
+   return newRoot
+}  O(1) , Space - O(1)
+
+  rotateRight(disbalancedNode){  // Here the disbalancedNode is the actual disbalanced node 
+   newRoot = disbalancedNode.leftChild 
+   disbalancedNode.leftChild = disbalancedNode.leftChild.rightChild
+   newRoot.rightChild = disbalancedNode
+   update height of disbalancedNode and newRoot
+   return newRoot
+}  O(1) , Space - O(1)
+
+
+RR rotation - It is exactly opposite of LL rotation , in RR we rotate the disbalanced node towards left 
+
+                                      50
+                                    /    \
+                                40        60*
+                                            \
+                                            70
+                                              \
+                                               75
+                         
+                           After left rotation 
+
+                                       50
+                                    /    \
+                                40        70
+                                         /  \
+                                        60   75
+
+      Example 2 :                
+                                     50*
+                                    /    \
+                                40        65         
+                                         /  \
+                                        60   70
+                                              \
+                                               75
+
+                                  
+                                  After RR rotation
+
+                                      65
+                                    /    \
+                                50       70
+                               / \         \
+                             40   60       75
+
+Algorithm :   rotateLeft(disbalancedNode){  // Here the disbalanced node passed is the leftChild of the actual disbalancedNode
+   newRoot = disbalancedNode.rightChild 
+   disbalancedNode.right = disbalancedNode.rightChild.leftChild
+   newRoot.leftChild = disbalancedNode
+   update height of disbalancedNode and newRoot
+   return newRoot
+}  O(1) , Space - O(1)   
+
+RL condition : First right rotation is done on right child of disbalanced node and then left roation on the actual disbalanced node 
+
+
+
+
+                50
+              /    \
+          40        60*
+                      \
+                      70 $
+                      /
+                     65   
+                  |
+                  |
+                  | R rotation on right child $ of disbalanced node
+                 \_/
+
+                  50
+                /    \
+            40        60*
+                        \
+                         65
+                          \
+                            70
+                  |
+                  |
+                  | L rotation on disbalanced node
+                 \_/
+
+                50
+              /    \
+          40         65
+                    /  \
+                  60   70
+
+                    Algorithm - 
+                    
+
+      Step1 - rotate RIGHT disbalancedNode.rightChild
+      Step2 - rotate LEFT disbalancedNode
+
+
+             rotateLeft(disbalancedNode){  // Here the disbalanced node passed is the leftChild of the actual disbalancedNode
+   newRoot = disbalancedNode.rightChild 
+   disbalancedNode.right = disbalancedNode.rightChild.leftChild
+   newRoot.leftChild = disbalancedNode
+   update height of disbalancedNode and newRoot
+   return newRoot
+}  O(1) , Space - O(1)
+
+  rotateRight(disbalancedNode){  // Here the disbalancedNode is the actual disbalanced node 
+   newRoot = disbalancedNode.leftChild 
+   disbalancedNode.leftChild = disbalancedNode.leftChild.rightChild
+   newRoot.rightChild = disbalancedNode
+   update height of disbalancedNode and newRoot
+   return newRoot
+}  O(1) , Space - O(1)
+
+
+Deletion in AVL tree : There are 2 types 
+Case 1- doesnt need rotation   
+Deletion in BST = Deletion can occur in 3 scenarios - 
+Case 1 - The node to be deleted in a leaf node  , simply delete the node 
+Case 2 - The node has 1 child  - delete the node and make the child as parent now 
+Case 3 - The node has 2 children  - find successor (min element in right subtree) , copy the value of successor to the 
+to be deleted node , delete the successor 
+
+Case 2 : needs rotation - whenever we delete the node , we check if the parent has become a disblanced node or not 
+if the parent is disbalanced we check for LL,LR,RR or RL 
+
+
+                                              
+                                               
+                         
+
+     
+                           
+
+       
+

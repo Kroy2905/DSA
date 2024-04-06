@@ -14,7 +14,7 @@ by the programmer.It relies on the implicit behaviour to track where the node  i
 traversing only hafl of the tree . So traversing takes only half
 of the entire tree gives a complexity of O(log n ). 
 
-Insertion in BST = insertion always takes place at the leaf node depending on the st property.
+Insertion in BST = insertion always takes place at the leaf node depending on the bst property.
 Deletion in BST = Deletion can occur in 3 scenarios - 
 Case 1 - The node to be deleted in a leaf node 
 Case 2 - The node has 1 child 
