@@ -1,0 +1,54 @@
+A binary heap is a Binary tree with following properties 
+- A binary heap is either min heap or max heap . In a min Heap the key at root must be minimum among
+all keys present in Biary heap. The same property must be recursively true for all nodes in Binary heap 
+- Its a complete binary tree (all levels are completely filled except possibly the last level and the last level has all keys
+as left as possible).This property makes heap suitable to be stored in an array 
+
+                                                  5
+                                                /    \
+                                            10        20   <-- min heap 
+                                            / \      /  \
+                                          30   40   50   60
+                                          /\
+                                         70 80          
+Why we need Binary heap ? - To find the maximum and minimum number among a set of numbers in O(logn) time
+and also make sure that inserting additional numbers does not take more then O (logn) time 
+Practical use - Prim's Algorithm , Heap sort and Priority Queue 
+
+There are 2 types of Heap 
+Min heap -  the value of each node is less than its children 
+
+                                                   5
+                                                /    \
+                                            10        20   <-- min heap 
+                                            / \      /  \
+                                          30   40   50   60
+                                          /\
+                                         70 80          
+
+Max heap - the vakue of each node is greatehr than its children 
+
+                                                  80
+                                                /    \
+                                            70        60   <-- min heap 
+                                            / \      /  \
+                                          50   40   30   20
+                                          /\
+                                         5  10          
+
+Operations in Binary heap : 
+- Creation of Binary heap 
+- pekk top of Binary Heap
+- Extract min / max 
+- traversal of Binary Heap
+- Size of Binary Heap
+- Insert value in Binary Heap
+- Delete in Binary Heap 
+
+Implementation - 1) Pointer 2 ) Array 
+Array implementation 
+left child = 2 * index 
+right child = 2 * index + 1 
+
+Extaction in heap can be done only for the root , when the root is extracted , and the tree 
+loses the heap property , then we need to heapify top to bottom

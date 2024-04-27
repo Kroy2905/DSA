@@ -31,7 +31,7 @@ Why tree data structures :
                          /\
                        N7  N8
                        
-Termibologies :
+Terminologies :
 Root - it is a node which doesnt have nay parent  - N1 
 Edge - A link between a parent and a child 
 Leaf - a node which does not have any children - e.g. - N6 
