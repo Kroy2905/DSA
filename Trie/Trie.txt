@@ -1,0 +1,113 @@
+A trie is a tree based data structure that organises information in a hierarchy 
+Properties : 
+-  It is typically used to store or search strings in a space and time 
+efficient way
+- Any node in trie can store non repetitive multiple characters 
+- every node stores link of the next character of the string 
+- Every node keeps track of end of string 
+- it can have any number of child 
+
+                                             AB
+                                    /                  \ 
+                                 I                     AIM
+                            /                          / | \ 
+                          RT                           R L  .   
+                        /  \                          /  /
+                       .    .                        .  .           Note . represents end of string 
+
+
+        root
+       /   \
+      A     B           <---- Actual representation 
+     /     /|\
+    I     A I M
+   / \     \ \ \
+  R   T     R L (end)
+(end)(end) (end)(end)
+
+
+Stored strings are - AIR , AIT,BAR,BIL,BM
+How trie is formed : 
+Lets say we want to insert a word "AIR" , 
+- so for every character which does not exist we need to create a node 
+- when all the characters are finished denote a end note / '.' 
+   
+     AIR                                   A
+                                      
+                                    A
+                                   /    
+                                  I 
+                                 /
+                                R
+                               /
+                              .
+    Next word AIT 
+    - we check if character already exists if not we create nodes / update the existing node 
+                                      A
+                                    /                  
+                                 I                     
+                            /                           
+                          RT                             
+                        /  \                          
+                       .    .         
+
+
+    Next word is BAR               
+                             
+                  B------>            AB
+                                    /                  
+                                 I                     
+                            /                           
+                          RT                             
+                        /  \                          
+                       .    .         
+
+
+
+                  A------>            AB
+                                    /   \               
+                                 I       A               
+                            /           /               
+                          RT                          
+                        /  \                       
+                       .    .        
+
+                 R------>            AB
+                                    /   \               
+                                 I       A               
+                            /           /               
+                          RT           R                  
+                        /  \          /               
+                       .    .        . 
+
+  Next Word BIL               
+                                     AB
+                                    /   \               
+                                 I       AI              
+                            /           / \              
+                          RT           R   L               
+                        /  \          /    /          
+                       .    .        .    .
+
+Next word BM :                                                                   
+
+
+                                    AB                                                                  
+                                  /   \               
+                               I       AIM            
+                            /          / \ \             
+                          RT          R   L  .             
+                        /  \        /    /          
+                       .    .      .    .
+
+       root
+       /   \
+      A     B           <---- Actual representation 
+     /     /|\
+    I     A I M
+   / \     \ \ \
+  R   T     R L (end)
+(end)(end) (end)(end)
+
+
+Why we need trie structure - for auto complete search and spell check 
