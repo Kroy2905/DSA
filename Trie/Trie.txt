@@ -111,3 +111,19 @@ Next word BM :
 
 
 Why we need trie structure - for auto complete search and spell check 
+Common operations in trie : Creation , Insertion , Searching a string , Deletion 
+A node in trie is a map where character is mapped against the  link to the node
+
+                               MAP 
+                      Ch1        -         Link to n1 
+                      CH2        -         Link to n2 
+                      -                        -
+                      -                        -
+                      -                        -
+                      -                         -
+                                 end of String 
+Insertion - In insertion there  can be 4 types : 
+1. A completely new string - APP 
+2. New string  has common characters with previous inserted strings - API
+3. New string has all the the characters common with previous string -APIS 
+4- NEw string already exists (here it is not inserted)
