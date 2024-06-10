@@ -188,3 +188,22 @@ Quadratic Probing - Adding arbitary Quadratic polynomial to the index unless an 
   If the index is filled , then index + 1^2 is checked next index + 2^2 is checked and so on until empty is found
 
 Double Hashing : The interval betwee nthe probes / buckets are calculated by ussing another has function . (check code)
+
+Direct Chaining vs Open Addressing 
+
+Direct Chaining :
+- THe hashtable never gets filled . 
+- Too many elements  inserted in link list affects the time complexity of random access and searching 
+Open Addressing :
+- Easy implementation 
+- HashTable gets filled and needs to be rehashed 
+
+When to use which : 
+- If the no. of elements is known , then is open addressing (rehashing not needed)
+- If deletion is frequent use , direct chaining is used because on deletion using open addressing  there are empty buckets in 
+hashtable , which again needs to be traversed for again a collision insertion 
+
+Advantage of Hashing :
+It aims at doing insertion , deletion and searching at o(1)
+Disadavantage : If hash function is not an optimised one it might result in O(n) complexity of insertion,
+search and deletion. 

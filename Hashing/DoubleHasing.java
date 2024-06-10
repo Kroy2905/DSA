@@ -35,14 +35,18 @@ public class DoubleHasing {
         if(getLoadFactor()>0.75){
             rehashKeys(word);
         }else{
-            int index = modASCII(word,hashtable.length);
-            int counter = 3;
-            while(hashtable[index]!=null){
-                System.out.println(index + "already occupied, Trying next index");
-                index = (index+(counter*counter))%hashtable.length;
-                counter++;
+            int x = modASCII(word,hashtable.length);
+            int y = secondHashFunction(word, hashtable.length);
+            for(int i=0;i<hashtable.length;i++){
+                int newIndex = (x+i*y)%hashtable.length; // This is a custom logic 
+                if(hashtable[newIndex]==null){
+                    hashtable[newIndex] = word;
+                    break;
+                }else{
+                    System.out.println("Index occupied , Trying the next !! ");
+                }
             }
-            hashtable[index] = word;
+         
             System.out.println(word + "inserted !!");
             usedCellNumber++;
         }
@@ -106,6 +110,18 @@ public class DoubleHasing {
         return sum;
      }
  
+     private int  secondHashFunction(String word, int M){
+        char ch[] = word.toCharArray();
+        int  sum = 0;
+        for(int i = 0;i<word.length();i++){
+            sum+=ch[i];
+        }
+        while(sum>hashtable.length){
+            sum=addAllDigits(sum);
+        }
+        return sum%M;
+
+     }
  
     
 }

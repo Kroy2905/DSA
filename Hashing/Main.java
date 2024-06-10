@@ -22,14 +22,24 @@ public class Main {
         // chain.deleteHashtable("you");
         // chain.displayHashtable();
 
-        QuadraticeProbing chain = new QuadraticeProbing(15);
+        // QuadraticeProbing chain = new QuadraticeProbing(15);
+        // chain.inserthashTable("hello");
+        // chain.inserthashTable("world");
+        // chain.inserthashTable("how");
+        // chain.inserthashTable("are");
+        // chain.inserthashTable("you");
+        // chain.searchHashtable("you");
+        // chain.deleteHashtable("you");
+        // chain.displayHashtable();
+
+               DoubleHasing chain = new DoubleHasing(15);
         chain.inserthashTable("hello");
         chain.inserthashTable("world");
         chain.inserthashTable("how");
         chain.inserthashTable("are");
         chain.inserthashTable("you");
         chain.searchHashtable("you");
-        chain.deleteHashtable("you");
+       // chain.deleteHashtable("you");
         chain.displayHashtable();
     }
     
