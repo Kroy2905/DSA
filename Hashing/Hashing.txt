@@ -1,0 +1,190 @@
+Hashing is a method of sorting and indexing data.The idea behind hashing is to allow large amount of data to 
+be indexed using keys commonly reated by formulae. 
+
+Why hashing is needed ? - For opitimised  searching . if there is an application where there is heavy searching . We 
+use hashing.
+Terminiogies : 
+Hash method : It is a method to map data of arbitary size to data of fixed size
+
+    Apple -------  Hash Function    --------  18 
+
+    Ball -------  Hash Function    --------  20 
+
+    Cat -------  Hash Function    --------  22
+
+    array - > 
+     1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17  18   19   20   21  22   23 24 25 26
+                                               Apple     Ball      Cat
+
+Key - Input by the user
+Hash value - Value returned by the hash function
+Hash table - It is a data structure which implements an associative array abstract data type , a structure
+that can map keys to values
+Collision - When two different keys to a hash function  produce the same hash value
+
+Collision Resolution techniques - 1-Direct Chaining 2- Open Addressing , Open Addressing is divided into 3 parts :
+1 - Linear Probing 2 - Quadratic Probing 3 - Double Hashing
+
+
+Direct Chaining - implemented using link list. colliding elements are stored in the list
+Elements are not inserted directly  rather only the reference is added. In case of a collision
+the colliding elements are chained together in the link list. 
+
+    Apple -------  Hash Function    --------  18 , address = 111
+
+    Ball -------  Hash Function    --------  18 , address = 222
+
+    Cat -------  Hash Function    --------  18 ,`address = 333
+
+
+    Dog-------  Hash Function    --------  22 , address = 444
+
+hash table : 
+                    Bucket 0: []
+                    Bucket 1: []
+                    Bucket 2: []
+                    Bucket 3: []
+                    .......
+                    Bucket 18: []
+                    Bucket 10: []
+                    Bucket 20: []
+                    Bucket 21: []
+                    Bucket 22: []
+                    Bucket 23: []
+        Insertig Apple 
+                    Bucket 0: []
+                    Bucket 1: []
+                    Bucket 2: []
+                    Bucket 3: []
+                    .......
+                    Bucket 18: [111] ->(Apple,null)
+                    Bucket 10: []
+                    Bucket 20: []
+                    Bucket 21: []
+                    Bucket 22: []
+                    Bucket 23: []
+
+              Insertig Ball 
+                    Bucket 0: []
+                    Bucket 1: []
+                    Bucket 2: []
+                    Bucket 3: []
+                    .......
+                    Bucket 18: [111] -> (Apple,222) -> (Ball,null)
+                    Bucket 10: []
+                    Bucket 20: []
+                    Bucket 21: []
+                    Bucket 22: []
+                    Bucket 23: []
+
+                       Insertig Cat 
+                    Bucket 0: []
+                    Bucket 1: []
+                    Bucket 2: []
+                    Bucket 3: []
+                    .......
+                    Bucket 18: [111] -> (Apple,222) -> (Ball,333) -> (Cat,null)
+                    Bucket 10: []
+                    Bucket 20: []
+                    Bucket 21: []
+                    Bucket 22: []
+                    Bucket 23: []
+
+
+                        Insertig Dog
+                    Bucket 0: []
+                    Bucket 1: []
+                    Bucket 2: []
+                    Bucket 3: []
+                    .......
+                    Bucket 18: [111] -> (Apple,222) -> (Ball,333) -> (Cat,null)
+                    Bucket 10: []
+                    Bucket 20: []
+                    Bucket 21: []
+                    Bucket 22: [444] ->  (Dog,null)
+                    Bucket 23: []
+
+
+Open Addressing : The colliding elements are stored in other vacant buckets.During storage and lookup, these are found through
+so called probing. 
+Linear Probing : It places new key into closest following new cell . When hashtable is full , we create extra space 
+depending on the load factor.(Check code)
+  Apple -------  Hash Function    --------  18 
+
+    Ball -------  Hash Function    --------  18 
+
+    Cat -------  Hash Function    --------  18 
+
+
+    Dog-------  Hash Function    --------  22 , address = 444
+
+hash table : 
+                    Bucket 0: []
+                    Bucket 1: []
+                    Bucket 2: []
+                    Bucket 3: []
+                    .......
+                    Bucket 18: []
+                    Bucket 10: []
+                    Bucket 20: []
+                    Bucket 21: []
+                    Bucket 22: []
+                    Bucket 23: []
+        Insertig Apple 
+                    Bucket 0: []
+                    Bucket 1: []
+                    Bucket 2: []
+                    Bucket 3: []
+                    .......
+                    Bucket 18: [Apple]
+                    Bucket 10: []
+                    Bucket 20: []
+                    Bucket 21: []
+                    Bucket 22: []
+                    Bucket 23: []
+
+              Insertig Ball 
+                    Bucket 0: []
+                    Bucket 1: []
+                    Bucket 2: []
+                    Bucket 3: []
+                    .......
+                    Bucket 18: [Apple] 
+                    Bucket 10: [Ball]
+                    Bucket 20: []
+                    Bucket 21: []
+                    Bucket 22: []
+                    Bucket 23: []
+
+                       Insertig Cat 
+                    Bucket 0: []
+                    Bucket 1: []
+                    Bucket 2: []
+                    Bucket 3: []
+                    .......
+                    Bucket 18: [Apple] 
+                    Bucket 10: [Ball]
+                    Bucket 20: [Cat]
+                    Bucket 21: []
+                    Bucket 22: []
+                    Bucket 23: []
+
+
+                        Insertig Dog
+                     Bucket 0: []
+                    Bucket 1: []
+                    Bucket 2: []
+                    Bucket 3: []
+                    .......
+                    Bucket 18: [Apple] 
+                    Bucket 10: [Ball]
+                    Bucket 20: [Cat]
+                    Bucket 21: []
+                    Bucket 22: [Dog]
+                    Bucket 23: []
+
+Quadratic Probing - Adding arbitary Quadratic polynomial to the index unless an empty bucket is found 
+  ex - 1^2 - 2^2 - 3^2 - 4^2 -
+  If the index is filled , then index + 1^2 is checked next index + 2^2 is checked and so on until empty is found
+
+Double Hashing : The interval betwee nthe probes / buckets are calculated by ussing another has function . (check code)
