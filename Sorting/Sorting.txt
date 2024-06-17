@@ -1,0 +1,47 @@
+Sorting is simply arranging data in ascending or descending order. 
+ 
+ Tupes of sorting 
+ 1 - Space Used - 
+ i) inplace - Does not require extra space - buule sort 
+ 
+ ii) out of place  - requires extra space - merge sort 
+
+ 2 - Stability -
+  i)stable  - The order of similar data is not changed post sorting - insertion sort 
+  ii) unstable - The order of similar data is changed - quick sort 
+  Terminology - 
+  Increasing order - If successive element is greater than the previous element
+  Decreasing order - If successive element is less than the previous element
+  Non Increasing order - If successive element is less than or equal to the previous element
+  Non Decreasing order - If successive element is greater than or equal to the previous element
+
+  Different types of sorting : 
+  1) Bubble sort - We repeatedly compar each pair of adjacent elements and swap them if they are in wrong order. 
+  T(n) -> O(n^2) , S(n) -> O(1)
+  When to use - i) elements are almost sorted , 2) space is a concern
+  When to avoid - i)elements are large in number 
+
+  2) Selection sort - Find the minimum element and move it to the sorted part of the array to make the unsorted part sorted 
+  
+T(n) -> O(n^2) , S(n) -> O(1)
+  When to use - i) when we have less memory 
+  When to avoid - i) time is important 
+
+  3) Insertion sort - Divide the array into two parts . Take first element from the unsorted part of the array and move
+  to its appropriate position in the sorted array . Repeat until unsorted array is empty 
+
+  T(n) -> O(n^2) , S(n) -> O(1)
+  When to use - i) when we have less memory ii) there is continuous flow of elements 
+  When to avoid - i) time is important 
+
+  4) Bucket sort : i) We create buckets and distribute elemnents into buckets  , creation of buckets depends 
+  on an ideal function which in turn is dependent on the number of elements ii) sort each bucket iii)merge the 
+  buckets to get a sorted list of elements.
+
+  T(n) -> O(n log n) , S(n) -> O(n)
+  When to use - i) when the elemnts are uniformly distributed . e.g. - 1,2,3,5,6,4,9  , dont use e.g- 100,2,3001.20
+  When to avoid - i) space is important 
+
+
+
+
