@@ -10,8 +10,9 @@ public class Main {
 
 
         int arr[] = {64, 34, 25, 12, 22, 11, 90};
-        BucketSort sort = new BucketSort(arr);
-       sort.bucketSort();
-        sort.printArray();
+        // BucketSort sort = new BucketSort(arr);
+        MergeSort sort = new MergeSort();
+        sort.mergeSort(arr,0,arr.length-1);
+        sort.printArray(arr);
     }
 }

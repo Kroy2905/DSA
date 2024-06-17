@@ -42,6 +42,14 @@ T(n) -> O(n^2) , S(n) -> O(1)
   When to use - i) when the elemnts are uniformly distributed . e.g. - 1,2,3,5,6,4,9  , dont use e.g- 100,2,3001.20
   When to avoid - i) space is important 
 
+  5)Merge Sort i) It works on divide and conquer apporach ii) divide the elements into two  halves recursively
+  until it is too small that it cannot be broken further  iii)merge the  halves by sorting them  
+
+    T(n) -> O(n log n) , S(n) -> O(n)
+  When to use - i) when you need stable sort i.e. order of the elements needs to be maintained ii) time is O(nlog n)
+  When to avoid - i) space is important 
+
+
 
 
 
