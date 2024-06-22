@@ -27,7 +27,7 @@ public class LinearProbing {
             }
         }
         data.add(word);
-        hashtable = new String[hashtable.length*2];
+        hashtable = new String[hashtable.length*2]; // increasing the length of the hash table by 2 
         for(String s : data){
             inserthashTable(s);
     }

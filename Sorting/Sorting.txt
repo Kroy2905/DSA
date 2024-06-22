@@ -16,7 +16,7 @@ Sorting is simply arranging data in ascending or descending order.
   Non Decreasing order - If successive element is greater than or equal to the previous element
 
   Different types of sorting : 
-  1) Bubble sort - We repeatedly compar each pair of adjacent elements and swap them if they are in wrong order. 
+  1) Bubble sort - We repeatedly compare each pair of adjacent elements and swap them if they are in wrong order. 
   T(n) -> O(n^2) , S(n) -> O(1)
   When to use - i) elements are almost sorted , 2) space is a concern
   When to avoid - i)elements are large in number 
@@ -48,6 +48,30 @@ T(n) -> O(n^2) , S(n) -> O(1)
     T(n) -> O(n log n) , S(n) -> O(n)
   When to use - i) when you need stable sort i.e. order of the elements needs to be maintained ii) time is O(nlog n)
   When to avoid - i) space is important 
+
+  6) Quick sort - i) It is a divide and conquer algorithm. ii) Find pivot number and make sure 
+  smaller numbers are located at the left of pivot and larger numbers are located at the right of the pivot.iii) Unlike 
+  merge sort extra sapce is not required 
+
+    T(n) -> O(n log n) , S(n) -> O(1)
+  When to use - i) when you need stable sort i.e. order of the elements needs to be maintained ii) time is O(nlog n)
+  When to avoid - i) space is important 
+
+  7) Heap Sort - i) insert the elements in the  heap (bottom to top) , ii) extract head of the heap (top to bottom)
+   T(n) -> O(n log n) , S(n) -> O(1)
+  When to use - i) When space is important  ii) time is O(nlog n)
+  When to avoid - i) when stability is important 
+
+  Name            Time Complexity   Space Complexity   Stable
+----------------------------------------------------------
+Bubble Sort     O(n^2)            O(1)               Yes
+Selection Sort  O(n^2)            O(1)               No
+Insertion Sort  O(n^2)            O(1)               Yes
+Bucket Sort     O(n logn)         O(n)               Yes
+Merge Sort      O(n logn)         O(n)               Yes
+Quick Sort      O(n logn)         O(n)               No
+Heap Sort       O(n logn)         O(1)               No
+
 
 
 
