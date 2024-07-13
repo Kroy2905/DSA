@@ -1,0 +1,131 @@
+Graph is a non linear data structure which consists of finite set of nodes(vertices) and  set of edge that connect graph . 
+Graphs are used to represent networks . e.g. - a train network 
+Tree data structure  could have been used to represent the network but trees dont have circular path between nodes .
+
+Terminologies : 
+- vertices - Vertices are the nodes in the graph
+- edge - Edge is the lines that connect the nodes in the graph.
+- unweighted graph - Unweighted graph is a graph which does not have any weight associated with the edge 
+
+    (n1)---------(n2)
+     | \           / |
+     |  \         /  |
+     |   \       /   |
+     |    \     /    |
+    (n3)-----(n4)
+       \       /
+        \     /
+         \   /
+          (n5)
+- weighted graph - Weighted graph is a graph which has  weight associated with the edge
+
+    (n1)------5------(n2)
+     | \              / |
+     |  \            /  |
+     3   7          4   2
+     |    \        /    |
+     |     \      /     |
+    (n3)------6------(n4)
+
+- undirected graph - the edges dont have any direction 
+
+     (n1)---------(n2)
+     | \           / |
+     |  \         /  |
+     |   \       /   |
+     |    \     /    |
+    (n3)-----(n4)
+       \       /
+        \     /
+         \   /
+          (n5)
+
+- directed graph - the edges  have  direction
+
+    (n1) ----> (n2)
+     ^ \         / |
+     |  \       /  v
+     |   v     v   |
+    (n3) <---- (n4)
+       \         /
+        \       v
+         (n5)
+
+- cyclic graph - if the graph hsa atleast one loop 
+
+    (n1)------(n2)
+     |         / |
+     |        /  |
+     |       /   |
+     |      /    |
+    (n3)---(n4)  |
+       \     |   |
+        \    |   |
+         \   |   |
+          \  |   |
+           (n5)--|
+In this undirected cyclic graph, there are multiple cycles, such as:
+
+    n1 -> n3 -> n4 -> n2 -> n1
+    n4 -> n5 -> n3 -> n4
+
+    (n1) ----> (n2)
+     ^ \        / |
+     |  \      /  v
+     |   v    v   |
+    (n3) <-- (n4)
+       \         /
+        \       v
+         \     (n5)
+          \      ^
+           \----/
+
+
+In this directed cyclic graph, there are cycles like:
+
+    n1 -> n2 -> n4 -> n3 -> n1
+    n4 -> n5 -> n4
+
+- Acyclic graph - there is no loop in the graph 
+- A tree is a special case of directed acyclic graph 
+
+Representation of graph in code - A graph can be represented via adjacent matrix or 2-D matrix. Elements of the matrix tells
+whether the pair of verices are adjacent/connected or not in graph 
+
+    (n1)------(n2)
+     | \       / |
+     |  \     /  |
+     |   \   /   |
+     |    \ /    |
+    (n3)---(n4)  |
+       \     |   |
+        \    |   |
+         \   |   |
+          \  |   |
+           (n5)  |
+
+
+The adjacency matrix for this graph is a square matrix used to represent a finite graph. The elements of the matrix indicate whether pairs of vertices are adjacent or not in the graph.
+
+
+The adjacency matrix A for this graph is:
+A=
+   n1 n2 n3 n4 n5
+n1  0  1  1  1  0
+n2  1  0  0  1  0
+n3  1  0  0  1  1
+n4  1  1  1  0  1
+n5  0  0  1  1  0
+
+​Representation  via adjacency list - An adjacency list is a collection of unordered list used to represent the graph. Each 
+list describes the set of neighbors of a vertex in a graph .
+adjacency list : 
+
+n1: n2, n3,n4
+n2: n1, n4,
+n3: n1, n4, n5
+n4: n1,n2, n3,
+n5: n3, n4
+When to use adjacency list vs adjacent matrix . : IF the graph is complete or almost complete we use adjacent matrix 
+and if the graph does not have many edges , we use adjacency list
+
