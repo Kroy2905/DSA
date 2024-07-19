@@ -2,6 +2,8 @@ package Graph;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Stack;
 
 /**
  * @author Koustav Roy
@@ -35,6 +37,54 @@ public class GraphL {
     }
     return s.toString();
   }
+  void bfsVisit (GraphNode node) {
+    LinkedList<GraphNode> queue = new LinkedList<GraphNode>();
+    queue.add(node);
+    while(!queue.isEmpty()){
+      GraphNode curNode = queue.remove(0);
+      curNode.isVisited = true;
+      System.out.print(curNode.name + " ");
+      for(GraphNode neighbor : curNode.neighbors){
+        if(!neighbor.isVisited){
+          queue.add(neighbor);
+          neighbor.isVisited = true;
+        }
+      }
+
+    }
+  }
+  public void bfs() {
+    for (GraphNode node : nodeList) {
+      if(!node.isVisited) {
+        bfsVisit(node);
+      }
+    }
+  }
+
+  void dfsVisit(GraphNode node) {
+    Stack<GraphNode> stack = new Stack<>();
+    stack.push(node);
+    while (!stack.isEmpty()) {
+      GraphNode currentNode = stack.pop();
+      currentNode.isVisited = true;
+      System.out.print(currentNode.name + " ");
+      for (GraphNode neighbor : currentNode.neighbors) {
+        if (!neighbor.isVisited) {
+          stack.push(neighbor);
+          neighbor.isVisited=true;
+        }
+      }
+    }
+  }
+
+  void dfs() {
+    for (GraphNode node : nodeList) {
+      if(!node.isVisited) {
+        dfsVisit(node);
+      }
+    }
+  }
+  
 
     
 }

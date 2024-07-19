@@ -129,3 +129,76 @@ n5: n3, n4
 When to use adjacency list vs adjacent matrix . : IF the graph is complete or almost complete we use adjacent matrix 
 and if the graph does not have many edges , we use adjacency list
 
+-------------------------------------------------  SEARCHING ALGO ------------------------------------------------
+Breadth first search - It is a traversing algorithm  in graph , where an arbitary vertex is selected and all the 
+neighboring vertices(at that same level )  are explored , before going to the neighbors in the next level . It as good as 
+level order traversing 
+Time complexity  - O(V+E)  ( vertex and edge )
+Space Complexity - O(V+E)
+    (n1)------(n2)
+     |          |\
+     |          | \
+     |          |  \
+     |          |   \
+    (n3)------(n4)  (n5)
+     |          |   /
+     |          |  /
+     |          | /
+     |          |/
+    (n6)-------(n7)  
+
+    BFS  = n1,n2,n3,n4,n5,n6,n7
+    Process - 
+    1. Enque a starting vertex 
+    2. while queue is not empty 
+        {
+            p=dequeueu()
+            if(p is not visited)
+            {
+                mark it visited 
+                enqueue all unvisited adjacent vertices 
+                
+            }
+        }
+
+Depth first search - It is a traversing algorithm  in graph , where an arbitary vertex is selected and explores as far as possible
+along each edge before backtracking. It is implemented using stack 
+Time complexity  - O(V+E)  ( vertex and edge )
+Space Complexity - O(V+E)
+    (n1)------(n2)
+     |          |\
+     |          | \
+     |          |  \
+     |          |   \
+    (n3)------(n4)  (n5)
+     |          |   /
+     |          |  /
+     |          | /
+     |          |/
+    (n6)-------(n7)  
+
+    BFS  = n1,n3,n6,n7,n4,n2,n5
+    Process - 
+    1. Push a starting vertex 
+    2. while stack is not empty 
+        {
+            p=pop()
+            if(p is not visited)
+            {
+                mark it visited 
+                push all unvisited adjacent vertices 
+                
+            }
+        }
+
+|                       | BFS                                                        | DFS                               |
+|-----------------------|----------------------------------                          |-----------------------------------|
+| How does it work internally? | It goes in breadth first                            | It goes in depth first            |
+| Which DS does it use internally? | Queue                                           | Stack                             |
+| Time Complexity       | O(V+E)                                                     | O(V+E)                            |
+| Space Complexity      | O(V+E)                                                     | O(V+E)                            |
+| When to use?          | If we know that the target is close to the starting point   | If we already know that the target vertex is buried very deep |
+
+      
+
+
