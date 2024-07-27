@@ -200,5 +200,33 @@ Space Complexity - O(V+E)
 | When to use?          | If we know that the target is close to the starting point   | If we already know that the target vertex is buried very deep |
 
       
+Topological sort - Sorts the vertices in such a way that  if any action(vertex) is dependent on any other action , then the 
+dependent vertex will always come first .
+    A       B
+     |    / | 
+     v  <   v   
+     C      D   
+      \     |   
+       v    |  
+       E    | 
+      / \  / 
+    v   v v  
+    H    F   
+         |      
+         v      
+         G      
 
+algorithm : 
+if a vertex depends on curr vertex 
+go to that vertex and comeback to current vertex
+else 
+push current vertex to stack 
+Time complexity : O(V+E) Space complexity - O(V+E)
+
+Single Source Shortest Path Problem : SSSPP  - Find the shortest path from one vertex (given) to other verices such that 
+the toal distance between them is minimum 
+It can be solved by - BFS , Dijkstra's algorithm , Bellman Ford  algorithm
+Time Complexity of SSSPP using BFS  : O(E) Space complexity - O(V)
+Why BFS cannot be used for weighted graphs for SSSPP : Because BFS was design for single/np weighted graphs. BFS  may give the 
+shortest path from one vertex but it will not give  least weighted shortest path 
 

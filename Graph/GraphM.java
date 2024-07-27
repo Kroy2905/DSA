@@ -109,4 +109,68 @@ public class GraphM {
   
   }
 
+
+  //  Topological Sort
+  public void addDirectededge(int i, int j) {
+    adjMatrix[i][j] = 1;
+  }
+
+  void topologicalVisit(GraphNode node, Stack<GraphNode> stack) {
+    ArrayList<GraphNode> neighbors = getNeighbors(node);
+    for (GraphNode neighbor : neighbors) {
+      if (!neighbor.isVisited) {
+        topologicalVisit(neighbor, stack);
+      }
+    }
+    node.isVisited = true;
+    stack.push(node);
+  }
+
+  void topologicalSort() {
+    Stack<GraphNode> stack = new Stack<>();
+    for (GraphNode node : nodeList) {
+      if (!node.isVisited) {
+        topologicalVisit(node, stack);
+      }
+    }
+
+    while (!stack.isEmpty()) {
+      System.out.print(stack.pop().name + " ");
+    }
+  }
+
+
+   //Print path of each of the vertex from source
+ public static void pathPrint(GraphNode node) {
+  if(node.parent!=null) {
+   pathPrint(node.parent);
+ }
+  System.out.print(node.name+" ");
+}
+
+public void BFSForSSSPP(GraphNode node) {
+  LinkedList<GraphNode> queue = new LinkedList<>();
+  queue.add(node);
+  while(!queue.isEmpty()) {
+    GraphNode currentNode = queue.remove(0);
+    currentNode.isVisited = true;
+    System.out.print("Printing path for node "+currentNode.name+": ");
+    pathPrint(currentNode);
+    System.out.println();
+    ArrayList<GraphNode> neighbors = getNeighbors(currentNode);
+    for (GraphNode neighbor : neighbors) {
+      if (!neighbor.isVisited) {
+        queue.add(neighbor);
+        neighbor.isVisited = true;
+        neighbor.parent = currentNode;
+      }
+    }
+
+  }
+}
+
+
+
+
+
 }
