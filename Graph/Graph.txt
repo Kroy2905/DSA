@@ -227,6 +227,6 @@ Single Source Shortest Path Problem : SSSPP  - Find the shortest path from one v
 the toal distance between them is minimum 
 It can be solved by - BFS , Dijkstra's algorithm , Bellman Ford  algorithm
 Time Complexity of SSSPP using BFS  : O(E) Space complexity - O(V)
-Why BFS cannot be used for weighted graphs for SSSPP : Because BFS was design for single/np weighted graphs. BFS  may give the 
+Why BFS cannot be used for weighted graphs for SSSPP : Because BFS was design for single/non weighted graphs. BFS  may give the 
 shortest path from one vertex but it will not give  least weighted shortest path 
 

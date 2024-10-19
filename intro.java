@@ -11,9 +11,48 @@ class intro
 	{
 		System.out.println("Hello World");
 		intro obj = new intro();
-		System.out.println(intro.longestPalindrome("ac"));
+        int arr[] = {-3,-2,-1,0,0,1,2,3};
+		System.out.println(intro.fourSum(arr, 0));
 
 	}
+
+    public static List<List<Integer>> fourSum(int[] nums, int target) {
+        Arrays.sort(nums);
+        List<List<Integer>> res = new ArrayList<>();
+        int n = nums.length;
+           Map <List<Integer>,Integer> map1 = new HashMap<>();
+            Map <Integer,Integer> map2 = new HashMap<>();
+        for(int i = 0;i<n-3;i++){
+            System.out.println ("i = "+i);
+            for(int j = i+1;j<n-2;j++){
+                     System.out.println ("j= "+j);
+                for(int k = j+1;k<n-1;k++){
+                         System.out.println ("k = "+k);
+                    for(int l = k+1;l<n;l++){
+                             System.out.println ("l = "+l);
+                        if(nums[i]+nums[j]+nums[k]+nums[l] == target ){
+                                 System.out.println ("Entered ");
+                        
+                    List<Integer> list = new ArrayList<>();
+                    list.add(nums[i]);
+                    list.add(nums[j]);
+                    list.add(nums[k]);  
+                     list.add(nums[l]);   
+                     if(!map1.containsKey(list)){
+                            map1.put(list,0);
+                          res.add(list);
+                     }
+                    
+                     
+                        }
+                    }
+                }
+            }
+        }
+
+        return res;
+        
+    }
 	public static  String longestPalindrome(String s) {
         int n = s.length();
         String str = s;
