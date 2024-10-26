@@ -177,7 +177,7 @@ Space Complexity - O(V+E)
      |          |/
     (n6)-------(n7)  
 
-    BFS  = n1,n3,n6,n7,n4,n2,n5
+    DFS  = n1,n3,n6,n7,n4,n2,n5
     Process - 
     1. Push a starting vertex 
     2. while stack is not empty 
@@ -226,7 +226,18 @@ Time complexity : O(V+E) Space complexity - O(V+E)
 Single Source Shortest Path Problem : SSSPP  - Find the shortest path from one vertex (given) to other verices such that 
 the toal distance between them is minimum 
 It can be solved by - BFS , Dijkstra's algorithm , Bellman Ford  algorithm
-Time Complexity of SSSPP using BFS  : O(E) Space complexity - O(V)
+Time Complexity of SSSPP using BFS  : O(V+E) Space complexity - O(V)
 Why BFS cannot be used for weighted graphs for SSSPP : Because BFS was design for single/non weighted graphs. BFS  may give the 
 shortest path from one vertex but it will not give  least weighted shortest path 
+
+DFS (Depth-First Search) is not suitable for finding the shortest path in
+ unweighted graphs or graphs with equal edge weights for the following reasons:
+1. DFS Doesn't Guarantee the Shortest Path:
+Nature of DFS: DFS explores as far as possible down each branch before backtracking. 
+This depth-first exploration means that it might take a longer path to reach a target 
+vertex instead of the shortest one.
+
+No Level-by-Level Exploration: DFS does not explore nodes level
+ by level like BFS. It could visit a distant node first, even if there
+  is a closer node available through a different path.
 

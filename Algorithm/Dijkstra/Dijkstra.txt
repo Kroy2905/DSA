@@ -7,25 +7,49 @@ Key Concepts
     Weight/Cost: A numerical value that represents the cost of traversing an edge.
     Source Node: The node from which we want to find the shortest paths to all other nodes.
 
+
+A priority queue is used in Dijkstra's algorithm because it helps efficiently 
+select the next node to process based on the shortest known distance from the 
+source node. Here’s a detailed explanation of why the priority queue is suitable for this:
+
+1. Efficiently Selecting the Next Node to Process
+Priority Selection: Dijkstra’s algorithm always processes the node that is
+ closest to the source and whose shortest path has not been determined yet.
+A priority queue allows nodes to be stored in a way that the node with the 
+smallest distance is always at the front.
+This ensures that each time we extract a node from the queue, it is
+ the one with the minimum distance. This is crucial for Dijkstra's algorithm, as 
+ it guarantees that we always expand the closest node first.
+
+
 Algorithm Steps
 
     Initialization:
-        Assign a tentative distance value to every node: 0 for the source node and infinity (∞) for all other nodes. These values are stored in a priority queue (often implemented as a min-heap).
+        Assign a tentative distance value to every node: 0 for the source node and infinity (∞) for
+         all other nodes.
+         These values are stored in a priority queue (often implemented as a min-heap).
         Set the source node as "current" and mark all other nodes as unvisited.
 
     Visit Neighbors:
-        For the current node, consider all of its unvisited neighbors and calculate their tentative distances through the current node. This means adding the edge weight between the current node and the neighbor to the current node's distance.
-        Compare the newly calculated tentative distance to the current assigned value for the neighbor node and update it if it's smaller.
+        For the current node, consider all of its unvisited neighbors and calculate 
+        their tentative distances through the current node. This means adding the edge 
+        weight between the current node and the neighbor to the current node's distance.
+        Compare the newly calculated tentative distance to the current assigned value for 
+        the neighbor node and update it if it's smaller.
 
     Mark Visited:
-        Once all neighbors of the current node have been examined, mark the current node as visited. A visited node will not be checked again.
+        Once all neighbors of the current node have been examined,
+         mark the current node as visited. A visited node will not be checked again.
 
     Select Next Current Node:
-        Select the unvisited node with the smallest tentative distance as the new "current node" and repeat steps 2-4.
+        Select the unvisited node with the smallest tentative distance as 
+        the new "current node" and repeat steps 2-4.
 
     Termination:
-        The algorithm terminates when all nodes have been visited or when the smallest tentative distance 
-        among the unvisited nodes is infinity (meaning no connection to the remaining unvisited nodes exists).
+        The algorithm terminates when all nodes have been visited or 
+        when the smallest tentative distance 
+        among the unvisited nodes is infinity (meaning no connection to the 
+        remaining unvisited nodes exists).
 
         Drawback - Dijkstra algorithm cannot be used for  graphs  with negative weights and have a cycle 
          In the A-C-D cycle below , first we get 3-6+1 = -2 , now this is not the min distance bwtween A and D because
