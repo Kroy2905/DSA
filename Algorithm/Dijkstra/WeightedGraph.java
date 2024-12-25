@@ -8,6 +8,7 @@ public class WeightedGraph {
   public WeightedGraph(ArrayList<WeightedNode> nodeList) {
     this.nodeList = nodeList;
   }
+  //Dijkstra algorithm
 
    void dijkstra(WeightedNode node) {
     // Create a priority queue to hold the nodes based on their distance.
@@ -32,7 +33,7 @@ public class WeightedGraph {
                 int newDistance = currentNode.distance + currentNode.weightMap.get(neighbor);
                 
                 // If the new calculated distance is shorter than the currently known distance:
-                if (neighbor.distance > newDistance) {
+                if ( newDistance < neighbor.distance) {
                     // Update the neighbor's distance with the new shorter distance.
                     neighbor.distance = newDistance;
                     
@@ -110,4 +111,50 @@ public class WeightedGraph {
 
 
   }
+
+  // Floyd Warshall algorithm
+  public void floydWarshall() {
+		int size = nodeList.size();
+		int[][] V = new int[size][size];
+
+		// Initializing Distance table from adjacency list
+		for (int i = 0; i < size; i++) {
+			WeightedNode first = nodeList.get(i);
+			for (int j = 0; j < size; j++) {
+				WeightedNode second = nodeList.get(j);
+				if (i == j)
+					V[i][j] = 0;
+				else if (first.weightMap.containsKey(second)) { //we have direct edge between i & j
+					V[i][j] = first.weightMap.get(second);
+				} else { //no direct edge between i & j, so mark it as infinity [divided by 10 to avoid arithmetic overflow]
+					V[i][j] = Integer.MAX_VALUE/10;
+				}
+			}
+		}//end of loop
+
+
+		// Floyd Warshall's Algorithm
+		for (int k = 0; k < nodeList.size(); k++) {
+			for (int i = 0; i < nodeList.size(); i++) {
+				for (int j = 0; j < nodeList.size(); j++) {
+					if (V[i][j] > V[i][k] + V[k][j]) {  // if update possible, then update path
+						V[i][j] = V[i][k] + V[k][j];    // this will keep a track on path
+					}
+				}
+			}
+		}//end of loop
+
+
+		// Print table of node with minimum distance and shortest path from each source
+		for (int i = 0; i < size; i++) {
+			System.out.print("Printing distance list for node "+nodeList.get(i)+": ");
+			for (int j = 0; j < size; j++) {
+				System.out.print(V[i][j]+" ");
+			}
+			System.out.println();
+		}
+
+	}// end of method
+
+
 }

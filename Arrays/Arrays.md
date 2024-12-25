@@ -8,7 +8,7 @@ Properties :
 Types of arrays : 
 - one dimensional array 
 - multi-dimensional array
-**Important = multi dimensional arrays are located as 1D array only 
+**Important = multi dimensional arrays are located as 1D array only**
 e.g. - [[0 , 1],
         [2 ,  3], --> Visual Representation . 
         [4 ,  5],

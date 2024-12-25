@@ -1,11 +1,10 @@
-package Algorithm.BellmanFord;
+package Algorithm.FloydWarshall;
+
 
 import java.util.ArrayList;
 
 import Algorithm.Dijkstra.WeightedGraph;
 import Algorithm.Dijkstra.WeightedNode;
-
-import java.util.*;
 
 /**
  *                             B ------- 3 -------- >    E
@@ -42,12 +41,10 @@ public class Main {
         newGraph.addWeightedEdge(1, 4, 3);  // B -> E (weight 3)
         newGraph.addWeightedEdge(2, 5, 8);  // C -> F (weight 8)
         newGraph.addWeightedEdge(3, 2, 6);  // D -> C (weight 6)
-     //   newGraph.addWeightedEdge(3, 1, -6);  // D -> B (weight -6) // Comment this to check for shortest path 
         newGraph.addWeightedEdge(3, 4, 4);  // D -> E (weight 4)
         newGraph.addWeightedEdge(4, 6, 9);  // E -> G (weight 9)
         newGraph.addWeightedEdge(5, 6, 7);  // F -> G (weight 7)
-        System.out.println("Bellman Ford  algorithm from source A");
-        newGraph.bellmanFord(nodeList.get(0));
-    }
     
+        newGraph.floydWarshall();
+    }
 }
