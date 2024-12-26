@@ -26,8 +26,8 @@ import Algorithm.Dijkstra.WeightedNode;
            if(set1.nodelist.size()>set2.nodelist.size()){
             ArrayList<WeightedNode> nodeset2 = set2.nodelist;
             for(WeightedNode node:nodeset2){
-                node.set = set1;
-                set1.nodelist.add(node);
+                node.set = set1;  // setting each node's set to the new set1 and set1 is being updated simulatenouesly 
+                set1.nodelist.add(node); // set1 is just being  updated ,its refernce never changes 
             }
             return set1;
            }else{
