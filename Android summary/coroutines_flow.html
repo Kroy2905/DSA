@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Coroutines & Flow — Interview Q&A</title>
+<style>:root{--bg:#06090e;--s1:#0a0f18;--s2:#0e1520;--s3:#131d2a;--b1:#182030;--b2:#1e2c3e;--txt:#cce0ee;--muted:#4e6878;--grn:#10a060;--grnb:#031508;--grnl:#44d890;--blu:#1e60d8;--blub:#040e28;--blul:#6aaeff;--pur:#6848b8;--purb:#0f0828;--purl:#b090ff;--amb:#c09010;--ambb:#201500;--ambl:#f0c040;--red:#b03030;--redb:#1e0808;--redl:#f07070;--cya:#0e8898;--cyab:#041418;--cyal:#40d8e8;--ora:#c06020;--orab:#201008;--oral:#f0a060}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,sans-serif;font-size:13px;line-height:1.6;min-height:100vh}
+nav{background:var(--s1);border-bottom:1px solid var(--b1);position:sticky;top:0;z-index:100;overflow-x:auto}
+.nav-inner{display:flex;align-items:center;padding:0 12px;gap:0;min-width:max-content}
+nav a{color:var(--muted);text-decoration:none;font-size:11px;font-weight:500;padding:12px 9px;border-bottom:2px solid transparent;white-space:nowrap;display:block}
+nav a:hover{color:var(--txt)}
+nav a.active{color:var(--grnl);border-bottom-color:var(--grn)}
+main{max-width:980px;padding:28px 20px 80px;margin:0 auto}
+h1{font-size:20px;font-weight:700;margin-bottom:6px;letter-spacing:-.02em}
+.sub{font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.6}
+h2{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:24px 0 10px;display:flex;align-items:center;gap:8px}
+h2::after{content:'';flex:1;height:1px;background:var(--b2)}
+details{border-radius:9px;border:1px solid var(--b2);background:var(--s1);margin-bottom:7px;overflow:hidden}
+details[open]{border-color:#2e4458}
+summary{padding:12px 15px;cursor:pointer;display:flex;align-items:center;gap:9px;list-style:none;font-weight:500;font-size:13px;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:'\203A';font-size:16px;color:var(--muted);transition:.2s;flex-shrink:0;width:14px;display:inline-block}
+details[open] summary::before{transform:rotate(90deg);color:var(--grnl)}
+.qn{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;flex-shrink:0;font-family:monospace}
+.qt{flex:1}
+.dif{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;border:1px solid;flex-shrink:0;letter-spacing:.06em;text-transform:uppercase}
+.easy{background:var(--grnb);color:var(--grnl);border-color:var(--grn)}
+.med{background:var(--ambb);color:var(--ambl);border-color:var(--amb)}
+.hard{background:var(--redb);color:var(--redl);border-color:var(--red)}
+.goog{background:var(--purb);color:var(--purl);border-color:var(--pur)}
+.ans{padding:0 15px 14px;border-top:1px solid var(--b2)}
+.ans p{font-size:12px;color:var(--muted);line-height:1.7;margin:10px 0 0}
+.ans p strong{color:var(--txt)}
+.ans ul,.ans ol{padding-left:18px;font-size:12px;color:var(--muted);line-height:1.85;margin:8px 0}
+.ans li strong{color:var(--txt)}
+pre{background:#070d14;border:1px solid var(--b2);border-radius:7px;padding:12px 14px;overflow-x:auto;margin:10px 0;font-size:11px;line-height:1.7;color:#a8c8e8}
+code{font-family:'JetBrains Mono','Fira Mono',monospace;font-size:11px}
+.kw{color:#79b8ff}.cn{color:#44d890}.st{color:#f0a060}.cm{color:#4e6878}.fn{color:#40d8e8}.an{color:#f0c040}.ty{color:#b090ff}
+.note{border-radius:7px;border:1px solid;padding:9px 12px;font-size:11px;line-height:1.6;margin:10px 0}
+.ngrn{background:var(--grnb);border-color:var(--grn);color:var(--grnl)}
+.namb{background:var(--ambb);border-color:var(--amb);color:var(--ambl)}
+.nred{background:var(--redb);border-color:var(--red);color:var(--redl)}
+.nblu{background:var(--blub);border-color:var(--blu);color:var(--blul)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0}
+@media(max-width:680px){.g2,.g3{grid-template-columns:1fr}}
+.gc{background:var(--s2);border:1px solid var(--b2);border-radius:7px;padding:12px}
+.gc h4{font-size:11px;font-weight:700;margin-bottom:6px}
+.gc p,.gc li{font-size:11px;color:var(--muted);line-height:1.6}
+.ic{background:var(--s3);border:1px solid var(--b2);border-radius:4px;padding:1px 6px;font-family:monospace;font-size:11px;color:var(--blul)}
+a{color:var(--grnl)}
+</style>
+</head>
+<body>
+<nav><div class="nav-inner"><a href="roadmap.html">🗺 Roadmap</a><a href="android_core.html">📱 Android Core</a><a href="android_advanced.html">🔥 Advanced</a><a href="architecture.html">🏛 Architecture</a><a href="kotlin.html">🎯 Kotlin</a><a href="coroutines_flow.html" class="active">⚡ Coroutines</a><a href="compose.html">🎨 Compose</a><a href="dependency_injection.html">💉 DI</a><a href="networking_storage.html">🌐 Net & Storage</a><a href="testing.html">🧪 Testing</a><a href="system_design.html">🏗 System Design</a><a href="dsa_google.html">🧩 DSA</a></div></nav>
+<main>
+<h1>⚡ Coroutines & Flow — Interview Questions</h1>
+<p class="sub">The most tested modern Android topic at senior level interviews. Know every nuance of structured concurrency and reactive streams.</p>
+
+<h2>Coroutines Fundamentals</h2>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q1</span><span class="qt">What is a coroutine? How is it different from a thread?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>A coroutine is a <strong>suspendable computation</strong> — lightweight, cooperative multitasking. Unlike threads:</p>
+<ul>
+<li><strong>Coroutines are cheap:</strong> You can run 100,000 coroutines on a device. 100,000 threads would crash it.</li>
+<li><strong>Coroutines suspend, not block:</strong> When a coroutine calls a suspend function, it releases the thread for other work. A thread blocks and does nothing while waiting.</li>
+<li><strong>Coroutines are cooperative:</strong> They yield control explicitly at suspension points. Threads are preemptive — OS can switch them at any time.</li>
+</ul>
+<pre><code><span class="cm">// Thread: blocks an OS thread while sleeping</span>
+<span class="ty">Thread</span> { <span class="ty">Thread</span>.<span class="fn">sleep</span>(<span class="cn">1000</span>); <span class="fn">println</span>(<span class="st">"done"</span>) }.<span class="fn">start</span>()
+
+<span class="cm">// Coroutine: suspends, frees the thread for other work</span>
+<span class="fn">launch</span> { <span class="fn">delay</span>(<span class="cn">1000</span>); <span class="fn">println</span>(<span class="st">"done"</span>) }
+
+<span class="cm">// 100,000 concurrent coroutines — works fine</span>
+<span class="fn">repeat</span>(<span class="cn">100_000</span>) {
+    <span class="fn">launch</span> { <span class="fn">delay</span>(<span class="cn">5000</span>); <span class="fn">print</span>(<span class="st">"."</span>) }
+}</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q2</span><span class="qt">Explain all Coroutine Dispatchers and when to use each</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// Dispatchers.Main — UI thread. For UI updates, ViewModel work</span>
+<span class="fn">launch</span>(<span class="ty">Dispatchers</span>.Main) { textView.text = <span class="st">"Hello"</span> }
+
+<span class="cm">// Dispatchers.IO — Optimized for I/O blocking operations</span>
+<span class="cm">// Thread pool size: max(64, CPU cores). Good for: network, file, database</span>
+<span class="fn">withContext</span>(<span class="ty">Dispatchers</span>.IO) { api.<span class="fn">fetchData</span>() }
+
+<span class="cm">// Dispatchers.Default — CPU-intensive work. Pool size = CPU cores</span>
+<span class="cm">// Good for: sorting large lists, JSON parsing, image processing</span>
+<span class="fn">withContext</span>(<span class="ty">Dispatchers</span>.Default) { bigList.<span class="fn">sortedBy</span> { it.name } }
+
+<span class="cm">// Dispatchers.Unconfined — Starts in current thread, resumes in whatever</span>
+<span class="cm">// thread the suspension was resumed on. Rarely used. Only in tests.</span>
+
+<span class="cm">// Custom dispatcher for tests (inject it for testability)</span>
+<span class="kw">class</span> <span class="ty">Repository</span>(<span class="kw">private val</span> <span class="cn">dispatcher</span>: <span class="ty">CoroutineDispatcher</span> = <span class="ty">Dispatchers</span>.IO) {
+    <span class="kw">suspend fun</span> <span class="fn">fetch</span>() = <span class="fn">withContext</span>(dispatcher) { api.<span class="fn">getData</span>() }
+}
+<span class="cm">// In tests: Repository(UnconfinedTestDispatcher())</span>
+
+<span class="cm">// Combine dispatchers</span>
+<span class="fn">launch</span>(<span class="ty">Dispatchers</span>.IO + CoroutineName(<span class="st">"fetch-data"</span>)) { <span class="cm">/* ... */</span> }</code></pre>
+<div class="note namb">💡 Avoid hardcoding Dispatchers in production code — inject them for testability. Use StandardTestDispatcher or UnconfinedTestDispatcher in tests.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q3</span><span class="qt">What is structured concurrency? Explain Job, SupervisorJob, and cancellation</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p><strong>Structured concurrency</strong> guarantees: a parent scope only completes when all its children complete. No coroutines can "escape" and run uncontrolled.</p>
+<pre><code><span class="cm">// Job: default parent-child relationship</span>
+<span class="cm">// If child fails → parent CANCELS ALL siblings</span>
+<span class="kw">val</span> <span class="cn">job</span> = <span class="ty">Job</span>()
+<span class="kw">val</span> <span class="cn">scope</span> = <span class="ty">CoroutineScope</span>(<span class="ty">Dispatchers</span>.IO + job)
+
+scope.<span class="fn">launch</span> { <span class="fn">task1</span>() } <span class="cm">// if this throws → task2 gets cancelled</span>
+scope.<span class="fn">launch</span> { <span class="fn">task2</span>() }
+
+job.<span class="fn">cancel</span>() <span class="cm">// cancels all children</span>
+
+<span class="cm">// SupervisorJob: child failure doesn't affect siblings</span>
+<span class="kw">val</span> <span class="cn">supervisor</span> = <span class="ty">SupervisorJob</span>()
+<span class="kw">val</span> <span class="cn">scope</span> = <span class="ty">CoroutineScope</span>(<span class="ty">Dispatchers</span>.IO + supervisor)
+
+scope.<span class="fn">launch</span> { <span class="fn">taskThatFails</span>() } <span class="cm">// fails, but task2 keeps running</span>
+scope.<span class="fn">launch</span> { <span class="fn">task2</span>() }
+
+<span class="cm">// viewModelScope uses SupervisorJob internally</span>
+<span class="cm">// lifecycleScope uses SupervisorJob internally</span>
+
+<span class="cm">// Cancellation is cooperative — must check isActive or use cancellable suspend fns</span>
+<span class="fn">launch</span> {
+    <span class="fn">repeat</span>(<span class="cn">1000</span>) { i ->
+        <span class="kw">if</span> (!isActive) <span class="kw">return</span>@launch <span class="cm">// check for cancellation</span>
+        <span class="fn">doWork</span>(i)
+    }
+}
+
+<span class="cm">// ensureActive() throws CancellationException if cancelled</span>
+<span class="fn">launch</span> {
+    <span class="kw">for</span> (item <span class="kw">in</span> items) {
+        <span class="fn">ensureActive</span>() <span class="cm">// throws if cancelled</span>
+        <span class="fn">processItem</span>(item)
+    }
+}</code></pre>
+<div class="note nred">⚠ CancellationException must never be caught without re-throwing. It's how coroutines cooperate with cancellation.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q4</span><span class="qt">What is the difference between launch and async? When to use each?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// launch: fire and forget. Returns Job, not a result</span>
+<span class="kw">val</span> <span class="cn">job</span>: <span class="ty">Job</span> = viewModelScope.<span class="fn">launch</span> {
+    repository.<span class="fn">saveData</span>(data) <span class="cm">// don't need the result</span>
+}
+job.<span class="fn">cancel</span>() <span class="cm">// can cancel</span>
+
+<span class="cm">// async: returns Deferred&lt;T&gt;. await() to get result</span>
+<span class="kw">val</span> <span class="cn">deferred</span>: <span class="ty">Deferred</span>&lt;<span class="ty">User</span>&gt; = viewModelScope.<span class="fn">async</span> {
+    repository.<span class="fn">getUser</span>(id) <span class="cm">// returns a value</span>
+}
+<span class="kw">val</span> <span class="cn">user</span>: <span class="ty">User</span> = deferred.<span class="fn">await</span>() <span class="cm">// suspends until result ready</span>
+
+<span class="cm">// Parallel execution with async</span>
+<span class="kw">val</span> <span class="cn">userDeferred</span> = <span class="fn">async</span> { api.<span class="fn">getUser</span>(id) }
+<span class="kw">val</span> <span class="cn">postsDeferred</span> = <span class="fn">async</span> { api.<span class="fn">getPosts</span>(id) }
+<span class="cm">// Both run in parallel, await both:</span>
+<span class="kw">val</span> <span class="cn">user</span> = userDeferred.<span class="fn">await</span>()
+<span class="kw">val</span> <span class="cn">posts</span> = postsDeferred.<span class="fn">await</span>()
+
+<span class="cm">// Sequential (wrong way to use async):</span>
+<span class="kw">val</span> <span class="cn">user</span> = <span class="fn">async</span> { api.<span class="fn">getUser</span>() }.<span class="fn">await</span>() <span class="cm">// defeats the purpose!</span>
+<span class="cm">// Better: just use withContext or a suspend fun directly</span></code></pre>
+</div>
+</details>
+
+<h2>Flow — Cold & Hot Streams</h2>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q5</span><span class="qt">Flow vs StateFlow vs SharedFlow — differences with real use cases</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// FLOW (cold): executes only when collected, each collector gets fresh emission</span>
+<span class="kw">fun</span> <span class="fn">getTemperature</span>(): <span class="ty">Flow</span>&lt;<span class="ty">Int</span>&gt; = <span class="fn">flow</span> {
+    <span class="kw">while</span> (<span class="kw">true</span>) {
+        <span class="fn">emit</span>(sensor.<span class="fn">read</span>()) <span class="cm">// Starts fresh for EACH collector</span>
+        <span class="fn">delay</span>(<span class="cn">1000</span>)
+    }
+}
+
+<span class="cm">// STATEFLOW (hot): always active, always has value, replays LAST value</span>
+<span class="cm">// Perfect for UI state</span>
+<span class="kw">val</span> <span class="cn">uiState</span> = <span class="ty">MutableStateFlow</span>(<span class="ty">UiState</span>.Loading)
+uiState.<span class="fn">update</span> { <span class="ty">UiState</span>.Success(data) }
+<span class="cm">// New subscriber immediately gets UiState.Success — even if emitted seconds ago</span>
+<span class="cm">// StateFlow.value always accessible</span>
+<span class="cm">// Doesn't emit if value is same (distinct until changed)</span>
+
+<span class="cm">// SHAREDFLOW (hot): configurable replay, no initial value</span>
+<span class="cm">// Perfect for events/effects</span>
+<span class="kw">val</span> <span class="cn">events</span> = <span class="ty">MutableSharedFlow</span>&lt;<span class="ty">Event</span>&gt;(
+    replay = <span class="cn">0</span>,              <span class="cm">// 0 = don't replay to new subscribers</span>
+    extraBufferCapacity = <span class="cn">10</span> <span class="cm">// buffer 10 events if no subscriber</span>
+)
+events.<span class="fn">tryEmit</span>(<span class="ty">Event</span>.Navigate) <span class="cm">// non-suspending emit (if buffer available)</span>
+
+<span class="cm">// Converting cold Flow to hot StateFlow</span>
+<span class="kw">val</span> <span class="cn">hotUsers</span> = repository.<span class="fn">getUsers</span>() <span class="cm">// cold Flow</span>
+    .<span class="fn">stateIn</span>(
+        scope = viewModelScope,
+        started = <span class="ty">SharingStarted</span>.<span class="fn">WhileSubscribed</span>(<span class="cn">5_000</span>), <span class="cm">// stops 5s after last subscriber</span>
+        initialValue = emptyList()
+    )</code></pre>
+<p><strong>SharingStarted options:</strong></p>
+<ul>
+<li><strong>WhileSubscribed(5000):</strong> Upstream active while subscribers exist, 5s grace period after last unsubscribes. Recommended for ViewModels.</li>
+<li><strong>Eagerly:</strong> Upstream starts immediately, never stops</li>
+<li><strong>Lazily:</strong> Upstream starts on first subscriber, never stops</li>
+</ul>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q6</span><span class="qt">Explain Flow exception handling and how it differs from coroutine exception handling</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// Flow: exceptions must be handled with catch operator</span>
+<span class="fn">flow</span> {
+    <span class="fn">emit</span>(api.<span class="fn">getData</span>()) <span class="cm">// can throw</span>
+}
+.<span class="fn">catch</span> { e -> <span class="fn">emit</span>(<span class="ty">Result</span>.<span class="ty">Error</span>(e)) } <span class="cm">// catches upstream exceptions</span>
+.<span class="fn">collect</span> { <span class="cm">/* handles Result */</span> }
+
+<span class="cm">// catch only catches UPSTREAM exceptions, not in collect {}</span>
+<span class="fn">flow</span> { <span class="fn">emit</span>(<span class="cn">1</span>) }
+    .<span class="fn">catch</span> { e -> <span class="fn">println</span>(<span class="st">"caught: </span><span class="cn">$e</span><span class="st">"</span>) }
+    .<span class="fn">collect</span> {
+        <span class="kw">throw</span> <span class="ty">RuntimeException</span>(<span class="st">"in collect"</span>) <span class="cm">// NOT caught by catch!</span>
+    }
+
+<span class="cm">// onCompletion: called when flow completes normally OR with exception</span>
+<span class="fn">flow</span> { <span class="fn">emit</span>(data) }
+    .<span class="fn">onCompletion</span> { cause ->
+        <span class="kw">if</span> (cause != <span class="kw">null</span>) <span class="fn">handleError</span>(cause)
+        <span class="fn">hideLoading</span>()
+    }
+    .<span class="fn">collect</span> { <span class="fn">handleData</span>(it) }
+
+<span class="cm">// Coroutine exception handler (for launch, not async)</span>
+<span class="kw">val</span> <span class="cn">handler</span> = <span class="ty">CoroutineExceptionHandler</span> { _, exception ->
+    <span class="fn">println</span>(<span class="st">"Caught: </span><span class="cn">$exception</span><span class="st">"</span>)
+}
+<span class="fn">launch</span>(handler) {
+    <span class="kw">throw</span> <span class="ty">RuntimeException</span>(<span class="st">"oops"</span>) <span class="cm">// caught by handler</span>
+}
+<span class="cm">// async: exception stored in Deferred, thrown on .await()</span>
+<span class="kw">val</span> <span class="cn">deferred</span> = <span class="fn">async</span> { <span class="kw">throw</span> <span class="ty">RuntimeException</span>() }
+<span class="kw">try</span> { deferred.<span class="fn">await</span>() } <span class="kw">catch</span> (e: <span class="ty">Exception</span>) { <span class="fn">handleError</span>(e) }</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q7</span><span class="qt">What are the key Flow operators and when do you use each?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// Transforming</span>
+.<span class="fn">map</span> { it * <span class="cn">2</span> }           <span class="cm">// transform each emission</span>
+.<span class="fn">filter</span> { it > <span class="cn">0</span> }        <span class="cm">// only emit if predicate true</span>
+.<span class="fn">transform</span> { emit(it); emit(it * <span class="cn">2</span>) } <span class="cm">// emit 0..N items per input</span>
+
+<span class="cm">// Flattening (when your lambda returns a Flow)</span>
+.<span class="fn">flatMapConcat</span> { userId -> getUserProfile(userId) } <span class="cm">// sequential</span>
+.<span class="fn">flatMapMerge</span> { userId -> getUserProfile(userId) }  <span class="cm">// concurrent</span>
+.<span class="fn">flatMapLatest</span> { query -> searchApi(query) }        <span class="cm">// cancels previous if new arrives</span>
+
+<span class="cm">// Combining</span>
+<span class="fn">combine</span>(flow1, flow2) { a, b -> a + b }  <span class="cm">// emits when EITHER changes</span>
+<span class="fn">zip</span>(flow1, flow2) { a, b -> Pair(a, b) }  <span class="cm">// pairs up, waits for both</span>
+
+<span class="cm">// Buffering / debouncing (for search-as-you-type)</span>
+searchQueryFlow
+    .<span class="fn">debounce</span>(<span class="cn">300</span>)          <span class="cm">// wait 300ms after last emission</span>
+    .<span class="fn">distinctUntilChanged</span>()  <span class="cm">// don't emit if same as last</span>
+    .<span class="fn">flatMapLatest</span> { query -> searchRepository.<span class="fn">search</span>(query) }
+    .<span class="fn">collect</span> { results -> <span class="fn">showResults</span>(results) }
+
+<span class="cm">// Buffer / conflate for backpressure</span>
+.<span class="fn">buffer</span>(<span class="cn">64</span>)    <span class="cm">// buffer 64 items to smooth out bursts</span>
+.<span class="fn">conflate</span>()   <span class="cm">// skip intermediate emissions, process latest only</span>
+
+<span class="cm">// Lifecycle-aware collection in Fragment</span>
+viewLifecycleOwner.lifecycleScope.<span class="fn">launch</span> {
+    <span class="fn">repeatOnLifecycle</span>(<span class="ty">Lifecycle</span>.<span class="ty">State</span>.STARTED) {
+        viewModel.state.<span class="fn">collect</span> { <span class="fn">render</span>(it) }
+    }
+}</code></pre>
+</div>
+</details>
+</main>
+</body>
+</html>

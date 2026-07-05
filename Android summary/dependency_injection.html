@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Dependency Injection — Interview Q&A</title>
+<style>:root{--bg:#06090e;--s1:#0a0f18;--s2:#0e1520;--s3:#131d2a;--b1:#182030;--b2:#1e2c3e;--txt:#cce0ee;--muted:#4e6878;--grn:#10a060;--grnb:#031508;--grnl:#44d890;--blu:#1e60d8;--blub:#040e28;--blul:#6aaeff;--pur:#6848b8;--purb:#0f0828;--purl:#b090ff;--amb:#c09010;--ambb:#201500;--ambl:#f0c040;--red:#b03030;--redb:#1e0808;--redl:#f07070;--cya:#0e8898;--cyab:#041418;--cyal:#40d8e8;--ora:#c06020;--orab:#201008;--oral:#f0a060}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,sans-serif;font-size:13px;line-height:1.6;min-height:100vh}
+nav{background:var(--s1);border-bottom:1px solid var(--b1);position:sticky;top:0;z-index:100;overflow-x:auto}
+.nav-inner{display:flex;align-items:center;padding:0 12px;gap:0;min-width:max-content}
+nav a{color:var(--muted);text-decoration:none;font-size:11px;font-weight:500;padding:12px 9px;border-bottom:2px solid transparent;white-space:nowrap;display:block}
+nav a:hover{color:var(--txt)}
+nav a.active{color:var(--grnl);border-bottom-color:var(--grn)}
+main{max-width:980px;padding:28px 20px 80px;margin:0 auto}
+h1{font-size:20px;font-weight:700;margin-bottom:6px;letter-spacing:-.02em}
+.sub{font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.6}
+h2{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:24px 0 10px;display:flex;align-items:center;gap:8px}
+h2::after{content:'';flex:1;height:1px;background:var(--b2)}
+details{border-radius:9px;border:1px solid var(--b2);background:var(--s1);margin-bottom:7px;overflow:hidden}
+details[open]{border-color:#2e4458}
+summary{padding:12px 15px;cursor:pointer;display:flex;align-items:center;gap:9px;list-style:none;font-weight:500;font-size:13px;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:'\203A';font-size:16px;color:var(--muted);transition:.2s;flex-shrink:0;width:14px;display:inline-block}
+details[open] summary::before{transform:rotate(90deg);color:var(--grnl)}
+.qn{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;flex-shrink:0;font-family:monospace}
+.qt{flex:1}
+.dif{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;border:1px solid;flex-shrink:0;letter-spacing:.06em;text-transform:uppercase}
+.easy{background:var(--grnb);color:var(--grnl);border-color:var(--grn)}
+.med{background:var(--ambb);color:var(--ambl);border-color:var(--amb)}
+.hard{background:var(--redb);color:var(--redl);border-color:var(--red)}
+.goog{background:var(--purb);color:var(--purl);border-color:var(--pur)}
+.ans{padding:0 15px 14px;border-top:1px solid var(--b2)}
+.ans p{font-size:12px;color:var(--muted);line-height:1.7;margin:10px 0 0}
+.ans p strong{color:var(--txt)}
+.ans ul,.ans ol{padding-left:18px;font-size:12px;color:var(--muted);line-height:1.85;margin:8px 0}
+.ans li strong{color:var(--txt)}
+pre{background:#070d14;border:1px solid var(--b2);border-radius:7px;padding:12px 14px;overflow-x:auto;margin:10px 0;font-size:11px;line-height:1.7;color:#a8c8e8}
+code{font-family:'JetBrains Mono','Fira Mono',monospace;font-size:11px}
+.kw{color:#79b8ff}.cn{color:#44d890}.st{color:#f0a060}.cm{color:#4e6878}.fn{color:#40d8e8}.an{color:#f0c040}.ty{color:#b090ff}
+.note{border-radius:7px;border:1px solid;padding:9px 12px;font-size:11px;line-height:1.6;margin:10px 0}
+.ngrn{background:var(--grnb);border-color:var(--grn);color:var(--grnl)}
+.namb{background:var(--ambb);border-color:var(--amb);color:var(--ambl)}
+.nred{background:var(--redb);border-color:var(--red);color:var(--redl)}
+.nblu{background:var(--blub);border-color:var(--blu);color:var(--blul)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0}
+@media(max-width:680px){.g2,.g3{grid-template-columns:1fr}}
+.gc{background:var(--s2);border:1px solid var(--b2);border-radius:7px;padding:12px}
+.gc h4{font-size:11px;font-weight:700;margin-bottom:6px}
+.gc p,.gc li{font-size:11px;color:var(--muted);line-height:1.6}
+.ic{background:var(--s3);border:1px solid var(--b2);border-radius:4px;padding:1px 6px;font-family:monospace;font-size:11px;color:var(--blul)}
+a{color:var(--grnl)}
+</style>
+</head>
+<body>
+<nav><div class="nav-inner"><a href="roadmap.html">🗺 Roadmap</a><a href="android_core.html">📱 Android Core</a><a href="android_advanced.html">🔥 Advanced</a><a href="architecture.html">🏛 Architecture</a><a href="kotlin.html">🎯 Kotlin</a><a href="coroutines_flow.html">⚡ Coroutines</a><a href="compose.html">🎨 Compose</a><a href="dependency_injection.html" class="active">💉 DI</a><a href="networking_storage.html">🌐 Net & Storage</a><a href="testing.html">🧪 Testing</a><a href="system_design.html">🏗 System Design</a><a href="dsa_google.html">🧩 DSA</a></div></nav>
+<main>
+<h1>💉 Dependency Injection — Interview Questions</h1>
+<p class="sub">Hilt is Google's recommended DI framework. Know why DI exists, how Hilt works, and the Dagger 2 concepts underneath it.</p>
+
+<h2>Why Dependency Injection?</h2>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q1</span><span class="qt">What is Dependency Injection and why do we need it?</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<p>DI = providing a class with its dependencies instead of the class creating them itself. Turns <span class="ic">val repo = UserRepositoryImpl()</span> inside a class into receiving it from outside.</p>
+<pre><code><span class="cm">// WITHOUT DI: tightly coupled, impossible to test</span>
+<span class="kw">class</span> <span class="ty">UserViewModel</span> {
+    <span class="kw">private val</span> <span class="cn">repo</span> = <span class="ty">UserRepositoryImpl</span>(<span class="cm">// creates its own — can't swap for test</span>
+        <span class="ty">RetrofitClient</span>.<span class="fn">create</span>(<span class="ty">UserApi</span>::<span class="kw">class</span>.java),
+        <span class="ty">AppDatabase</span>.<span class="fn">getInstance</span>(context).userDao()
+    )
+}
+
+<span class="cm">// WITH DI: loosely coupled, fully testable</span>
+<span class="kw">class</span> <span class="ty">UserViewModel</span>(<span class="kw">private val</span> <span class="cn">repo</span>: <span class="ty">UserRepository</span>) : <span class="ty">ViewModel</span>() {
+    <span class="cm">// repo is an interface — test can inject MockUserRepository</span>
+}
+
+<span class="cm">// Benefits:</span>
+<span class="cm">// 1. Testability: inject mocks/fakes instead of real implementations</span>
+<span class="cm">// 2. Flexibility: swap implementations (prod vs debug vs test)</span>
+<span class="cm">// 3. Single responsibility: class doesn't manage lifecycle of its dependencies</span>
+<span class="cm">// 4. Reusability: dependencies shared across classes (Singleton pattern managed for you)</span></code></pre>
+</div>
+</details>
+
+<h2>Hilt (Google's Recommended DI)</h2>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q2</span><span class="qt">Explain Hilt setup and all its core annotations</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// 1. Application — entry point</span>
+<span class="an">@HiltAndroidApp</span>
+<span class="kw">class</span> <span class="ty">MyApp</span> : <span class="ty">Application</span>()
+
+<span class="cm">// 2. Android class — inject into Activities, Fragments, Services, etc.</span>
+<span class="an">@AndroidEntryPoint</span>
+<span class="kw">class</span> <span class="ty">MainActivity</span> : <span class="ty">AppCompatActivity</span>() {
+    <span class="an">@Inject</span> <span class="kw">lateinit var</span> <span class="cn">analytics</span>: <span class="ty">Analytics</span> <span class="cm">// field injection</span>
+}
+
+<span class="cm">// 3. ViewModel</span>
+<span class="an">@HiltViewModel</span>
+<span class="kw">class</span> <span class="ty">UserViewModel</span> <span class="an">@Inject</span> <span class="kw">constructor</span>(
+    <span class="kw">private val</span> <span class="cn">repo</span>: <span class="ty">UserRepository</span>  <span class="cm">// constructor injection</span>
+) : <span class="ty">ViewModel</span>()
+
+<span class="cm">// 4. Module — tells Hilt HOW to provide types it can't figure out itself</span>
+<span class="an">@Module</span>
+<span class="an">@InstallIn</span>(<span class="ty">SingletonComponent</span>::<span class="kw">class</span>) <span class="cm">// available app-wide as Singleton</span>
+<span class="kw">object</span> <span class="ty">NetworkModule</span> {
+
+    <span class="an">@Provides</span>
+    <span class="an">@Singleton</span>  <span class="cm">// only one instance created</span>
+    <span class="kw">fun</span> <span class="fn">provideRetrofit</span>(): <span class="ty">Retrofit</span> = <span class="ty">Retrofit</span>.<span class="ty">Builder</span>()
+        .<span class="fn">baseUrl</span>(<span class="ty">BuildConfig</span>.API_URL)
+        .<span class="fn">addConverterFactory</span>(<span class="ty">GsonConverterFactory</span>.<span class="fn">create</span>())
+        .<span class="fn">build</span>()
+
+    <span class="an">@Provides</span>
+    <span class="an">@Singleton</span>
+    <span class="kw">fun</span> <span class="fn">provideUserApi</span>(retrofit: <span class="ty">Retrofit</span>): <span class="ty">UserApi</span> =  <span class="cm">// Hilt provides retrofit</span>
+        retrofit.<span class="fn">create</span>(<span class="ty">UserApi</span>::<span class="kw">class</span>.java)
+}
+
+<span class="cm">// 5. Binds — tell Hilt which implementation to use for an interface</span>
+<span class="an">@Module</span>
+<span class="an">@InstallIn</span>(<span class="ty">SingletonComponent</span>::<span class="kw">class</span>)
+<span class="kw">abstract class</span> <span class="ty">RepositoryModule</span> {
+    <span class="an">@Binds</span>
+    <span class="an">@Singleton</span>
+    <span class="kw">abstract fun</span> <span class="fn">bindUserRepository</span>(impl: <span class="ty">UserRepositoryImpl</span>): <span class="ty">UserRepository</span>
+    <span class="cm">// @Provides (object): use for 3rd-party classes (Retrofit, Room)</span>
+    <span class="cm">// @Binds (abstract): use for your own interface→impl mappings (more efficient)</span>
+}</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q3</span><span class="qt">Explain Hilt components and scopes — which scope for each use case?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p>Hilt has a hierarchy of Components, each with its own scope and lifetime:</p>
+<div class="g2">
+<div class="gc"><h4>Component Hierarchy</h4>
+<ul>
+<li style="color:var(--redl)">SingletonComponent (Application)</li>
+<li style="color:var(--oral)">ActivityRetainedComponent (ViewModel scope)</li>
+<li style="color:var(--ambl)">ActivityComponent (Activity)</li>
+<li style="color:var(--grnl)">FragmentComponent (Fragment)</li>
+<li style="color:var(--blul)">ViewComponent (View)</li>
+<li style="color:var(--cyal)">ServiceComponent (Service)</li>
+</ul>
+</div>
+<div class="gc"><h4>Scope Annotations</h4>
+<ul>
+<li style="color:var(--redl)">@Singleton — one per app</li>
+<li style="color:var(--oral)">@ActivityRetainedScoped — survives rotation</li>
+<li style="color:var(--ambl)">@ActivityScoped — one per Activity</li>
+<li style="color:var(--grnl)">@FragmentScoped — one per Fragment</li>
+<li style="color:var(--blul)">@ViewScoped — one per View</li>
+</ul>
+</div>
+</div>
+<pre><code><span class="cm">// @Singleton: shared database, shared network client</span>
+<span class="an">@Singleton</span> <span class="kw">class</span> <span class="ty">UserRepository</span> <span class="an">@Inject</span> <span class="kw">constructor</span>(…)
+
+<span class="cm">// @ActivityScoped: analytics tied to one Activity session</span>
+<span class="an">@ActivityScoped</span> <span class="kw">class</span> <span class="ty">ScreenAnalytics</span> <span class="an">@Inject</span> <span class="kw">constructor</span>(…)
+
+<span class="cm">// @ViewModelScoped (ActivityRetainedScoped internally)</span>
+<span class="cm">// Use for objects that should survive rotation but not be singletons</span>
+<span class="an">@ViewModelScoped</span> <span class="kw">class</span> <span class="ty">SearchManager</span> <span class="an">@Inject</span> <span class="kw">constructor</span>(…)
+
+<span class="cm">// Rule: a scoped object can only inject objects of same or broader scope</span>
+<span class="cm">// @FragmentScoped can inject @Singleton, @ActivityScoped, @FragmentScoped</span>
+<span class="cm">// @FragmentScoped CANNOT inject @ViewModelScoped (narrower)</span>
+
+<span class="cm">// Qualifiers: when you have multiple bindings of same type</span>
+<span class="an">@Qualifier</span>
+<span class="an">@Retention</span>(<span class="ty">AnnotationRetention</span>.BINARY)
+<span class="kw">annotation class</span> <span class="ty">AuthInterceptorOkHttpClient</span>
+
+<span class="an">@Qualifier</span>
+<span class="an">@Retention</span>(<span class="ty">AnnotationRetention</span>.BINARY)
+<span class="kw">annotation class</span> <span class="ty">PlainOkHttpClient</span>
+
+<span class="an">@Provides</span> <span class="an">@AuthInterceptorOkHttpClient</span>
+<span class="kw">fun</span> <span class="fn">provideAuthClient</span>(interceptor: <span class="ty">AuthInterceptor</span>) = <span class="ty">OkHttpClient</span>.<span class="ty">Builder</span>().<span class="fn">addInterceptor</span>(interceptor).<span class="fn">build</span>()
+
+<span class="an">@Provides</span> <span class="an">@PlainOkHttpClient</span>
+<span class="kw">fun</span> <span class="fn">providePlainClient</span>() = <span class="ty">OkHttpClient</span>.<span class="fn">Builder</span>().<span class="fn">build</span>()</code></pre>
+</div>
+</details>
+
+<h2>Dagger 2 (Hilt is built on it)</h2>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q4</span><span class="qt">Explain core Dagger 2 concepts: @Component, @Module, @Inject, @Provides</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// @Inject on constructor: Dagger knows how to create this class</span>
+<span class="kw">class</span> <span class="ty">UserRepository</span> <span class="an">@Inject</span> <span class="kw">constructor</span>(
+    <span class="kw">private val</span> <span class="cn">api</span>: <span class="ty">UserApi</span>,   <span class="cm">// Dagger provides these</span>
+    <span class="kw">private val</span> <span class="cn">dao</span>: <span class="ty">UserDao</span>
+)
+
+<span class="cm">// @Module: provides things Dagger can't create via @Inject</span>
+<span class="an">@Module</span>
+<span class="kw">class</span> <span class="ty">NetworkModule</span> {
+    <span class="an">@Provides</span> <span class="cm">// Dagger calls this to get an OkHttpClient</span>
+    <span class="kw">fun</span> <span class="fn">provideOkHttpClient</span>(): <span class="ty">OkHttpClient</span> = <span class="ty">OkHttpClient</span>.<span class="ty">Builder</span>().<span class="fn">build</span>()
+}
+
+<span class="cm">// @Component: the bridge — connects modules to injection targets</span>
+<span class="cm">// Dagger generates AppComponent_Impl at compile time</span>
+<span class="an">@Component</span>(<span class="cn">modules</span> = [<span class="ty">NetworkModule</span>::<span class="kw">class</span>, <span class="ty">DatabaseModule</span>::<span class="kw">class</span>])
+<span class="kw">interface</span> <span class="ty">AppComponent</span> {
+    <span class="kw">fun</span> <span class="fn">inject</span>(activity: <span class="ty">MainActivity</span>)  <span class="cm">// allows injection into MainActivity</span>
+    <span class="kw">fun</span> <span class="fn">userRepository</span>(): <span class="ty">UserRepository</span>  <span class="cm">// expose to sub-components</span>
+}
+
+<span class="cm">// Hilt removes the need to write Components manually — it generates them</span>
+<span class="cm">// This is Hilt's main advantage over raw Dagger 2</span></code></pre>
+</div>
+</details>
+
+<h2>Koin (Lightweight Alternative)</h2>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q5</span><span class="qt">How does Koin work and how does it compare to Hilt/Dagger?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// Koin: service locator + DI without code generation</span>
+<span class="cm">// Resolved at RUNTIME (not compile time like Dagger/Hilt)</span>
+
+<span class="kw">val</span> <span class="cn">appModule</span> = <span class="fn">module</span> {
+    <span class="fn">single</span> { <span class="ty">OkHttpClient</span>.<span class="ty">Builder</span>().<span class="fn">build</span>() }   <span class="cm">// singleton</span>
+    <span class="fn">single</span> { <span class="ty">Retrofit</span>.<span class="ty">Builder</span>().<span class="fn">client</span>(<span class="fn">get</span>()).<span class="fn">build</span>() } <span class="cm">// get() resolves OkHttpClient</span>
+    <span class="fn">factory</span> { <span class="ty">UserRepositoryImpl</span>(<span class="fn">get</span>(), <span class="fn">get</span>()) } <span class="cm">// new instance each time</span>
+    <span class="fn">viewModel</span> { <span class="ty">UserViewModel</span>(<span class="fn">get</span>()) }
+}
+
+<span class="cm">// In Application.onCreate():</span>
+<span class="fn">startKoin</span> {
+    <span class="fn">androidContext</span>(<span class="kw">this</span>@MyApp)
+    <span class="fn">modules</span>(appModule)
+}
+
+<span class="cm">// In Fragment/Activity:</span>
+<span class="kw">val</span> <span class="cn">viewModel</span>: <span class="ty">UserViewModel</span> <span class="kw">by</span> <span class="fn">viewModel</span>()
+<span class="kw">val</span> <span class="cn">repo</span>: <span class="ty">UserRepository</span> <span class="kw">by</span> <span class="fn">inject</span>()</code></pre>
+<div class="g2">
+<div class="gc" style="border-color:var(--grn)"><h4 style="color:var(--grnl)">Koin Pros</h4><p>No annotation processing. Faster build times. Kotlin DSL. Easy to learn. Good for small-medium projects.</p></div>
+<div class="gc" style="border-color:var(--red)"><h4 style="color:var(--redl)">Koin Cons</h4><p>Runtime failures (errors discovered at runtime, not compile time). No scope hierarchy. Slightly slower at runtime due to reflection.</p></div>
+</div>
+<div class="note namb">💡 Google recommendation: Hilt for new projects (compile-time safety, works well with Jetpack). Koin is fine for smaller teams or projects prioritizing build speed.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q6</span><span class="qt">How do you test with Hilt? How do you replace modules in tests?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// Replace module in tests with @TestInstallIn</span>
+<span class="an">@Module</span>
+<span class="an">@TestInstallIn</span>(<span class="cn">components</span> = [<span class="ty">SingletonComponent</span>::<span class="kw">class</span>], <span class="cn">replaces</span> = [<span class="ty">NetworkModule</span>::<span class="kw">class</span>])
+<span class="kw">object</span> <span class="ty">FakeNetworkModule</span> {
+    <span class="an">@Provides</span>
+    <span class="kw">fun</span> <span class="fn">provideFakeUserApi</span>(): <span class="ty">UserApi</span> = <span class="ty">FakeUserApi</span>() <span class="cm">// fake impl for tests</span>
+}
+
+<span class="cm">// HiltAndroidTest for instrumented tests</span>
+<span class="an">@HiltAndroidTest</span>
+<span class="kw">class</span> <span class="ty">UserViewModelTest</span> {
+    <span class="an">@get:Rule</span>
+    <span class="kw">val</span> <span class="cn">hiltRule</span> = <span class="ty">HiltAndroidRule</span>(<span class="kw">this</span>)
+
+    <span class="an">@Inject</span>
+    <span class="kw">lateinit var</span> <span class="cn">viewModel</span>: <span class="ty">UserViewModel</span>
+
+    <span class="an">@Before</span>
+    <span class="kw">fun</span> <span class="fn">setUp</span>() { hiltRule.<span class="fn">inject</span>() }
+}
+
+<span class="cm">// For unit tests (no Android): just inject via constructor manually</span>
+<span class="kw">class</span> <span class="ty">UserViewModelUnitTest</span> {
+    <span class="kw">private val</span> <span class="cn">fakeRepo</span> = <span class="fn">mockk</span>&lt;<span class="ty">UserRepository</span>&gt;()
+    <span class="kw">private val</span> <span class="cn">viewModel</span> = <span class="ty">UserViewModel</span>(fakeRepo) <span class="cm">// no Hilt needed!</span>
+}</code></pre>
+<div class="note ngrn">✓ Pure constructor injection (no @HiltViewModel needed) is the best approach for unit-testable ViewModels — Hilt just wires the real app, tests inject directly.</div>
+</div>
+</details>
+</main>
+</body>
+</html>

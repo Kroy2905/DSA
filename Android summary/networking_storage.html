@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Networking & Storage — Interview Q&A</title>
+<style>:root{--bg:#06090e;--s1:#0a0f18;--s2:#0e1520;--s3:#131d2a;--b1:#182030;--b2:#1e2c3e;--txt:#cce0ee;--muted:#4e6878;--grn:#10a060;--grnb:#031508;--grnl:#44d890;--blu:#1e60d8;--blub:#040e28;--blul:#6aaeff;--pur:#6848b8;--purb:#0f0828;--purl:#b090ff;--amb:#c09010;--ambb:#201500;--ambl:#f0c040;--red:#b03030;--redb:#1e0808;--redl:#f07070;--cya:#0e8898;--cyab:#041418;--cyal:#40d8e8;--ora:#c06020;--orab:#201008;--oral:#f0a060}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,sans-serif;font-size:13px;line-height:1.6;min-height:100vh}
+nav{background:var(--s1);border-bottom:1px solid var(--b1);position:sticky;top:0;z-index:100;overflow-x:auto}
+.nav-inner{display:flex;align-items:center;padding:0 12px;gap:0;min-width:max-content}
+nav a{color:var(--muted);text-decoration:none;font-size:11px;font-weight:500;padding:12px 9px;border-bottom:2px solid transparent;white-space:nowrap;display:block}
+nav a:hover{color:var(--txt)}
+nav a.active{color:var(--grnl);border-bottom-color:var(--grn)}
+main{max-width:980px;padding:28px 20px 80px;margin:0 auto}
+h1{font-size:20px;font-weight:700;margin-bottom:6px;letter-spacing:-.02em}
+.sub{font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.6}
+h2{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:24px 0 10px;display:flex;align-items:center;gap:8px}
+h2::after{content:'';flex:1;height:1px;background:var(--b2)}
+details{border-radius:9px;border:1px solid var(--b2);background:var(--s1);margin-bottom:7px;overflow:hidden}
+details[open]{border-color:#2e4458}
+summary{padding:12px 15px;cursor:pointer;display:flex;align-items:center;gap:9px;list-style:none;font-weight:500;font-size:13px;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:'\203A';font-size:16px;color:var(--muted);transition:.2s;flex-shrink:0;width:14px;display:inline-block}
+details[open] summary::before{transform:rotate(90deg);color:var(--grnl)}
+.qn{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;flex-shrink:0;font-family:monospace}
+.qt{flex:1}
+.dif{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;border:1px solid;flex-shrink:0;letter-spacing:.06em;text-transform:uppercase}
+.easy{background:var(--grnb);color:var(--grnl);border-color:var(--grn)}
+.med{background:var(--ambb);color:var(--ambl);border-color:var(--amb)}
+.hard{background:var(--redb);color:var(--redl);border-color:var(--red)}
+.goog{background:var(--purb);color:var(--purl);border-color:var(--pur)}
+.ans{padding:0 15px 14px;border-top:1px solid var(--b2)}
+.ans p{font-size:12px;color:var(--muted);line-height:1.7;margin:10px 0 0}
+.ans p strong{color:var(--txt)}
+.ans ul,.ans ol{padding-left:18px;font-size:12px;color:var(--muted);line-height:1.85;margin:8px 0}
+.ans li strong{color:var(--txt)}
+pre{background:#070d14;border:1px solid var(--b2);border-radius:7px;padding:12px 14px;overflow-x:auto;margin:10px 0;font-size:11px;line-height:1.7;color:#a8c8e8}
+code{font-family:'JetBrains Mono','Fira Mono',monospace;font-size:11px}
+.kw{color:#79b8ff}.cn{color:#44d890}.st{color:#f0a060}.cm{color:#4e6878}.fn{color:#40d8e8}.an{color:#f0c040}.ty{color:#b090ff}
+.note{border-radius:7px;border:1px solid;padding:9px 12px;font-size:11px;line-height:1.6;margin:10px 0}
+.ngrn{background:var(--grnb);border-color:var(--grn);color:var(--grnl)}
+.namb{background:var(--ambb);border-color:var(--amb);color:var(--ambl)}
+.nred{background:var(--redb);border-color:var(--red);color:var(--redl)}
+.nblu{background:var(--blub);border-color:var(--blu);color:var(--blul)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0}
+@media(max-width:680px){.g2,.g3{grid-template-columns:1fr}}
+.gc{background:var(--s2);border:1px solid var(--b2);border-radius:7px;padding:12px}
+.gc h4{font-size:11px;font-weight:700;margin-bottom:6px}
+.gc p,.gc li{font-size:11px;color:var(--muted);line-height:1.6}
+.ic{background:var(--s3);border:1px solid var(--b2);border-radius:4px;padding:1px 6px;font-family:monospace;font-size:11px;color:var(--blul)}
+a{color:var(--grnl)}
+</style>
+</head>
+<body>
+<nav><div class="nav-inner"><a href="roadmap.html">🗺 Roadmap</a><a href="android_core.html">📱 Android Core</a><a href="android_advanced.html">🔥 Advanced</a><a href="architecture.html">🏛 Architecture</a><a href="kotlin.html">🎯 Kotlin</a><a href="coroutines_flow.html">⚡ Coroutines</a><a href="compose.html">🎨 Compose</a><a href="dependency_injection.html">💉 DI</a><a href="networking_storage.html" class="active">🌐 Net & Storage</a><a href="testing.html">🧪 Testing</a><a href="system_design.html">🏗 System Design</a><a href="dsa_google.html">🧩 DSA</a></div></nav>
+<main>
+<h1>🌐 Networking & Storage — Interview Questions</h1>
+<p class="sub">Retrofit, OkHttp, Room, DataStore, Paging 3 — know the internals, not just the API surface.</p>
+
+<h2>Retrofit & OkHttp</h2>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q1</span><span class="qt">How does Retrofit work internally? What is the role of OkHttp?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p>Retrofit is a type-safe HTTP client that converts your interface definitions into HTTP calls. It's a layer on top of OkHttp.</p>
+<ul>
+<li><strong>OkHttp:</strong> Raw HTTP client. Handles connections, TLS, HTTP/2, caching, interceptors.</li>
+<li><strong>Retrofit:</strong> Uses Java/Kotlin reflection + annotation processing to turn your interface methods into OkHttp Calls. Uses ConverterFactory (Gson/Moshi/Kotlinx) to serialize/deserialize.</li>
+</ul>
+<pre><code><span class="cm">// Full production setup</span>
+<span class="kw">val</span> <span class="cn">okHttpClient</span> = <span class="ty">OkHttpClient</span>.<span class="ty">Builder</span>()
+    .<span class="fn">connectTimeout</span>(<span class="cn">30</span>, <span class="ty">TimeUnit</span>.SECONDS)
+    .<span class="fn">readTimeout</span>(<span class="cn">30</span>, <span class="ty">TimeUnit</span>.SECONDS)
+    .<span class="fn">addInterceptor</span>(<span class="ty">HttpLoggingInterceptor</span>().<span class="fn">apply</span> { level = <span class="ty">HttpLoggingInterceptor</span>.<span class="ty">Level</span>.BODY }) <span class="cm">// debug only</span>
+    .<span class="fn">addInterceptor</span> { chain ->
+        <span class="cm">// Auth interceptor: add token to every request</span>
+        <span class="kw">val</span> <span class="cn">request</span> = chain.request().<span class="fn">newBuilder</span>()
+            .<span class="fn">addHeader</span>(<span class="st">"Authorization"</span>, <span class="st">"Bearer </span><span class="cn">${tokenProvider.getToken()}</span><span class="st">"</span>)
+            .<span class="fn">build</span>()
+        chain.<span class="fn">proceed</span>(request)
+    }
+    .<span class="fn">addInterceptor</span>(<span class="ty">RetryInterceptor</span>(maxRetries = <span class="cn">3</span>))
+    .<span class="fn">cache</span>(<span class="ty">Cache</span>(cacheDir, <span class="cn">50L</span> * <span class="cn">1024</span> * <span class="cn">1024</span>)) <span class="cm">// 50MB HTTP cache</span>
+    .<span class="fn">build</span>()
+
+<span class="kw">val</span> <span class="cn">retrofit</span> = <span class="ty">Retrofit</span>.<span class="ty">Builder</span>()
+    .<span class="fn">baseUrl</span>(<span class="st">"https://api.example.com/"</span>)
+    .<span class="fn">client</span>(okHttpClient)
+    .<span class="fn">addConverterFactory</span>(<span class="ty">MoshiConverterFactory</span>.<span class="fn">create</span>()) <span class="cm">// or Gson</span>
+    .<span class="fn">build</span>()
+
+<span class="cm">// Suspend functions work natively with Retrofit 2.6+</span>
+<span class="kw">interface</span> <span class="ty">UserApi</span> {
+    <span class="an">@GET</span>(<span class="st">"users/{id}"</span>)
+    <span class="kw">suspend fun</span> <span class="fn">getUser</span>(<span class="an">@Path</span>(<span class="st">"id"</span>) id: <span class="ty">String</span>): <span class="ty">Response</span>&lt;<span class="ty">UserDto</span>&gt;
+
+    <span class="an">@POST</span>(<span class="st">"users"</span>)
+    <span class="kw">suspend fun</span> <span class="fn">createUser</span>(<span class="an">@Body</span> user: <span class="ty">CreateUserRequest</span>): <span class="ty">UserDto</span>
+
+    <span class="an">@GET</span>(<span class="st">"users"</span>)
+    <span class="kw">suspend fun</span> <span class="fn">searchUsers</span>(<span class="an">@Query</span>(<span class="st">"q"</span>) query: <span class="ty">String</span>, <span class="an">@Query</span>(<span class="st">"page"</span>) page: <span class="ty">Int</span>): <span class="ty">PaginatedResponse</span>&lt;<span class="ty">UserDto</span>&gt;
+}</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q2</span><span class="qt">How do you handle API errors robustly? Sealed Result type pattern.</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// Sealed Result type — wrap every network call</span>
+<span class="kw">sealed class</span> <span class="ty">ApiResult</span>&lt;<span class="kw">out</span> T&gt; {
+    <span class="kw">data class</span> <span class="ty">Success</span>&lt;T&gt;(<span class="kw">val</span> data: T) : <span class="ty">ApiResult</span>&lt;T&gt;()
+    <span class="kw">data class</span> <span class="ty">Error</span>(<span class="kw">val</span> code: <span class="ty">Int</span>, <span class="kw">val</span> message: <span class="ty">String</span>) : <span class="ty">ApiResult</span>&lt;<span class="ty">Nothing</span>&gt;()
+    <span class="kw">data class</span> <span class="ty">Exception</span>(<span class="kw">val</span> e: <span class="ty">Throwable</span>) : <span class="ty">ApiResult</span>&lt;<span class="ty">Nothing</span>&gt;()
+}
+
+<span class="cm">// Extension function to safely execute any Retrofit call</span>
+<span class="kw">suspend fun</span> &lt;T&gt; <span class="fn">safeApiCall</span>(call: <span class="kw">suspend</span> () -> <span class="ty">Response</span>&lt;T&gt;): <span class="ty">ApiResult</span>&lt;T&gt; {
+    <span class="kw">return try</span> {
+        <span class="kw">val</span> <span class="cn">response</span> = <span class="fn">call</span>()
+        <span class="kw">if</span> (response.<span class="fn">isSuccessful</span>()) {
+            <span class="ty">ApiResult</span>.<span class="ty">Success</span>(response.body()!!)
+        } <span class="kw">else</span> {
+            <span class="ty">ApiResult</span>.<span class="ty">Error</span>(response.code(), response.<span class="fn">errorBody</span>()?.<span class="fn">string</span>() ?: <span class="st">"Unknown"</span>)
+        }
+    } <span class="kw">catch</span> (e: <span class="ty">IOException</span>) {
+        <span class="ty">ApiResult</span>.<span class="ty">Exception</span>(<span class="ty">NetworkException</span>(<span class="st">"No network"</span>, e))
+    } <span class="kw">catch</span> (e: <span class="ty">Exception</span>) {
+        <span class="ty">ApiResult</span>.<span class="ty">Exception</span>(e)
+    }
+}
+
+<span class="cm">// Usage in Repository</span>
+<span class="kw">suspend fun</span> <span class="fn">getUser</span>(id: <span class="ty">String</span>) = <span class="fn">safeApiCall</span> { api.<span class="fn">getUser</span>(id) }
+
+<span class="cm">// Handling in ViewModel</span>
+<span class="kw">when</span> (<span class="kw">val</span> result = repo.<span class="fn">getUser</span>(id)) {
+    <span class="kw">is</span> <span class="ty">ApiResult</span>.<span class="ty">Success</span> -> _uiState.<span class="fn">update</span> { it.<span class="fn">copy</span>(user = result.data) }
+    <span class="kw">is</span> <span class="ty">ApiResult</span>.<span class="ty">Error</span> -> _uiState.<span class="fn">update</span> { it.<span class="fn">copy</span>(error = result.message) }
+    <span class="kw">is</span> <span class="ty">ApiResult</span>.<span class="ty">Exception</span> -> <span class="fn">handleException</span>(result.e)
+}</code></pre>
+</div>
+</details>
+
+<h2>Room Database</h2>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q3</span><span class="qt">Explain Room's core components and how to handle schema migrations</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// 1. Entity — maps to a database table</span>
+<span class="an">@Entity</span>(tableName = <span class="st">"users"</span>, indices = [<span class="ty">Index</span>(value = [<span class="st">"email"</span>], unique = <span class="kw">true</span>)])
+<span class="kw">data class</span> <span class="ty">UserEntity</span>(
+    <span class="an">@PrimaryKey</span> <span class="kw">val</span> id: <span class="ty">String</span>,
+    <span class="kw">val</span> name: <span class="ty">String</span>,
+    <span class="kw">val</span> email: <span class="ty">String</span>,
+    <span class="an">@ColumnInfo</span>(name = <span class="st">"created_at"</span>) <span class="kw">val</span> createdAt: <span class="ty">Long</span>
+)
+
+<span class="cm">// 2. DAO — Data Access Object</span>
+<span class="an">@Dao</span>
+<span class="kw">interface</span> <span class="ty">UserDao</span> {
+    <span class="an">@Query</span>(<span class="st">"SELECT * FROM users WHERE id = :id"</span>)
+    <span class="kw">fun</span> <span class="fn">getUserById</span>(id: <span class="ty">String</span>): <span class="ty">Flow</span>&lt;<span class="ty">UserEntity</span>?&gt; <span class="cm">// Room emits on DB change</span>
+
+    <span class="an">@Insert</span>(<span class="cn">onConflict</span> = <span class="ty">OnConflictStrategy</span>.REPLACE)
+    <span class="kw">suspend fun</span> <span class="fn">insertAll</span>(users: <span class="ty">List</span>&lt;<span class="ty">UserEntity</span>&gt;)
+
+    <span class="an">@Query</span>(<span class="st">"DELETE FROM users WHERE created_at &lt; :cutoff"</span>)
+    <span class="kw">suspend fun</span> <span class="fn">deleteOlderThan</span>(cutoff: <span class="ty">Long</span>)
+
+    <span class="an">@Transaction</span> <span class="cm">// combines DAO calls in one transaction</span>
+    <span class="kw">suspend fun</span> <span class="fn">refreshUsers</span>(users: <span class="ty">List</span>&lt;<span class="ty">UserEntity</span>&gt;) {
+        <span class="fn">deleteAll</span>(); <span class="fn">insertAll</span>(users)
+    }
+}
+
+<span class="cm">// 3. Database</span>
+<span class="an">@Database</span>(entities = [<span class="ty">UserEntity</span>::<span class="kw">class</span>, <span class="ty">PostEntity</span>::<span class="kw">class</span>], version = <span class="cn">3</span>)
+<span class="an">@TypeConverters</span>(<span class="ty">Converters</span>::<span class="kw">class</span>)
+<span class="kw">abstract class</span> <span class="ty">AppDatabase</span> : <span class="ty">RoomDatabase</span>() {
+    <span class="kw">abstract fun</span> <span class="fn">userDao</span>(): <span class="ty">UserDao</span>
+}
+
+<span class="cm">// 4. Migration — schema changes between versions</span>
+<span class="kw">val</span> <span class="cn">MIGRATION_2_3</span> = <span class="kw">object</span> : <span class="ty">Migration</span>(<span class="cn">2</span>, <span class="cn">3</span>) {
+    <span class="kw">override fun</span> <span class="fn">migrate</span>(database: <span class="ty">SupportSQLiteDatabase</span>) {
+        database.<span class="fn">execSQL</span>(<span class="st">"ALTER TABLE users ADD COLUMN bio TEXT"</span>)
+    }
+}
+
+<span class="kw">val</span> <span class="cn">db</span> = <span class="ty">Room</span>.<span class="fn">databaseBuilder</span>(context, <span class="ty">AppDatabase</span>::<span class="kw">class</span>.java, <span class="st">"app.db"</span>)
+    .<span class="fn">addMigrations</span>(MIGRATION_2_3)
+    .<span class="fn">fallbackToDestructiveMigration</span>() <span class="cm">// dev only — deletes data</span>
+    .<span class="fn">build</span>()</code></pre>
+<div class="note nred">⚠ Room queries run on a background thread. If you use Flow<T>, Room automatically emits on a background thread. Collect on main. Never expose Cursor directly to UI.</div>
+</div>
+</details>
+
+<h2>DataStore vs SharedPreferences</h2>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q4</span><span class="qt">Why replace SharedPreferences with DataStore? How does each work?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<div class="g2">
+<div class="gc" style="border-color:var(--red)"><h4 style="color:var(--redl)">SharedPreferences — Avoid</h4><ul><li>Synchronous on first load (ANR risk)</li><li>No type safety</li><li>apply() is async but errors silently</li><li>Not safe for complex objects</li></ul></div>
+<div class="gc" style="border-color:var(--grn)"><h4 style="color:var(--grnl)">DataStore — Use This</h4><ul><li>Fully async (coroutines/Flow)</li><li>Type-safe (Proto DataStore)</li><li>Handles exceptions properly</li><li>No main-thread risk</li></ul></div>
+</div>
+<pre><code><span class="cm">// Preferences DataStore (key-value, like SharedPreferences but async)</span>
+<span class="kw">val</span> <span class="ty">Context</span>.<span class="cn">dataStore</span> <span class="kw">by</span> <span class="fn">preferencesDataStore</span>(name = <span class="st">"settings"</span>)
+
+<span class="kw">object</span> <span class="ty">PreferencesKeys</span> {
+    <span class="kw">val</span> <span class="cn">IS_DARK_MODE</span> = <span class="fn">booleanPreferencesKey</span>(<span class="st">"dark_mode"</span>)
+    <span class="kw">val</span> <span class="cn">USER_ID</span> = <span class="fn">stringPreferencesKey</span>(<span class="st">"user_id"</span>)
+}
+
+<span class="cm">// Read — returns Flow (reactive)</span>
+<span class="kw">val</span> <span class="cn">isDarkMode</span>: <span class="ty">Flow</span>&lt;<span class="ty">Boolean</span>&gt; = context.dataStore.data
+    .<span class="fn">map</span> { prefs -> prefs[<span class="ty">PreferencesKeys</span>.IS_DARK_MODE] ?: <span class="kw">false</span> }
+
+<span class="cm">// Write — suspend function</span>
+<span class="kw">suspend fun</span> <span class="fn">setDarkMode</span>(enabled: <span class="ty">Boolean</span>) {
+    context.dataStore.<span class="fn">edit</span> { prefs ->
+        prefs[<span class="ty">PreferencesKeys</span>.IS_DARK_MODE] = enabled
+    }
+}
+
+<span class="cm">// Proto DataStore — typed, schema-defined (protobuf)</span>
+<span class="cm">// Best for complex structured preferences</span></code></pre>
+</div>
+</details>
+
+<h2>Paging 3</h2>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q5</span><span class="qt">How does Paging 3 work? PagingSource vs RemoteMediator?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// PagingSource: network ONLY pagination (no local DB)</span>
+<span class="kw">class</span> <span class="ty">UserPagingSource</span>(<span class="kw">private val</span> <span class="cn">api</span>: <span class="ty">UserApi</span>) : <span class="ty">PagingSource</span>&lt;<span class="ty">Int</span>, <span class="ty">User</span>&gt;() {
+    <span class="kw">override suspend fun</span> <span class="fn">load</span>(params: <span class="ty">LoadParams</span>&lt;<span class="ty">Int</span>&gt;): <span class="ty">LoadResult</span>&lt;<span class="ty">Int</span>, <span class="ty">User</span>&gt; {
+        <span class="kw">val</span> <span class="cn">page</span> = params.key ?: <span class="cn">1</span>
+        <span class="kw">return try</span> {
+            <span class="kw">val</span> <span class="cn">response</span> = api.<span class="fn">getUsers</span>(page = page, pageSize = params.loadSize)
+            <span class="ty">LoadResult</span>.<span class="ty">Page</span>(
+                data = response.users,
+                prevKey = <span class="kw">if</span> (page == <span class="cn">1</span>) <span class="kw">null</span> <span class="kw">else</span> page - <span class="cn">1</span>,
+                nextKey = <span class="kw">if</span> (response.users.<span class="fn">isEmpty</span>()) <span class="kw">null</span> <span class="kw">else</span> page + <span class="cn">1</span>
+            )
+        } <span class="kw">catch</span> (e: <span class="ty">IOException</span>) { <span class="ty">LoadResult</span>.<span class="ty">Error</span>(e) }
+    }
+    <span class="kw">override fun</span> <span class="fn">getRefreshKey</span>(state: <span class="ty">PagingState</span>&lt;<span class="ty">Int</span>, <span class="ty">User</span>&gt;) =
+        state.anchorPosition?.<span class="fn">let</span> { state.<span class="fn">closestPageToPosition</span>(it)?.prevKey?.plus(<span class="cn">1</span>) }
+}
+
+<span class="cm">// RemoteMediator: network + DB (offline-first pagination)</span>
+<span class="cm">// DB is source of truth, network populates DB, Pager reads from DB</span>
+<span class="an">@OptIn</span>(<span class="ty">ExperimentalPagingApi</span>::<span class="kw">class</span>)
+<span class="kw">class</span> <span class="ty">UserRemoteMediator</span>(
+    <span class="kw">private val</span> <span class="cn">api</span>: <span class="ty">UserApi</span>, <span class="kw">private val</span> <span class="cn">db</span>: <span class="ty">AppDatabase</span>
+) : <span class="ty">RemoteMediator</span>&lt;<span class="ty">Int</span>, <span class="ty">User</span>&gt;() {
+    <span class="kw">override suspend fun</span> <span class="fn">load</span>(loadType: <span class="ty">LoadType</span>, state: <span class="ty">PagingState</span>&lt;<span class="ty">Int</span>, <span class="ty">User</span>&gt;): <span class="ty">MediatorResult</span> {
+        <span class="kw">val</span> <span class="cn">page</span> = <span class="kw">when</span> (loadType) {
+            <span class="ty">LoadType</span>.REFRESH -> <span class="cn">1</span>
+            <span class="ty">LoadType</span>.PREPEND -> <span class="kw">return</span> <span class="ty">MediatorResult</span>.<span class="ty">Success</span>(endOfPaginationReached = <span class="kw">true</span>)
+            <span class="ty">LoadType</span>.APPEND -> db.<span class="fn">remoteKeyDao</span>().<span class="fn">getNextPage</span>() ?: <span class="kw">return</span> <span class="ty">MediatorResult</span>.<span class="ty">Success</span>(<span class="kw">true</span>)
+        }
+        <span class="kw">val</span> <span class="cn">users</span> = api.<span class="fn">getUsers</span>(page)
+        db.<span class="fn">withTransaction</span> {
+            <span class="kw">if</span> (loadType == <span class="ty">LoadType</span>.REFRESH) db.<span class="fn">userDao</span>().<span class="fn">clearAll</span>()
+            db.<span class="fn">userDao</span>().<span class="fn">insertAll</span>(users)
+            db.<span class="fn">remoteKeyDao</span>().<span class="fn">insert</span>(<span class="ty">RemoteKey</span>(nextPage = page + <span class="cn">1</span>))
+        }
+        <span class="kw">return</span> <span class="ty">MediatorResult</span>.<span class="ty">Success</span>(endOfPaginationReached = users.<span class="fn">isEmpty</span>())
+    }
+}
+
+<span class="cm">// In ViewModel</span>
+<span class="kw">val</span> <span class="cn">users</span>: <span class="ty">Flow</span>&lt;<span class="ty">PagingData</span>&lt;<span class="ty">User</span>&gt;&gt; = <span class="ty">Pager</span>(
+    config = <span class="ty">PagingConfig</span>(pageSize = <span class="cn">20</span>, prefetchDistance = <span class="cn">5</span>),
+    remoteMediator = <span class="ty">UserRemoteMediator</span>(api, db),
+    pagingSourceFactory = { db.<span class="fn">userDao</span>().<span class="fn">pagingSource</span>() }
+).<span class="fn">flow</span>.<span class="fn">cachedIn</span>(viewModelScope)</code></pre>
+</div>
+</details>
+</main>
+</body>
+</html>

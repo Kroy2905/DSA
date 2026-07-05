@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Testing — Interview Q&A</title>
+<style>:root{--bg:#06090e;--s1:#0a0f18;--s2:#0e1520;--s3:#131d2a;--b1:#182030;--b2:#1e2c3e;--txt:#cce0ee;--muted:#4e6878;--grn:#10a060;--grnb:#031508;--grnl:#44d890;--blu:#1e60d8;--blub:#040e28;--blul:#6aaeff;--pur:#6848b8;--purb:#0f0828;--purl:#b090ff;--amb:#c09010;--ambb:#201500;--ambl:#f0c040;--red:#b03030;--redb:#1e0808;--redl:#f07070;--cya:#0e8898;--cyab:#041418;--cyal:#40d8e8;--ora:#c06020;--orab:#201008;--oral:#f0a060}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,sans-serif;font-size:13px;line-height:1.6;min-height:100vh}
+nav{background:var(--s1);border-bottom:1px solid var(--b1);position:sticky;top:0;z-index:100;overflow-x:auto}
+.nav-inner{display:flex;align-items:center;padding:0 12px;gap:0;min-width:max-content}
+nav a{color:var(--muted);text-decoration:none;font-size:11px;font-weight:500;padding:12px 9px;border-bottom:2px solid transparent;white-space:nowrap;display:block}
+nav a:hover{color:var(--txt)}
+nav a.active{color:var(--grnl);border-bottom-color:var(--grn)}
+main{max-width:980px;padding:28px 20px 80px;margin:0 auto}
+h1{font-size:20px;font-weight:700;margin-bottom:6px;letter-spacing:-.02em}
+.sub{font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.6}
+h2{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:24px 0 10px;display:flex;align-items:center;gap:8px}
+h2::after{content:'';flex:1;height:1px;background:var(--b2)}
+details{border-radius:9px;border:1px solid var(--b2);background:var(--s1);margin-bottom:7px;overflow:hidden}
+details[open]{border-color:#2e4458}
+summary{padding:12px 15px;cursor:pointer;display:flex;align-items:center;gap:9px;list-style:none;font-weight:500;font-size:13px;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:'\203A';font-size:16px;color:var(--muted);transition:.2s;flex-shrink:0;width:14px;display:inline-block}
+details[open] summary::before{transform:rotate(90deg);color:var(--grnl)}
+.qn{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;flex-shrink:0;font-family:monospace}
+.qt{flex:1}
+.dif{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;border:1px solid;flex-shrink:0;letter-spacing:.06em;text-transform:uppercase}
+.easy{background:var(--grnb);color:var(--grnl);border-color:var(--grn)}
+.med{background:var(--ambb);color:var(--ambl);border-color:var(--amb)}
+.hard{background:var(--redb);color:var(--redl);border-color:var(--red)}
+.goog{background:var(--purb);color:var(--purl);border-color:var(--pur)}
+.ans{padding:0 15px 14px;border-top:1px solid var(--b2)}
+.ans p{font-size:12px;color:var(--muted);line-height:1.7;margin:10px 0 0}
+.ans p strong{color:var(--txt)}
+.ans ul,.ans ol{padding-left:18px;font-size:12px;color:var(--muted);line-height:1.85;margin:8px 0}
+.ans li strong{color:var(--txt)}
+pre{background:#070d14;border:1px solid var(--b2);border-radius:7px;padding:12px 14px;overflow-x:auto;margin:10px 0;font-size:11px;line-height:1.7;color:#a8c8e8}
+code{font-family:'JetBrains Mono','Fira Mono',monospace;font-size:11px}
+.kw{color:#79b8ff}.cn{color:#44d890}.st{color:#f0a060}.cm{color:#4e6878}.fn{color:#40d8e8}.an{color:#f0c040}.ty{color:#b090ff}
+.note{border-radius:7px;border:1px solid;padding:9px 12px;font-size:11px;line-height:1.6;margin:10px 0}
+.ngrn{background:var(--grnb);border-color:var(--grn);color:var(--grnl)}
+.namb{background:var(--ambb);border-color:var(--amb);color:var(--ambl)}
+.nred{background:var(--redb);border-color:var(--red);color:var(--redl)}
+.nblu{background:var(--blub);border-color:var(--blu);color:var(--blul)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0}
+@media(max-width:680px){.g2,.g3{grid-template-columns:1fr}}
+.gc{background:var(--s2);border:1px solid var(--b2);border-radius:7px;padding:12px}
+.gc h4{font-size:11px;font-weight:700;margin-bottom:6px}
+.gc p,.gc li{font-size:11px;color:var(--muted);line-height:1.6}
+.ic{background:var(--s3);border:1px solid var(--b2);border-radius:4px;padding:1px 6px;font-family:monospace;font-size:11px;color:var(--blul)}
+a{color:var(--grnl)}
+</style>
+</head>
+<body>
+<nav><div class="nav-inner"><a href="roadmap.html">🗺 Roadmap</a><a href="android_core.html">📱 Android Core</a><a href="android_advanced.html">🔥 Advanced</a><a href="architecture.html">🏛 Architecture</a><a href="kotlin.html">🎯 Kotlin</a><a href="coroutines_flow.html">⚡ Coroutines</a><a href="compose.html">🎨 Compose</a><a href="dependency_injection.html">💉 DI</a><a href="networking_storage.html">🌐 Net & Storage</a><a href="testing.html" class="active">🧪 Testing</a><a href="system_design.html">🏗 System Design</a><a href="dsa_google.html">🧩 DSA</a></div></nav>
+<main>
+<h1>🧪 Testing — Interview Questions</h1>
+<p class="sub">Testing is a first-class citizen at Google. Know unit testing, integration testing, UI testing, and TDD. Expect to write tests during the interview.</p>
+
+<h2>Unit Testing</h2>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q1</span><span class="qt">How do you unit test a ViewModel with coroutines and Flow?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// Dependencies:</span>
+<span class="cm">// testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")</span>
+<span class="cm">// testImplementation("io.mockk:mockk:1.13.5")</span>
+<span class="cm">// testImplementation("app.cash.turbine:turbine:1.0.0")</span>
+
+<span class="kw">class</span> <span class="ty">UserViewModelTest</span> {
+
+    <span class="cm">// Rule to replace Dispatchers.Main in tests</span>
+    <span class="an">@get:Rule</span>
+    <span class="kw">val</span> <span class="cn">mainDispatcherRule</span> = <span class="ty">MainDispatcherRule</span>()
+
+    <span class="kw">private val</span> <span class="cn">userRepository</span> = <span class="fn">mockk</span>&lt;<span class="ty">UserRepository</span>&gt;()
+    <span class="kw">private lateinit var</span> <span class="cn">viewModel</span>: <span class="ty">UserViewModel</span>
+
+    <span class="an">@Before</span>
+    <span class="kw">fun</span> <span class="fn">setUp</span>() { viewModel = <span class="ty">UserViewModel</span>(userRepository) }
+
+    <span class="an">@Test</span>
+    <span class="kw">fun</span> <span class="fn">`loadUser emits loading then success`</span>() = <span class="fn">runTest</span> {
+        <span class="cm">// Arrange</span>
+        <span class="kw">val</span> <span class="cn">user</span> = <span class="ty">User</span>(<span class="st">"1"</span>, <span class="st">"Alice"</span>)
+        <span class="fn">coEvery</span> { userRepository.<span class="fn">getUser</span>(<span class="st">"1"</span>) } <span class="fn">returns</span> user
+
+        <span class="cm">// Act + Assert with Turbine</span>
+        viewModel.uiState.<span class="fn">test</span> {
+            viewModel.<span class="fn">loadUser</span>(<span class="st">"1"</span>)
+
+            <span class="kw">val</span> <span class="cn">loading</span> = <span class="fn">awaitItem</span>()
+            <span class="fn">assertTrue</span>(loading.isLoading)
+
+            <span class="kw">val</span> <span class="cn">success</span> = <span class="fn">awaitItem</span>()
+            <span class="fn">assertFalse</span>(success.isLoading)
+            <span class="fn">assertEquals</span>(user, success.user)
+
+            <span class="fn">cancelAndIgnoreRemainingEvents</span>()
+        }
+    }
+
+    <span class="an">@Test</span>
+    <span class="kw">fun</span> <span class="fn">`loadUser emits error on network failure`</span>() = <span class="fn">runTest</span> {
+        <span class="fn">coEvery</span> { userRepository.<span class="fn">getUser</span>(<span class="st">"1"</span>) } <span class="fn">throws</span> <span class="ty">IOException</span>(<span class="st">"Network error"</span>)
+        viewModel.uiState.<span class="fn">test</span> {
+            viewModel.<span class="fn">loadUser</span>(<span class="st">"1"</span>)
+            <span class="fn">skipItems</span>(<span class="cn">1</span>) <span class="cm">// skip loading state</span>
+            <span class="kw">val</span> <span class="cn">error</span> = <span class="fn">awaitItem</span>()
+            <span class="fn">assertNotNull</span>(error.errorMessage)
+            <span class="fn">cancelAndIgnoreRemainingEvents</span>()
+        }
+    }
+}
+
+<span class="cm">// MainDispatcherRule — replaces Dispatchers.Main in tests</span>
+<span class="kw">class</span> <span class="ty">MainDispatcherRule</span>(<span class="kw">private val</span> <span class="cn">dispatcher</span>: <span class="ty">TestCoroutineDispatcher</span> = <span class="ty">UnconfinedTestDispatcher</span>()) : <span class="ty">TestWatcher</span>() {
+    <span class="kw">override fun</span> <span class="fn">starting</span>(d: <span class="ty">Description</span>?) = <span class="ty">Dispatchers</span>.<span class="fn">setMain</span>(dispatcher)
+    <span class="kw">override fun</span> <span class="fn">finished</span>(d: <span class="ty">Description</span>?) = <span class="ty">Dispatchers</span>.<span class="fn">resetMain</span>()
+}</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q2</span><span class="qt">How do you unit test a UseCase and Repository?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// UseCase test — pure Kotlin, no Android dependency</span>
+<span class="kw">class</span> <span class="ty">GetUserUseCaseTest</span> {
+    <span class="kw">private val</span> <span class="cn">repository</span> = <span class="fn">mockk</span>&lt;<span class="ty">UserRepository</span>&gt;()
+    <span class="kw">private val</span> <span class="cn">useCase</span> = <span class="ty">GetUserUseCase</span>(repository)
+
+    <span class="an">@Test</span>
+    <span class="kw">fun</span> <span class="fn">`returns user when repository succeeds`</span>() = <span class="fn">runTest</span> {
+        <span class="kw">val</span> <span class="cn">expected</span> = <span class="ty">User</span>(<span class="st">"1"</span>, <span class="st">"Alice"</span>)
+        <span class="fn">coEvery</span> { repository.<span class="fn">getUser</span>(<span class="st">"1"</span>) } <span class="fn">returns</span> expected
+        <span class="kw">val</span> <span class="cn">result</span> = useCase.<span class="fn">invoke</span>(<span class="st">"1"</span>)
+        <span class="fn">assertEquals</span>(expected, result)
+        <span class="fn">coVerify</span>(exactly = <span class="cn">1</span>) { repository.<span class="fn">getUser</span>(<span class="st">"1"</span>) }
+    }
+}
+
+<span class="cm">// Repository test — mock both data sources</span>
+<span class="kw">class</span> <span class="ty">UserRepositoryTest</span> {
+    <span class="kw">private val</span> <span class="cn">remoteSource</span> = <span class="fn">mockk</span>&lt;<span class="ty">UserRemoteDataSource</span>&gt;()
+    <span class="kw">private val</span> <span class="cn">localSource</span> = <span class="fn">mockk</span>&lt;<span class="ty">UserLocalDataSource</span>&gt;(relaxed = <span class="kw">true</span>)
+    <span class="kw">private val</span> <span class="cn">repository</span> = <span class="ty">UserRepositoryImpl</span>(remoteSource, localSource)
+
+    <span class="an">@Test</span>
+    <span class="kw">fun</span> <span class="fn">`getUser returns local cache if available`</span>() = <span class="fn">runTest</span> {
+        <span class="kw">val</span> <span class="cn">cached</span> = <span class="ty">User</span>(<span class="st">"1"</span>, <span class="st">"Alice"</span>)
+        <span class="fn">coEvery</span> { localSource.<span class="fn">getUser</span>(<span class="st">"1"</span>) } <span class="fn">returns</span> cached
+        <span class="kw">val</span> <span class="cn">result</span> = repository.<span class="fn">getUser</span>(<span class="st">"1"</span>)
+        <span class="fn">assertEquals</span>(cached, result)
+        <span class="fn">coVerify</span>(exactly = <span class="cn">0</span>) { remoteSource.<span class="fn">fetchUser</span>(<span class="ty">any</span>()) } <span class="cm">// network NOT called</span>
+    }
+}
+
+<span class="cm">// MockK essentials</span>
+<span class="fn">mockk</span>&lt;<span class="ty">MyClass</span>&gt;()            <span class="cm">// strict mock — every call must be stubbed</span>
+<span class="fn">mockk</span>&lt;<span class="ty">MyClass</span>&gt;(relaxed = <span class="kw">true</span>) <span class="cm">// relaxed — unstubbed calls return defaults</span>
+<span class="fn">coEvery</span> { suspend_fun() } <span class="fn">returns</span> value <span class="cm">// stub a suspend function</span>
+<span class="fn">coEvery</span> { fun() } <span class="fn">throws</span> <span class="ty">IOException</span>() <span class="cm">// throw from mock</span>
+<span class="fn">coVerify</span>(exactly = <span class="cn">1</span>) { fun() }        <span class="cm">// verify called exactly once</span>
+<span class="fn">verify</span>(exactly = <span class="cn">0</span>) { fun() }          <span class="cm">// verify never called</span></code></pre>
+</div>
+</details>
+
+<h2>Compose UI Testing</h2>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q3</span><span class="qt">How do you write Compose UI tests?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// Compose UI test — uses ComposeTestRule</span>
+<span class="kw">class</span> <span class="ty">LoginScreenTest</span> {
+
+    <span class="an">@get:Rule</span>
+    <span class="kw">val</span> <span class="cn">composeTestRule</span> = <span class="fn">createComposeRule</span>()
+
+    <span class="an">@Test</span>
+    <span class="kw">fun</span> <span class="fn">`login button disabled when email empty`</span>() {
+        composeTestRule.<span class="fn">setContent</span> {
+            <span class="fn">LoginScreen</span>(<span class="cn">onLogin</span> = {}, <span class="cn">onForgotPassword</span> = {})
+        }
+        <span class="cm">// Find node by test tag</span>
+        composeTestRule.<span class="fn">onNodeWithTag</span>(<span class="st">"login_button"</span>).<span class="fn">assertIsNotEnabled</span>()
+    }
+
+    <span class="an">@Test</span>
+    <span class="kw">fun</span> <span class="fn">`shows error on invalid email`</span>() {
+        composeTestRule.<span class="fn">setContent</span> { <span class="fn">LoginScreen</span>(<span class="cn">onLogin</span> = {}, <span class="cn">onForgotPassword</span> = {}) }
+
+        <span class="cm">// Interact: type in text field</span>
+        composeTestRule.<span class="fn">onNodeWithTag</span>(<span class="st">"email_field"</span>).<span class="fn">performTextInput</span>(<span class="st">"notanemail"</span>)
+        composeTestRule.<span class="fn">onNodeWithTag</span>(<span class="st">"login_button"</span>).<span class="fn">performClick</span>()
+
+        <span class="cm">// Assert: error visible</span>
+        composeTestRule.<span class="fn">onNodeWithText</span>(<span class="st">"Invalid email"</span>).<span class="fn">assertIsDisplayed</span>()
+    }
+
+    <span class="an">@Test</span>
+    <span class="kw">fun</span> <span class="fn">`successful login navigates to home`</span>() {
+        <span class="kw">var</span> <span class="cn">loginCalled</span> = <span class="kw">false</span>
+        composeTestRule.<span class="fn">setContent</span> {
+            <span class="fn">LoginScreen</span>(<span class="cn">onLogin</span> = { loginCalled = <span class="kw">true</span> }, <span class="cn">onForgotPassword</span> = {})
+        }
+        composeTestRule.<span class="fn">onNodeWithTag</span>(<span class="st">"email_field"</span>).<span class="fn">performTextInput</span>(<span class="st">"user@test.com"</span>)
+        composeTestRule.<span class="fn">onNodeWithTag</span>(<span class="st">"password_field"</span>).<span class="fn">performTextInput</span>(<span class="st">"password"</span>)
+        composeTestRule.<span class="fn">onNodeWithTag</span>(<span class="st">"login_button"</span>).<span class="fn">performClick</span>()
+        <span class="fn">assertTrue</span>(loginCalled)
+    }
+}
+
+<span class="cm">// In your composable — add test tags</span>
+<span class="ty">TextField</span>(
+    value = email,
+    <span class="cn">onValueChange</span> = onEmailChange,
+    <span class="cn">modifier</span> = <span class="ty">Modifier</span>.<span class="fn">testTag</span>(<span class="st">"email_field"</span>)
+)</code></pre>
+</div>
+</details>
+
+<h2>Espresso (View-based UI Testing)</h2>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q4</span><span class="qt">How do you write Espresso tests? What are common pitfalls?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// Basic Espresso test structure</span>
+<span class="an">@RunWith</span>(<span class="ty">AndroidJUnit4</span>::<span class="kw">class</span>)
+<span class="kw">class</span> <span class="ty">LoginActivityTest</span> {
+
+    <span class="an">@get:Rule</span>
+    <span class="kw">val</span> <span class="cn">activityRule</span> = <span class="ty">ActivityScenarioRule</span>(<span class="ty">LoginActivity</span>::<span class="kw">class</span>.java)
+
+    <span class="an">@Test</span>
+    <span class="kw">fun</span> <span class="fn">loginWithValidCredentials</span>() {
+        <span class="cm">// Find → Perform → Check</span>
+        <span class="fn">onView</span>(<span class="fn">withId</span>(R.id.<span class="cn">emailEditText</span>))
+            .<span class="fn">perform</span>(<span class="fn">typeText</span>(<span class="st">"user@test.com"</span>), <span class="fn">closeSoftKeyboard</span>())
+
+        <span class="fn">onView</span>(<span class="fn">withId</span>(R.id.<span class="cn">passwordEditText</span>))
+            .<span class="fn">perform</span>(<span class="fn">typeText</span>(<span class="st">"password123"</span>), <span class="fn">closeSoftKeyboard</span>())
+
+        <span class="fn">onView</span>(<span class="fn">withId</span>(R.id.<span class="cn">loginButton</span>)).<span class="fn">perform</span>(<span class="fn">click</span>())
+
+        <span class="fn">onView</span>(<span class="fn">withId</span>(R.id.<span class="cn">homeScreen</span>)).<span class="fn">check</span>(<span class="fn">matches</span>(<span class="fn">isDisplayed</span>()))
+    }
+
+    <span class="an">@Test</span>
+    <span class="kw">fun</span> <span class="fn">scrollAndClickInRecyclerView</span>() {
+        <span class="fn">onView</span>(<span class="fn">withId</span>(R.id.<span class="cn">recyclerView</span>))
+            .<span class="fn">perform</span>(<span class="ty">RecyclerViewActions</span>.<span class="fn">scrollToPosition</span>&lt;<span class="ty">RecyclerView.ViewHolder</span>&gt;(<span class="cn">10</span>))
+        <span class="fn">onView</span>(<span class="fn">withId</span>(R.id.<span class="cn">recyclerView</span>))
+            .<span class="fn">perform</span>(<span class="ty">RecyclerViewActions</span>.<span class="fn">actionOnItemAtPosition</span>&lt;<span class="ty">RecyclerView.ViewHolder</span>&gt;(<span class="cn">10</span>, <span class="fn">click</span>()))
+    }
+}
+
+<span class="cm">// Common pitfalls:</span>
+<span class="cm">// 1. IdlingResources: Espresso doesn't know when async ops finish</span>
+<span class="cm">// Register an IdlingResource for OkHttp, Coroutines, etc.</span>
+<span class="kw">val</span> <span class="cn">idlingResource</span> = <span class="ty">CountingIdlingResource</span>(<span class="st">"OkHttp"</span>)
+<span class="ty">IdlingRegistry</span>.<span class="fn">getInstance</span>().<span class="fn">register</span>(idlingResource)
+<span class="cm">// Modern alternative: runTest with coroutines handles timing automatically</span></code></pre>
+</div>
+</details>
+
+<h2>TDD & Best Practices</h2>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q5</span><span class="qt">What is the testing pyramid and how do you apply it in Android?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<div class="g3">
+<div class="gc" style="border-color:var(--grn)"><h4 style="color:var(--grnl)">Unit Tests (70%)</h4><p>ViewModels, UseCases, Repositories, Mappers, Utils. Run on JVM, fast (milliseconds). Use MockK for mocking, Turbine for flows.</p></div>
+<div class="gc" style="border-color:var(--amb)"><h4 style="color:var(--ambl)">Integration Tests (20%)</h4><p>Room DAO tests (in-memory DB), Repository with real data sources, API contract tests. Slower, run on emulator/device.</p></div>
+<div class="gc" style="border-color:var(--red)"><h4 style="color:var(--redl)">E2E UI Tests (10%)</h4><p>Critical user flows only (login, checkout, signup). Espresso or Compose UI tests. Slowest, most brittle.</p></div>
+</div>
+<pre><code><span class="cm">// In-memory Room DB for integration tests</span>
+<span class="kw">class</span> <span class="ty">UserDaoTest</span> {
+    <span class="kw">private lateinit var</span> <span class="cn">db</span>: <span class="ty">AppDatabase</span>
+    <span class="kw">private lateinit var</span> <span class="cn">dao</span>: <span class="ty">UserDao</span>
+
+    <span class="an">@Before</span>
+    <span class="kw">fun</span> <span class="fn">setUp</span>() {
+        <span class="cm">// In-memory: no files on disk, perfect for tests</span>
+        db = <span class="ty">Room</span>.<span class="fn">inMemoryDatabaseBuilder</span>(<span class="fn">ApplicationProvider</span>.<span class="fn">getApplicationContext</span>(), <span class="ty">AppDatabase</span>::<span class="kw">class</span>.java)
+            .<span class="fn">allowMainThreadQueries</span>() <span class="cm">// test only!</span>
+            .<span class="fn">build</span>()
+        dao = db.<span class="fn">userDao</span>()
+    }
+
+    <span class="an">@After</span> <span class="kw">fun</span> <span class="fn">tearDown</span>() = db.<span class="fn">close</span>()
+
+    <span class="an">@Test</span>
+    <span class="kw">fun</span> <span class="fn">insertAndRetrieveUser</span>() = <span class="fn">runTest</span> {
+        <span class="kw">val</span> <span class="cn">user</span> = <span class="ty">UserEntity</span>(<span class="st">"1"</span>, <span class="st">"Alice"</span>, <span class="st">"alice@test.com"</span>, <span class="cn">0L</span>)
+        dao.<span class="fn">insertAll</span>(<span class="fn">listOf</span>(user))
+        dao.<span class="fn">getUserById</span>(<span class="st">"1"</span>).<span class="fn">first</span>().<span class="fn">let</span> {
+            <span class="fn">assertEquals</span>(<span class="st">"Alice"</span>, it?.name)
+        }
+    }
+}</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q6</span><span class="qt">What makes code testable? Common anti-patterns that hurt testability.</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p><strong>Good practices for testability:</strong></p>
+<ul>
+<li><strong>Constructor injection:</strong> All dependencies passed in, not created internally</li>
+<li><strong>Program to interfaces:</strong> <span class="ic">UserRepository</span> interface, not <span class="ic">UserRepositoryImpl</span></li>
+<li><strong>Inject Dispatchers:</strong> <span class="ic">class Repo(val dispatcher: CoroutineDispatcher = Dispatchers.IO)</span> — inject <span class="ic">UnconfinedTestDispatcher</span> in tests</li>
+<li><strong>Pure functions:</strong> No side effects, easy to verify output from input</li>
+<li><strong>Avoid static methods and singletons:</strong> They're global state — impossible to replace in tests</li>
+</ul>
+<p><strong>Anti-patterns that kill testability:</strong></p>
+<pre><code><span class="cm">// BAD: creates dependencies internally</span>
+<span class="kw">class</span> <span class="ty">BadViewModel</span> : <span class="ty">ViewModel</span>() {
+    <span class="kw">private val</span> <span class="cn">repo</span> = <span class="ty">UserRepositoryImpl</span>() <span class="cm">// hardcoded — can't mock</span>
+    <span class="kw">private val</span> <span class="cn">analytics</span> = <span class="ty">FirebaseAnalytics</span>.<span class="fn">getInstance</span>(context) <span class="cm">// static</span>
+}
+
+<span class="cm">// BAD: Dispatchers.IO hardcoded</span>
+<span class="kw">suspend fun</span> <span class="fn">loadData</span>() = <span class="fn">withContext</span>(<span class="ty">Dispatchers</span>.IO) { repo.<span class="fn">fetch</span>() }
+
+<span class="cm">// GOOD: injectable dispatcher</span>
+<span class="kw">class</span> <span class="ty">GoodViewModel</span>(
+    <span class="kw">private val</span> <span class="cn">repo</span>: <span class="ty">UserRepository</span>,          <span class="cm">// interface</span>
+    <span class="kw">private val</span> <span class="cn">analytics</span>: <span class="ty">Analytics</span>,           <span class="cm">// interface</span>
+    <span class="kw">private val</span> <span class="cn">dispatcher</span>: <span class="ty">CoroutineDispatcher</span> = <span class="ty">Dispatchers</span>.IO <span class="cm">// injectable</span>
+) : <span class="ty">ViewModel</span>()</code></pre>
+</div>
+</details>
+</main>
+</body>
+</html>

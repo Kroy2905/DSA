@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>DSA for Google — Interview Patterns</title>
+<style>:root{--bg:#06090e;--s1:#0a0f18;--s2:#0e1520;--s3:#131d2a;--b1:#182030;--b2:#1e2c3e;--txt:#cce0ee;--muted:#4e6878;--grn:#10a060;--grnb:#031508;--grnl:#44d890;--blu:#1e60d8;--blub:#040e28;--blul:#6aaeff;--pur:#6848b8;--purb:#0f0828;--purl:#b090ff;--amb:#c09010;--ambb:#201500;--ambl:#f0c040;--red:#b03030;--redb:#1e0808;--redl:#f07070;--cya:#0e8898;--cyab:#041418;--cyal:#40d8e8;--ora:#c06020;--orab:#201008;--oral:#f0a060}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,sans-serif;font-size:13px;line-height:1.6;min-height:100vh}
+nav{background:var(--s1);border-bottom:1px solid var(--b1);position:sticky;top:0;z-index:100;overflow-x:auto}
+.nav-inner{display:flex;align-items:center;padding:0 12px;gap:0;min-width:max-content}
+nav a{color:var(--muted);text-decoration:none;font-size:11px;font-weight:500;padding:12px 9px;border-bottom:2px solid transparent;white-space:nowrap;display:block}
+nav a:hover{color:var(--txt)}
+nav a.active{color:var(--grnl);border-bottom-color:var(--grn)}
+main{max-width:980px;padding:28px 20px 80px;margin:0 auto}
+h1{font-size:20px;font-weight:700;margin-bottom:6px;letter-spacing:-.02em}
+.sub{font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.6}
+h2{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:24px 0 10px;display:flex;align-items:center;gap:8px}
+h2::after{content:'';flex:1;height:1px;background:var(--b2)}
+details{border-radius:9px;border:1px solid var(--b2);background:var(--s1);margin-bottom:7px;overflow:hidden}
+details[open]{border-color:#2e4458}
+summary{padding:12px 15px;cursor:pointer;display:flex;align-items:center;gap:9px;list-style:none;font-weight:500;font-size:13px;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:'\203A';font-size:16px;color:var(--muted);transition:.2s;flex-shrink:0;width:14px;display:inline-block}
+details[open] summary::before{transform:rotate(90deg);color:var(--grnl)}
+.qn{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;flex-shrink:0;font-family:monospace}
+.qt{flex:1}
+.dif{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;border:1px solid;flex-shrink:0;letter-spacing:.06em;text-transform:uppercase}
+.easy{background:var(--grnb);color:var(--grnl);border-color:var(--grn)}
+.med{background:var(--ambb);color:var(--ambl);border-color:var(--amb)}
+.hard{background:var(--redb);color:var(--redl);border-color:var(--red)}
+.goog{background:var(--purb);color:var(--purl);border-color:var(--pur)}
+.ans{padding:0 15px 14px;border-top:1px solid var(--b2)}
+.ans p{font-size:12px;color:var(--muted);line-height:1.7;margin:10px 0 0}
+.ans p strong{color:var(--txt)}
+.ans ul,.ans ol{padding-left:18px;font-size:12px;color:var(--muted);line-height:1.85;margin:8px 0}
+.ans li strong{color:var(--txt)}
+pre{background:#070d14;border:1px solid var(--b2);border-radius:7px;padding:12px 14px;overflow-x:auto;margin:10px 0;font-size:11px;line-height:1.7;color:#a8c8e8}
+code{font-family:'JetBrains Mono','Fira Mono',monospace;font-size:11px}
+.kw{color:#79b8ff}.cn{color:#44d890}.st{color:#f0a060}.cm{color:#4e6878}.fn{color:#40d8e8}.an{color:#f0c040}.ty{color:#b090ff}
+.note{border-radius:7px;border:1px solid;padding:9px 12px;font-size:11px;line-height:1.6;margin:10px 0}
+.ngrn{background:var(--grnb);border-color:var(--grn);color:var(--grnl)}
+.namb{background:var(--ambb);border-color:var(--amb);color:var(--ambl)}
+.nred{background:var(--redb);border-color:var(--red);color:var(--redl)}
+.nblu{background:var(--blub);border-color:var(--blu);color:var(--blul)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0}
+@media(max-width:680px){.g2,.g3{grid-template-columns:1fr}}
+.gc{background:var(--s2);border:1px solid var(--b2);border-radius:7px;padding:12px}
+.gc h4{font-size:11px;font-weight:700;margin-bottom:6px}
+.gc p,.gc li{font-size:11px;color:var(--muted);line-height:1.6}
+.ic{background:var(--s3);border:1px solid var(--b2);border-radius:4px;padding:1px 6px;font-family:monospace;font-size:11px;color:var(--blul)}
+a{color:var(--grnl)}
+</style>
+</head>
+<body>
+<nav><div class="nav-inner"><a href="roadmap.html">🗺 Roadmap</a><a href="android_core.html">📱 Android Core</a><a href="android_advanced.html">🔥 Advanced</a><a href="architecture.html">🏛 Architecture</a><a href="kotlin.html">🎯 Kotlin</a><a href="coroutines_flow.html">⚡ Coroutines</a><a href="compose.html">🎨 Compose</a><a href="dependency_injection.html">💉 DI</a><a href="networking_storage.html">🌐 Net & Storage</a><a href="testing.html">🧪 Testing</a><a href="system_design.html">🏗 System Design</a><a href="dsa_google.html" class="active">🧩 DSA</a></div></nav>
+<main>
+<h1>🧩 DSA for Google Android Interviews</h1>
+<p class="sub">Google requires LeetCode Medium-Hard in coding rounds. Master these 12 patterns and you can solve ~80% of interview questions. All solutions in Kotlin.</p>
+
+<h2>Pattern 1: Two Pointers</h2>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">P1-1</span><span class="qt">Two Sum — Find pair that sums to target</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// O(n) time, O(n) space — HashMap solution</span>
+<span class="kw">fun</span> <span class="fn">twoSum</span>(nums: <span class="ty">IntArray</span>, target: <span class="ty">Int</span>): <span class="ty">IntArray</span> {
+    <span class="kw">val</span> <span class="cn">seen</span> = <span class="ty">HashMap</span>&lt;<span class="ty">Int</span>, <span class="ty">Int</span>&gt;() <span class="cm">// value → index</span>
+    <span class="kw">for</span> (i <span class="kw">in</span> nums.<span class="fn">indices</span>) {
+        <span class="kw">val</span> <span class="cn">complement</span> = target - nums[i]
+        <span class="kw">if</span> (seen.<span class="fn">containsKey</span>(complement)) {
+            <span class="kw">return</span> <span class="fn">intArrayOf</span>(seen[complement]!!, i)
+        }
+        seen[nums[i]] = i
+    }
+    <span class="kw">return</span> <span class="fn">intArrayOf</span>()
+}
+<span class="cm">// Key insight: complement = target - current. Check if complement seen before.</span></code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">P1-2</span><span class="qt">Container With Most Water (Two Pointers)</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// Greedy two-pointer: move the shorter side inward</span>
+<span class="kw">fun</span> <span class="fn">maxArea</span>(height: <span class="ty">IntArray</span>): <span class="ty">Int</span> {
+    <span class="kw">var</span> <span class="cn">left</span> = <span class="cn">0</span>; <span class="kw">var</span> <span class="cn">right</span> = height.size - <span class="cn">1</span>; <span class="kw">var</span> <span class="cn">maxWater</span> = <span class="cn">0</span>
+    <span class="kw">while</span> (left &lt; right) {
+        <span class="kw">val</span> <span class="cn">water</span> = <span class="fn">minOf</span>(height[left], height[right]) * (right - left)
+        maxWater = <span class="fn">maxOf</span>(maxWater, water)
+        <span class="kw">if</span> (height[left] &lt; height[right]) left++ <span class="kw">else</span> right--
+        <span class="cm">// Move the shorter side — the taller side can't improve by moving</span>
+    }
+    <span class="kw">return</span> maxWater
+}
+<span class="cm">// O(n) time, O(1) space</span></code></pre>
+</div>
+</details>
+
+<h2>Pattern 2: Sliding Window</h2>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">P2-1</span><span class="qt">Longest Substring Without Repeating Characters</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="kw">fun</span> <span class="fn">lengthOfLongestSubstring</span>(s: <span class="ty">String</span>): <span class="ty">Int</span> {
+    <span class="kw">val</span> <span class="cn">lastSeen</span> = <span class="ty">HashMap</span>&lt;<span class="ty">Char</span>, <span class="ty">Int</span>&gt;() <span class="cm">// char → last index seen</span>
+    <span class="kw">var</span> <span class="cn">left</span> = <span class="cn">0</span>; <span class="kw">var</span> <span class="cn">maxLen</span> = <span class="cn">0</span>
+    <span class="kw">for</span> (right <span class="kw">in</span> s.<span class="fn">indices</span>) {
+        <span class="kw">if</span> (lastSeen.<span class="fn">containsKey</span>(s[right])) {
+            <span class="cm">// Shrink window past the duplicate</span>
+            left = <span class="fn">maxOf</span>(left, lastSeen[s[right]]!! + <span class="cn">1</span>)
+        }
+        lastSeen[s[right]] = right
+        maxLen = <span class="fn">maxOf</span>(maxLen, right - left + <span class="cn">1</span>)
+    }
+    <span class="kw">return</span> maxLen
+}
+<span class="cm">// O(n) time, O(min(n,m)) space where m = charset size</span></code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">P2-2</span><span class="qt">Minimum Window Substring</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="kw">fun</span> <span class="fn">minWindow</span>(s: <span class="ty">String</span>, t: <span class="ty">String</span>): <span class="ty">String</span> {
+    <span class="kw">if</span> (s.<span class="fn">isEmpty</span>() || t.<span class="fn">isEmpty</span>()) <span class="kw">return</span> <span class="st">""</span>
+    <span class="kw">val</span> <span class="cn">need</span> = <span class="ty">HashMap</span>&lt;<span class="ty">Char</span>, <span class="ty">Int</span>&gt;()
+    <span class="kw">for</span> (c <span class="kw">in</span> t) need[c] = (need[c] ?: <span class="cn">0</span>) + <span class="cn">1</span>
+    <span class="kw">var</span> <span class="cn">left</span> = <span class="cn">0</span>; <span class="kw">var</span> <span class="cn">formed</span> = <span class="cn">0</span>; <span class="kw">val</span> <span class="cn">window</span> = <span class="ty">HashMap</span>&lt;<span class="ty">Char</span>, <span class="ty">Int</span>&gt;()
+    <span class="kw">var</span> <span class="cn">minLen</span> = <span class="ty">Int</span>.MAX_VALUE; <span class="kw">var</span> <span class="cn">minLeft</span> = <span class="cn">0</span>
+    <span class="kw">for</span> (right <span class="kw">in</span> s.<span class="fn">indices</span>) {
+        window[s[right]] = (window[s[right]] ?: <span class="cn">0</span>) + <span class="cn">1</span>
+        <span class="kw">if</span> (need.<span class="fn">containsKey</span>(s[right]) && window[s[right]] == need[s[right]]) formed++
+        <span class="kw">while</span> (formed == need.size) { <span class="cm">// window is valid, try to shrink</span>
+            <span class="kw">if</span> (right - left + <span class="cn">1</span> &lt; minLen) { minLen = right - left + <span class="cn">1</span>; minLeft = left }
+            window[s[left]] = window[s[left]]!! - <span class="cn">1</span>
+            <span class="kw">if</span> (need.<span class="fn">containsKey</span>(s[left]) && window[s[left]]!! &lt; need[s[left]]!!) formed--
+            left++
+        }
+    }
+    <span class="kw">return</span> <span class="kw">if</span> (minLen == <span class="ty">Int</span>.MAX_VALUE) <span class="st">""</span> <span class="kw">else</span> s.<span class="fn">substring</span>(minLeft, minLeft + minLen)
+}</code></pre>
+</div>
+</details>
+
+<h2>Pattern 3: Binary Search</h2>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">P3-1</span><span class="qt">Classic binary search template — know this cold</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// Template: find exact target</span>
+<span class="kw">fun</span> <span class="fn">binarySearch</span>(nums: <span class="ty">IntArray</span>, target: <span class="ty">Int</span>): <span class="ty">Int</span> {
+    <span class="kw">var</span> <span class="cn">lo</span> = <span class="cn">0</span>; <span class="kw">var</span> <span class="cn">hi</span> = nums.size - <span class="cn">1</span>
+    <span class="kw">while</span> (lo &lt;= hi) {
+        <span class="kw">val</span> <span class="cn">mid</span> = lo + (hi - lo) / <span class="cn">2</span> <span class="cm">// avoid overflow</span>
+        <span class="kw">when</span> {
+            nums[mid] == target -> <span class="kw">return</span> mid
+            nums[mid] &lt; target -> lo = mid + <span class="cn">1</span>
+            <span class="kw">else</span> -> hi = mid - <span class="cn">1</span>
+        }
+    }
+    <span class="kw">return</span> -<span class="cn">1</span>
+}
+
+<span class="cm">// Template: find leftmost position (first occurrence)</span>
+<span class="kw">fun</span> <span class="fn">lowerBound</span>(nums: <span class="ty">IntArray</span>, target: <span class="ty">Int</span>): <span class="ty">Int</span> {
+    <span class="kw">var</span> <span class="cn">lo</span> = <span class="cn">0</span>; <span class="kw">var</span> <span class="cn">hi</span> = nums.size <span class="cm">// hi = size (not size-1)</span>
+    <span class="kw">while</span> (lo &lt; hi) { <span class="cm">// strict less (not <=)</span>
+        <span class="kw">val</span> <span class="cn">mid</span> = lo + (hi - lo) / <span class="cn">2</span>
+        <span class="kw">if</span> (nums[mid] &lt; target) lo = mid + <span class="cn">1</span> <span class="kw">else</span> hi = mid
+    }
+    <span class="kw">return</span> lo <span class="cm">// first position where nums[pos] >= target</span>
+}</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">P3-2</span><span class="qt">Search in Rotated Sorted Array</span><span class="dif med">Medium — Google Favorite</span></summary>
+<div class="ans">
+<pre><code><span class="kw">fun</span> <span class="fn">search</span>(nums: <span class="ty">IntArray</span>, target: <span class="ty">Int</span>): <span class="ty">Int</span> {
+    <span class="kw">var</span> <span class="cn">lo</span> = <span class="cn">0</span>; <span class="kw">var</span> <span class="cn">hi</span> = nums.size - <span class="cn">1</span>
+    <span class="kw">while</span> (lo &lt;= hi) {
+        <span class="kw">val</span> <span class="cn">mid</span> = lo + (hi - lo) / <span class="cn">2</span>
+        <span class="kw">if</span> (nums[mid] == target) <span class="kw">return</span> mid
+        <span class="cm">// Determine which half is sorted</span>
+        <span class="kw">if</span> (nums[lo] &lt;= nums[mid]) { <span class="cm">// left half is sorted</span>
+            <span class="kw">if</span> (target &gt;= nums[lo] && target &lt; nums[mid]) hi = mid - <span class="cn">1</span>
+            <span class="kw">else</span> lo = mid + <span class="cn">1</span>
+        } <span class="kw">else</span> { <span class="cm">// right half is sorted</span>
+            <span class="kw">if</span> (target &gt; nums[mid] && target &lt;= nums[hi]) lo = mid + <span class="cn">1</span>
+            <span class="kw">else</span> hi = mid - <span class="cn">1</span>
+        }
+    }
+    <span class="kw">return</span> -<span class="cn">1</span>
+}
+<span class="cm">// Key insight: at least one half is always sorted. Check which half, then decide.</span></code></pre>
+</div>
+</details>
+
+<h2>Pattern 4: Trees</h2>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">P4-1</span><span class="qt">BFS and DFS templates for trees</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<pre><code><span class="kw">class</span> <span class="ty">TreeNode</span>(<span class="kw">var</span> <span class="cn">value</span>: <span class="ty">Int</span>, <span class="kw">var</span> <span class="cn">left</span>: <span class="ty">TreeNode</span>? = <span class="kw">null</span>, <span class="kw">var</span> <span class="cn">right</span>: <span class="ty">TreeNode</span>? = <span class="kw">null</span>)
+
+<span class="cm">// DFS: inorder (left-root-right) — gives sorted order for BST</span>
+<span class="kw">fun</span> <span class="fn">inorder</span>(root: <span class="ty">TreeNode</span>?, result: <span class="ty">MutableList</span>&lt;<span class="ty">Int</span>&gt;) {
+    <span class="kw">if</span> (root == <span class="kw">null</span>) <span class="kw">return</span>
+    <span class="fn">inorder</span>(root.left, result)
+    result.<span class="fn">add</span>(root.value)
+    <span class="fn">inorder</span>(root.right, result)
+}
+
+<span class="cm">// BFS: level order traversal</span>
+<span class="kw">fun</span> <span class="fn">levelOrder</span>(root: <span class="ty">TreeNode</span>?): <span class="ty">List</span>&lt;<span class="ty">List</span>&lt;<span class="ty">Int</span>&gt;&gt; {
+    <span class="kw">if</span> (root == <span class="kw">null</span>) <span class="kw">return</span> emptyList()
+    <span class="kw">val</span> <span class="cn">result</span> = <span class="ty">mutableListOf</span>&lt;<span class="ty">List</span>&lt;<span class="ty">Int</span>&gt;&gt;()
+    <span class="kw">val</span> <span class="cn">queue</span>: <span class="ty">ArrayDeque</span>&lt;<span class="ty">TreeNode</span>&gt; = <span class="ty">ArrayDeque</span>()
+    queue.<span class="fn">addLast</span>(root)
+    <span class="kw">while</span> (queue.<span class="fn">isNotEmpty</span>()) {
+        <span class="kw">val</span> <span class="cn">levelSize</span> = queue.size
+        <span class="kw">val</span> <span class="cn">level</span> = <span class="ty">mutableListOf</span>&lt;<span class="ty">Int</span>&gt;()
+        <span class="fn">repeat</span>(levelSize) {
+            <span class="kw">val</span> <span class="cn">node</span> = queue.<span class="fn">removeFirst</span>()
+            level.<span class="fn">add</span>(node.value)
+            node.left?.<span class="fn">let</span> { queue.<span class="fn">addLast</span>(it) }
+            node.right?.<span class="fn">let</span> { queue.<span class="fn">addLast</span>(it) }
+        }
+        result.<span class="fn">add</span>(level)
+    }
+    <span class="kw">return</span> result
+}</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">P4-2</span><span class="qt">Lowest Common Ancestor of Binary Tree</span><span class="dif med">Medium — Google Favorite</span></summary>
+<div class="ans">
+<pre><code><span class="kw">fun</span> <span class="fn">lowestCommonAncestor</span>(root: <span class="ty">TreeNode</span>?, p: <span class="ty">TreeNode</span>?, q: <span class="ty">TreeNode</span>?): <span class="ty">TreeNode</span>? {
+    <span class="kw">if</span> (root == <span class="kw">null</span> || root == p || root == q) <span class="kw">return</span> root
+    <span class="kw">val</span> <span class="cn">left</span> = <span class="fn">lowestCommonAncestor</span>(root.left, p, q)
+    <span class="kw">val</span> <span class="cn">right</span> = <span class="fn">lowestCommonAncestor</span>(root.right, p, q)
+    <span class="cm">// If found in both subtrees, root is LCA</span>
+    <span class="kw">if</span> (left != <span class="kw">null</span> && right != <span class="kw">null</span>) <span class="kw">return</span> root
+    <span class="kw">return</span> left ?: right
+}
+<span class="cm">// O(n) time — visits each node once. Key: if both subtrees return non-null, root is LCA</span></code></pre>
+</div>
+</details>
+
+<h2>Pattern 5: Dynamic Programming</h2>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">P5-1</span><span class="qt">Climbing Stairs — DP foundation</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// Recurrence: ways(n) = ways(n-1) + ways(n-2)</span>
+<span class="cm">// O(n) time, O(1) space — rolling variables</span>
+<span class="kw">fun</span> <span class="fn">climbStairs</span>(n: <span class="ty">Int</span>): <span class="ty">Int</span> {
+    <span class="kw">if</span> (n &lt;= <span class="cn">2</span>) <span class="kw">return</span> n
+    <span class="kw">var</span> <span class="cn">prev2</span> = <span class="cn">1</span>; <span class="kw">var</span> <span class="cn">prev1</span> = <span class="cn">2</span>
+    <span class="kw">for</span> (i <span class="kw">in</span> <span class="cn">3</span>..n) {
+        <span class="kw">val</span> <span class="cn">cur</span> = prev1 + prev2
+        prev2 = prev1; prev1 = cur
+    }
+    <span class="kw">return</span> prev1
+}</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">P5-2</span><span class="qt">Longest Common Subsequence</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="kw">fun</span> <span class="fn">longestCommonSubsequence</span>(text1: <span class="ty">String</span>, text2: <span class="ty">String</span>): <span class="ty">Int</span> {
+    <span class="kw">val</span> <span class="cn">m</span> = text1.length; <span class="kw">val</span> <span class="cn">n</span> = text2.length
+    <span class="kw">val</span> <span class="cn">dp</span> = <span class="ty">Array</span>(m + <span class="cn">1</span>) { <span class="ty">IntArray</span>(n + <span class="cn">1</span>) } <span class="cm">// dp[i][j] = LCS of text1[0..i-1] and text2[0..j-1]</span>
+    <span class="kw">for</span> (i <span class="kw">in</span> <span class="cn">1</span>..m) {
+        <span class="kw">for</span> (j <span class="kw">in</span> <span class="cn">1</span>..n) {
+            dp[i][j] = <span class="kw">if</span> (text1[i-<span class="cn">1</span>] == text2[j-<span class="cn">1</span>]) dp[i-<span class="cn">1</span>][j-<span class="cn">1</span>] + <span class="cn">1</span>
+                       <span class="kw">else</span> <span class="fn">maxOf</span>(dp[i-<span class="cn">1</span>][j], dp[i][j-<span class="cn">1</span>])
+        }
+    }
+    <span class="kw">return</span> dp[m][n]
+}
+<span class="cm">// O(m*n) time and space. Classic 2D DP problem.</span></code></pre>
+</div>
+</details>
+
+<h2>Pattern 6: Graph BFS/DFS</h2>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">P6-1</span><span class="qt">Number of Islands — DFS on grid</span><span class="dif med">Medium — Must Know</span></summary>
+<div class="ans">
+<pre><code><span class="kw">fun</span> <span class="fn">numIslands</span>(grid: <span class="ty">Array</span>&lt;<span class="ty">CharArray</span>&gt;): <span class="ty">Int</span> {
+    <span class="kw">var</span> <span class="cn">count</span> = <span class="cn">0</span>
+    <span class="kw">for</span> (r <span class="kw">in</span> grid.<span class="fn">indices</span>) {
+        <span class="kw">for</span> (c <span class="kw">in</span> grid[r].<span class="fn">indices</span>) {
+            <span class="kw">if</span> (grid[r][c] == <span class="st">'1'</span>) {
+                count++
+                <span class="fn">dfs</span>(grid, r, c) <span class="cm">// mark all connected land as visited</span>
+            }
+        }
+    }
+    <span class="kw">return</span> count
+}
+
+<span class="kw">private fun</span> <span class="fn">dfs</span>(grid: <span class="ty">Array</span>&lt;<span class="ty">CharArray</span>&gt;, r: <span class="ty">Int</span>, c: <span class="ty">Int</span>) {
+    <span class="kw">if</span> (r &lt; <span class="cn">0</span> || r >= grid.size || c &lt; <span class="cn">0</span> || c >= grid[<span class="cn">0</span>].size || grid[r][c] != <span class="st">'1'</span>) <span class="kw">return</span>
+    grid[r][c] = <span class="st">'0'</span> <span class="cm">// mark visited</span>
+    <span class="fn">dfs</span>(grid, r+<span class="cn">1</span>, c); <span class="fn">dfs</span>(grid, r-<span class="cn">1</span>, c)
+    <span class="fn">dfs</span>(grid, r, c+<span class="cn">1</span>); <span class="fn">dfs</span>(grid, r, c-<span class="cn">1</span>)
+}
+<span class="cm">// O(m*n) time. Modify grid in-place to avoid visited set.</span></code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">P6-2</span><span class="qt">Word Ladder — BFS shortest path</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="kw">fun</span> <span class="fn">ladderLength</span>(beginWord: <span class="ty">String</span>, endWord: <span class="ty">String</span>, wordList: <span class="ty">List</span>&lt;<span class="ty">String</span>&gt;): <span class="ty">Int</span> {
+    <span class="kw">val</span> <span class="cn">wordSet</span> = wordList.<span class="fn">toHashSet</span>()
+    <span class="kw">if</span> (!wordSet.<span class="fn">contains</span>(endWord)) <span class="kw">return</span> <span class="cn">0</span>
+    <span class="kw">val</span> <span class="cn">queue</span>: <span class="ty">ArrayDeque</span>&lt;<span class="ty">String</span>&gt; = <span class="ty">ArrayDeque</span>()
+    queue.<span class="fn">addLast</span>(beginWord); <span class="kw">var</span> <span class="cn">steps</span> = <span class="cn">1</span>
+    <span class="kw">while</span> (queue.<span class="fn">isNotEmpty</span>()) {
+        <span class="fn">repeat</span>(queue.size) {
+            <span class="kw">val</span> <span class="cn">word</span> = queue.<span class="fn">removeFirst</span>()
+            <span class="kw">for</span> (i <span class="kw">in</span> word.<span class="fn">indices</span>) {
+                <span class="kw">for</span> (c <span class="kw">in</span> <span class="st">'a'</span>..<span class="st">'z'</span>) {
+                    <span class="kw">val</span> <span class="cn">next</span> = word.<span class="fn">substring</span>(<span class="cn">0</span>, i) + c + word.<span class="fn">substring</span>(i+<span class="cn">1</span>)
+                    <span class="kw">if</span> (next == endWord) <span class="kw">return</span> steps + <span class="cn">1</span>
+                    <span class="kw">if</span> (wordSet.<span class="fn">remove</span>(next)) queue.<span class="fn">addLast</span>(next)
+                }
+            }
+        }
+        steps++
+    }
+    <span class="kw">return</span> <span class="cn">0</span>
+}
+<span class="cm">// BFS guarantees shortest path. Remove from set to mark visited.</span></code></pre>
+</div>
+</details>
+
+<h2>Interview Tips for DSA</h2>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">★</span><span class="qt">How to approach a coding problem at Google</span><span class="dif goog">Must Know</span></summary>
+<div class="ans">
+<ol>
+<li><strong>Clarify (2 min):</strong> Edge cases? Input constraints? Can I modify input? Return type?</li>
+<li><strong>Example (2 min):</strong> Walk through 1-2 examples manually. Find the pattern.</li>
+<li><strong>Brute force (2 min):</strong> State the O(n²) or obvious solution. "Naive approach is X."</li>
+<li><strong>Optimize (5 min):</strong> Think about: sorting, two pointers, sliding window, hash map, DP, divide and conquer. State before coding.</li>
+<li><strong>Code (15 min):</strong> Clean, readable code. Name variables well. Comments on non-obvious parts.</li>
+<li><strong>Test (5 min):</strong> Walk through your code with the example. Test edge cases: empty, single element, all same.</li>
+<li><strong>Complexity:</strong> State time and space complexity. Know how to derive it.</li>
+</ol>
+<div class="note ngrn">✓ Never code in silence. Think out loud. Interviewers want to see your process, not just the answer.</div>
+<div class="note namb">💡 Most Google questions use: HashMap, BFS/DFS, Two Pointers, Binary Search, or DP. Recognize the pattern first.</div>
+</div>
+</details>
+</main>
+</body>
+</html>

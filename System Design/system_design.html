@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Mobile System Design — Interview</title>
+<style>:root{--bg:#06090e;--s1:#0a0f18;--s2:#0e1520;--s3:#131d2a;--b1:#182030;--b2:#1e2c3e;--txt:#cce0ee;--muted:#4e6878;--grn:#10a060;--grnb:#031508;--grnl:#44d890;--blu:#1e60d8;--blub:#040e28;--blul:#6aaeff;--pur:#6848b8;--purb:#0f0828;--purl:#b090ff;--amb:#c09010;--ambb:#201500;--ambl:#f0c040;--red:#b03030;--redb:#1e0808;--redl:#f07070;--cya:#0e8898;--cyab:#041418;--cyal:#40d8e8;--ora:#c06020;--orab:#201008;--oral:#f0a060}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,sans-serif;font-size:13px;line-height:1.6;min-height:100vh}
+nav{background:var(--s1);border-bottom:1px solid var(--b1);position:sticky;top:0;z-index:100;overflow-x:auto}
+.nav-inner{display:flex;align-items:center;padding:0 12px;gap:0;min-width:max-content}
+nav a{color:var(--muted);text-decoration:none;font-size:11px;font-weight:500;padding:12px 9px;border-bottom:2px solid transparent;white-space:nowrap;display:block}
+nav a:hover{color:var(--txt)}
+nav a.active{color:var(--grnl);border-bottom-color:var(--grn)}
+main{max-width:980px;padding:28px 20px 80px;margin:0 auto}
+h1{font-size:20px;font-weight:700;margin-bottom:6px;letter-spacing:-.02em}
+.sub{font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.6}
+h2{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:24px 0 10px;display:flex;align-items:center;gap:8px}
+h2::after{content:'';flex:1;height:1px;background:var(--b2)}
+details{border-radius:9px;border:1px solid var(--b2);background:var(--s1);margin-bottom:7px;overflow:hidden}
+details[open]{border-color:#2e4458}
+summary{padding:12px 15px;cursor:pointer;display:flex;align-items:center;gap:9px;list-style:none;font-weight:500;font-size:13px;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:'\203A';font-size:16px;color:var(--muted);transition:.2s;flex-shrink:0;width:14px;display:inline-block}
+details[open] summary::before{transform:rotate(90deg);color:var(--grnl)}
+.qn{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;flex-shrink:0;font-family:monospace}
+.qt{flex:1}
+.dif{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;border:1px solid;flex-shrink:0;letter-spacing:.06em;text-transform:uppercase}
+.easy{background:var(--grnb);color:var(--grnl);border-color:var(--grn)}
+.med{background:var(--ambb);color:var(--ambl);border-color:var(--amb)}
+.hard{background:var(--redb);color:var(--redl);border-color:var(--red)}
+.goog{background:var(--purb);color:var(--purl);border-color:var(--pur)}
+.ans{padding:0 15px 14px;border-top:1px solid var(--b2)}
+.ans p{font-size:12px;color:var(--muted);line-height:1.7;margin:10px 0 0}
+.ans p strong{color:var(--txt)}
+.ans ul,.ans ol{padding-left:18px;font-size:12px;color:var(--muted);line-height:1.85;margin:8px 0}
+.ans li strong{color:var(--txt)}
+pre{background:#070d14;border:1px solid var(--b2);border-radius:7px;padding:12px 14px;overflow-x:auto;margin:10px 0;font-size:11px;line-height:1.7;color:#a8c8e8}
+code{font-family:'JetBrains Mono','Fira Mono',monospace;font-size:11px}
+.kw{color:#79b8ff}.cn{color:#44d890}.st{color:#f0a060}.cm{color:#4e6878}.fn{color:#40d8e8}.an{color:#f0c040}.ty{color:#b090ff}
+.note{border-radius:7px;border:1px solid;padding:9px 12px;font-size:11px;line-height:1.6;margin:10px 0}
+.ngrn{background:var(--grnb);border-color:var(--grn);color:var(--grnl)}
+.namb{background:var(--ambb);border-color:var(--amb);color:var(--ambl)}
+.nred{background:var(--redb);border-color:var(--red);color:var(--redl)}
+.nblu{background:var(--blub);border-color:var(--blu);color:var(--blul)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0}
+@media(max-width:680px){.g2,.g3{grid-template-columns:1fr}}
+.gc{background:var(--s2);border:1px solid var(--b2);border-radius:7px;padding:12px}
+.gc h4{font-size:11px;font-weight:700;margin-bottom:6px}
+.gc p,.gc li{font-size:11px;color:var(--muted);line-height:1.6}
+.ic{background:var(--s3);border:1px solid var(--b2);border-radius:4px;padding:1px 6px;font-family:monospace;font-size:11px;color:var(--blul)}
+a{color:var(--grnl)}
+</style>
+</head>
+<body>
+<nav><div class="nav-inner"><a href="roadmap.html">🗺 Roadmap</a><a href="android_core.html">📱 Android Core</a><a href="android_advanced.html">🔥 Advanced</a><a href="architecture.html">🏛 Architecture</a><a href="kotlin.html">🎯 Kotlin</a><a href="coroutines_flow.html">⚡ Coroutines</a><a href="compose.html">🎨 Compose</a><a href="dependency_injection.html">💉 DI</a><a href="networking_storage.html">🌐 Net & Storage</a><a href="testing.html">🧪 Testing</a><a href="system_design.html" class="active">🏗 System Design</a><a href="dsa_google.html">🧩 DSA</a></div></nav>
+<main>
+<h1>🏗 Mobile System Design — Interview</h1>
+<p class="sub">Google expects you to design complete mobile systems. Use this framework for every question. Practice these 6 designs until you can do each in 45 minutes.</p>
+
+<h2>The Framework</h2>
+<details open><summary><span class="qn" style="background:var(--purb);color:var(--purl)">★</span><span class="qt">Framework for ANY mobile system design question</span><span class="dif goog">Must Know</span></summary>
+<div class="ans">
+<ol>
+<li><strong>Clarify requirements (5 min):</strong> Functional (what features?), Non-functional (scale, offline, latency), Platform (Android only? iOS too?)</li>
+<li><strong>High-level architecture (5 min):</strong> Layers — Presentation, Domain, Data. Draw the box diagram.</li>
+<li><strong>Data models (5 min):</strong> What entities? What does the local DB store? What does the API return?</li>
+<li><strong>API design (5 min):</strong> What endpoints does the app call? Request/response shapes.</li>
+<li><strong>Key screens + navigation (5 min):</strong> Main screens, navigation graph, what's cached.</li>
+<li><strong>Networking strategy (10 min):</strong> Pagination, caching strategy, offline behavior, sync.</li>
+<li><strong>Performance + optimization (5 min):</strong> Image loading, lazy loading, prefetching, memory.</li>
+<li><strong>Edge cases (5 min):</strong> No network, partial data, large lists, expired cache.</li>
+</ol>
+</div>
+</details>
+
+<h2>Design: Instagram Feed</h2>
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">D1</span><span class="qt">Design Instagram-style infinite scroll feed for Android</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p><strong>Requirements:</strong> Infinite scroll, images, likes/comments, offline support, smooth 60fps scroll</p>
+<p><strong>Architecture:</strong></p>
+<pre><code><span class="cm">// Data model</span>
+<span class="an">@Entity</span>
+<span class="kw">data class</span> <span class="ty">Post</span>(
+    <span class="an">@PrimaryKey</span> <span class="kw">val</span> id: <span class="ty">String</span>,
+    <span class="kw">val</span> userId: <span class="ty">String</span>,
+    <span class="kw">val</span> imageUrl: <span class="ty">String</span>,
+    <span class="kw">val</span> caption: <span class="ty">String</span>,
+    <span class="kw">val</span> likesCount: <span class="ty">Int</span>,
+    <span class="kw">val</span> createdAt: <span class="ty">Long</span>,
+    <span class="kw">val</span> page: <span class="ty">Int</span>  <span class="cm">// for invalidation</span>
+)
+
+<span class="cm">// Paging 3 — handles pagination, loading states, errors</span>
+<span class="kw">class</span> <span class="ty">FeedPagingSource</span>(
+    <span class="kw">private val</span> <span class="cn">api</span>: <span class="ty">FeedApi</span>
+) : <span class="ty">PagingSource</span>&lt;<span class="ty">String</span>, <span class="ty">Post</span>&gt;() { <span class="cm">// key=cursor, value=Post</span>
+    <span class="kw">override suspend fun</span> <span class="fn">load</span>(params: <span class="ty">LoadParams</span>&lt;<span class="ty">String</span>&gt;): <span class="ty">LoadResult</span>&lt;<span class="ty">String</span>, <span class="ty">Post</span>&gt; {
+        <span class="kw">return try</span> {
+            <span class="kw">val</span> <span class="cn">response</span> = api.<span class="fn">getFeed</span>(cursor = params.key, limit = params.loadSize)
+            <span class="ty">LoadResult</span>.<span class="ty">Page</span>(
+                data = response.posts,
+                prevKey = <span class="kw">null</span>,           <span class="cm">// no back-paging in feed</span>
+                nextKey = response.nextCursor
+            )
+        } <span class="kw">catch</span> (e: <span class="ty">Exception</span>) { <span class="ty">LoadResult</span>.<span class="ty">Error</span>(e) }
+    }
+}
+
+<span class="cm">// RemoteMediator for offline-first (network + Room)</span>
+<span class="an">@OptIn</span>(<span class="ty">ExperimentalPagingApi</span>::<span class="kw">class</span>)
+<span class="kw">class</span> <span class="ty">FeedRemoteMediator</span>(
+    <span class="kw">private val</span> <span class="cn">api</span>: <span class="ty">FeedApi</span>,
+    <span class="kw">private val</span> <span class="cn">db</span>: <span class="ty">AppDatabase</span>
+) : <span class="ty">RemoteMediator</span>&lt;<span class="ty">Int</span>, <span class="ty">Post</span>&gt;() {
+    <span class="kw">override suspend fun</span> <span class="fn">load</span>(loadType: <span class="ty">LoadType</span>, state: <span class="ty">PagingState</span>&lt;<span class="ty">Int</span>, <span class="ty">Post</span>&gt;): <span class="ty">MediatorResult</span> {
+        <span class="kw">val</span> <span class="cn">posts</span> = api.<span class="fn">getFeed</span>(<span class="cm">/* ... */</span>)
+        db.<span class="fn">withTransaction</span> {
+            <span class="kw">if</span> (loadType == <span class="ty">LoadType</span>.REFRESH) db.postDao().<span class="fn">clearAll</span>()
+            db.postDao().<span class="fn">insertAll</span>(posts)
+        }
+        <span class="kw">return</span> <span class="ty">MediatorResult</span>.<span class="ty">Success</span>(endOfPaginationReached = posts.isEmpty())
+    }
+}</code></pre>
+<p><strong>Image loading strategy:</strong></p>
+<ul>
+<li>Use <strong>Coil</strong>: memory cache (LRU, ~25% heap) + disk cache + placeholder + crossfade</li>
+<li>Pre-fetch next 3 images while user scrolls using <span class="ic">CoilPrefetcher</span></li>
+<li>Different quality for scroll vs stopped (low-res thumbnail → full res)</li>
+<li>Cancel image loads for off-screen items via <span class="ic">ImageRequest</span> lifecycle</li>
+</ul>
+<p><strong>Performance optimizations:</strong></p>
+<ul>
+<li>DiffUtil with stable IDs — only rebind changed items</li>
+<li>RecycledViewPool shared across multiple RecyclerViews</li>
+<li>ViewHolder caching: setRecycledViewPool, setItemViewCacheSize</li>
+<li>Avoid nested RecyclerViews — use ConcatAdapter instead</li>
+</ul>
+</div>
+</details>
+
+<h2>Design: Chat Application</h2>
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">D2</span><span class="qt">Design a WhatsApp-style chat app</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p><strong>Key challenges:</strong> Real-time messages, delivery receipts, offline queue, message ordering</p>
+<pre><code><span class="cm">// Message data model</span>
+<span class="an">@Entity</span>
+<span class="kw">data class</span> <span class="ty">Message</span>(
+    <span class="an">@PrimaryKey</span> <span class="kw">val</span> id: <span class="ty">String</span>,
+    <span class="kw">val</span> chatId: <span class="ty">String</span>,
+    <span class="kw">val</span> senderId: <span class="ty">String</span>,
+    <span class="kw">val</span> content: <span class="ty">String</span>,
+    <span class="kw">val</span> type: <span class="ty">MessageType</span>, <span class="cm">// TEXT, IMAGE, AUDIO</span>
+    <span class="kw">val</span> status: <span class="ty">MessageStatus</span>, <span class="cm">// PENDING, SENT, DELIVERED, READ</span>
+    <span class="kw">val</span> timestamp: <span class="ty">Long</span>,
+    <span class="kw">val</span> localId: <span class="ty">String</span> <span class="cm">// client-generated before server confirms</span>
+)
+
+<span class="cm">// Optimistic UI: show message as PENDING immediately, update on server ACK</span>
+<span class="kw">fun</span> <span class="fn">sendMessage</span>(text: <span class="ty">String</span>) {
+    <span class="kw">val</span> <span class="cn">localMessage</span> = <span class="ty">Message</span>(localId = <span class="fn">UUID</span>.<span class="fn">randomUUID</span>(), status = PENDING)
+    db.messageDao().<span class="fn">insert</span>(localMessage) <span class="cm">// show immediately in UI</span>
+    viewModelScope.<span class="fn">launch</span>(Dispatchers.IO) {
+        <span class="kw">try</span> {
+            <span class="kw">val</span> <span class="cn">serverMsg</span> = api.<span class="fn">sendMessage</span>(text)
+            db.messageDao().<span class="fn">update</span>(serverMsg.<span class="fn">copy</span>(status = SENT))
+        } <span class="kw">catch</span> (e: <span class="ty">Exception</span>) {
+            db.messageDao().<span class="fn">update</span>(localMessage.<span class="fn">copy</span>(status = FAILED))
+            outbox.<span class="fn">add</span>(localMessage) <span class="cm">// retry queue</span>
+        }
+    }
+}</code></pre>
+<p><strong>Real-time transport options:</strong></p>
+<ul>
+<li><strong>WebSocket:</strong> Persistent connection, truly real-time. Battery cost.</li>
+<li><strong>FCM:</strong> Google's push — app doesn't need to be open. Use for offline messages.</li>
+<li><strong>Long polling:</strong> Simpler but inefficient. Avoid.</li>
+<li><strong>SSE:</strong> Server-sent events — server to client only. Good for notifications.</li>
+</ul>
+<p><strong>Recommended:</strong> FCM for wakeup + WebSocket when app is foreground. Foreground Service keeps WebSocket alive while app is in background during active chat.</p>
+<p><strong>Message sync:</strong> On reconnect, fetch all messages with timestamp > last_received_at. Use Room as single source of truth. UI observes Room, not network directly.</p>
+</div>
+</details>
+
+<h2>Design: Image Loading Library</h2>
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">D3</span><span class="qt">Design an image loading library (like Coil/Glide) from scratch</span><span class="dif hard">Hard — Google Favorite</span></summary>
+<div class="ans">
+<p>This is a classic Google interview question. They want to see you think in layers.</p>
+<pre><code><span class="cm">// Architecture: 3-level cache + request deduplication</span>
+<span class="kw">class</span> <span class="ty">ImageLoader</span>(context: <span class="ty">Context</span>) {
+
+    <span class="cm">// L1: Memory cache (LRU, ~25% of available heap)</span>
+    <span class="kw">private val</span> <span class="cn">memoryCache</span> = <span class="ty">LruCache</span>&lt;<span class="ty">String</span>, <span class="ty">Bitmap</span>&gt;(
+        (<span class="ty">Runtime</span>.<span class="fn">getRuntime</span>().<span class="fn">maxMemory</span>() / <span class="cn">1024</span> / <span class="cn">4</span>).<span class="fn">toInt</span>()
+    )
+
+    <span class="cm">// L2: Disk cache (DiskLruCache, ~250MB)</span>
+    <span class="kw">private val</span> <span class="cn">diskCache</span>: <span class="ty">DiskLruCache</span> = <span class="ty">DiskLruCache</span>.<span class="fn">open</span>(cacheDir, <span class="cn">1</span>, <span class="cn">1</span>, <span class="cn">250L</span>*<span class="cn">1024</span>*<span class="cn">1024</span>)
+
+    <span class="cm">// L3: Network (OkHttp with HTTP cache headers)</span>
+    <span class="kw">private val</span> <span class="cn">httpClient</span>: <span class="ty">OkHttpClient</span> = <span class="ty">OkHttpClient</span>.<span class="ty">Builder</span>()
+        .<span class="fn">cache</span>(<span class="ty">Cache</span>(cacheDir, <span class="cn">50L</span> * <span class="cn">1024</span> * <span class="cn">1024</span>))
+        .<span class="fn">build</span>()
+
+    <span class="cm">// Deduplication: if same URL loading, return same Deferred</span>
+    <span class="kw">private val</span> <span class="cn">inFlight</span> = <span class="ty">ConcurrentHashMap</span>&lt;<span class="ty">String</span>, <span class="ty">Deferred</span>&lt;<span class="ty">Bitmap</span>&gt;&gt;()
+
+    <span class="kw">suspend fun</span> <span class="fn">load</span>(url: <span class="ty">String</span>): <span class="ty">Bitmap</span> {
+        <span class="cm">// 1. Check memory cache (main thread ok, fast)</span>
+        memoryCache.<span class="fn">get</span>(url)?.<span class="fn">let</span> { <span class="kw">return</span> it }
+
+        <span class="cm">// 2. Deduplicate in-flight requests</span>
+        <span class="kw">return</span> inFlight.<span class="fn">getOrPut</span>(url) {
+            <span class="fn">async</span>(<span class="ty">Dispatchers</span>.IO) {
+                <span class="cm">// 3. Check disk cache</span>
+                diskCache.<span class="fn">get</span>(url)?.<span class="fn">let</span> {
+                    <span class="kw">val</span> <span class="cn">bmp</span> = <span class="ty">BitmapFactory</span>.<span class="fn">decodeStream</span>(it)
+                    memoryCache.<span class="fn">put</span>(url, bmp); bmp
+                } ?:
+                <span class="cm">// 4. Fetch from network</span>
+                <span class="fn">fetchFromNetwork</span>(url).<span class="fn">also</span> {
+                    diskCache.<span class="fn">put</span>(url, it); memoryCache.<span class="fn">put</span>(url, it)
+                }
+            }
+        }.<span class="fn">await</span>().<span class="fn">also</span> { inFlight.<span class="fn">remove</span>(url) }
+    }
+}</code></pre>
+<p><strong>Additional considerations Google will ask about:</strong></p>
+<ul>
+<li><strong>Bitmap pool:</strong> Reuse existing Bitmap memory with inBitmap option</li>
+<li><strong>Downsampling:</strong> Never decode full-res if target view is 100x100 — use inSampleSize</li>
+<li><strong>Transformation pipeline:</strong> Crop, circle, blur as post-processing steps</li>
+<li><strong>Placeholder/error:</strong> Show while loading, show on error</li>
+<li><strong>Cancellation:</strong> Cancel request when view is recycled or detached</li>
+<li><strong>GIF/animated images:</strong> Separate decode pipeline</li>
+</ul>
+</div>
+</details>
+
+<h2>Design: Offline-First App</h2>
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">D4</span><span class="qt">Design an offline-first architecture for a news reading app</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// Single source of truth: Room is the only source UI observes</span>
+<span class="cm">// Network → Room → UI. Never Network → UI directly.</span>
+
+<span class="kw">class</span> <span class="ty">NewsRepository</span>(
+    <span class="kw">private val</span> <span class="cn">api</span>: <span class="ty">NewsApi</span>,
+    <span class="kw">private val</span> <span class="cn">dao</span>: <span class="ty">NewsDao</span>,
+    <span class="kw">private val</span> <span class="cn">networkMonitor</span>: <span class="ty">NetworkMonitor</span>
+) {
+    <span class="cm">// UI observes this Flow — always gets Room data</span>
+    <span class="kw">fun</span> <span class="fn">getArticles</span>(): <span class="ty">Flow</span>&lt;<span class="ty">List</span>&lt;<span class="ty">Article</span>&gt;&gt; = dao.<span class="fn">getArticlesFlow</span>()
+
+    <span class="cm">// Refresh called separately — fetches from network and stores in Room</span>
+    <span class="kw">suspend fun</span> <span class="fn">refresh</span>() {
+        <span class="kw">if</span> (!networkMonitor.isOnline) <span class="kw">return</span> <span class="cm">// fail silently, show cached</span>
+        <span class="kw">val</span> <span class="cn">articles</span> = api.<span class="fn">getLatestArticles</span>()
+        dao.<span class="fn">insertAll</span>(articles)
+        dao.<span class="fn">deleteOlderThan</span>(<span class="ty">System</span>.<span class="fn">currentTimeMillis</span>() - <span class="cn">7</span> * <span class="cn">24</span> * <span class="cn">60</span> * <span class="cn">60</span> * <span class="cn">1000L</span>)
+    }
+}
+
+<span class="cm">// Network status monitoring</span>
+<span class="kw">class</span> <span class="ty">NetworkMonitor</span>(context: <span class="ty">Context</span>) {
+    <span class="kw">val</span> <span class="cn">isOnline</span>: <span class="ty">StateFlow</span>&lt;<span class="ty">Boolean</span>&gt; = <span class="fn">callbackFlow</span> {
+        <span class="kw">val</span> <span class="cn">cm</span> = context.<span class="fn">getSystemService</span>(<span class="ty">ConnectivityManager</span>::<span class="kw">class</span>.java)
+        <span class="kw">val</span> <span class="cn">callback</span> = <span class="kw">object</span> : <span class="ty">NetworkCallback</span>() {
+            <span class="kw">override fun</span> <span class="fn">onAvailable</span>(network: <span class="ty">Network</span>) = <span class="fn">trySend</span>(<span class="kw">true</span>)
+            <span class="kw">override fun</span> <span class="fn">onLost</span>(network: <span class="ty">Network</span>) = <span class="fn">trySend</span>(<span class="kw">false</span>)
+        }
+        cm.<span class="fn">registerDefaultNetworkCallback</span>(callback)
+        <span class="fn">awaitClose</span> { cm.<span class="fn">unregisterNetworkCallback</span>(callback) }
+    }.<span class="fn">stateIn</span>(scope, <span class="ty">SharingStarted</span>.Eagerly, <span class="kw">true</span>)
+}</code></pre>
+<p><strong>Cache invalidation strategies:</strong></p>
+<ul>
+<li><strong>Time-based:</strong> Delete articles older than N days</li>
+<li><strong>Size-based:</strong> Keep only latest N articles</li>
+<li><strong>Pull-to-refresh:</strong> User-initiated refresh</li>
+<li><strong>WorkManager:</strong> Periodic background refresh when on WiFi + charging</li>
+</ul>
+</div>
+</details>
+</main>
+</body>
+</html>

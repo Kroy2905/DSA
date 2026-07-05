@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Android Core — Interview Q&A</title>
+<style>:root{--bg:#06090e;--s1:#0a0f18;--s2:#0e1520;--s3:#131d2a;--b1:#182030;--b2:#1e2c3e;--txt:#cce0ee;--muted:#4e6878;--grn:#10a060;--grnb:#031508;--grnl:#44d890;--blu:#1e60d8;--blub:#040e28;--blul:#6aaeff;--pur:#6848b8;--purb:#0f0828;--purl:#b090ff;--amb:#c09010;--ambb:#201500;--ambl:#f0c040;--red:#b03030;--redb:#1e0808;--redl:#f07070;--cya:#0e8898;--cyab:#041418;--cyal:#40d8e8;--ora:#c06020;--orab:#201008;--oral:#f0a060}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,sans-serif;font-size:13px;line-height:1.6;min-height:100vh}
+nav{background:var(--s1);border-bottom:1px solid var(--b1);position:sticky;top:0;z-index:100;overflow-x:auto}
+.nav-inner{display:flex;align-items:center;padding:0 12px;gap:0;min-width:max-content}
+nav a{color:var(--muted);text-decoration:none;font-size:11px;font-weight:500;padding:12px 9px;border-bottom:2px solid transparent;white-space:nowrap;display:block}
+nav a:hover{color:var(--txt)}
+nav a.active{color:var(--grnl);border-bottom-color:var(--grn)}
+main{max-width:980px;padding:28px 20px 80px;margin:0 auto}
+h1{font-size:20px;font-weight:700;margin-bottom:6px;letter-spacing:-.02em}
+.sub{font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.6}
+h2{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:24px 0 10px;display:flex;align-items:center;gap:8px}
+h2::after{content:'';flex:1;height:1px;background:var(--b2)}
+details{border-radius:9px;border:1px solid var(--b2);background:var(--s1);margin-bottom:7px;overflow:hidden}
+details[open]{border-color:#2e4458}
+summary{padding:12px 15px;cursor:pointer;display:flex;align-items:center;gap:9px;list-style:none;font-weight:500;font-size:13px;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:'\203A';font-size:16px;color:var(--muted);transition:.2s;flex-shrink:0;width:14px;display:inline-block}
+details[open] summary::before{transform:rotate(90deg);color:var(--grnl)}
+.qn{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;flex-shrink:0;font-family:monospace}
+.qt{flex:1}
+.dif{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;border:1px solid;flex-shrink:0;letter-spacing:.06em;text-transform:uppercase}
+.easy{background:var(--grnb);color:var(--grnl);border-color:var(--grn)}
+.med{background:var(--ambb);color:var(--ambl);border-color:var(--amb)}
+.hard{background:var(--redb);color:var(--redl);border-color:var(--red)}
+.goog{background:var(--purb);color:var(--purl);border-color:var(--pur)}
+.ans{padding:0 15px 14px;border-top:1px solid var(--b2)}
+.ans p{font-size:12px;color:var(--muted);line-height:1.7;margin:10px 0 0}
+.ans p strong{color:var(--txt)}
+.ans ul,.ans ol{padding-left:18px;font-size:12px;color:var(--muted);line-height:1.85;margin:8px 0}
+.ans li strong{color:var(--txt)}
+pre{background:#070d14;border:1px solid var(--b2);border-radius:7px;padding:12px 14px;overflow-x:auto;margin:10px 0;font-size:11px;line-height:1.7;color:#a8c8e8}
+code{font-family:'JetBrains Mono','Fira Mono',monospace;font-size:11px}
+.kw{color:#79b8ff}.cn{color:#44d890}.st{color:#f0a060}.cm{color:#4e6878}.fn{color:#40d8e8}.an{color:#f0c040}.ty{color:#b090ff}
+.note{border-radius:7px;border:1px solid;padding:9px 12px;font-size:11px;line-height:1.6;margin:10px 0}
+.ngrn{background:var(--grnb);border-color:var(--grn);color:var(--grnl)}
+.namb{background:var(--ambb);border-color:var(--amb);color:var(--ambl)}
+.nred{background:var(--redb);border-color:var(--red);color:var(--redl)}
+.nblu{background:var(--blub);border-color:var(--blu);color:var(--blul)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0}
+@media(max-width:680px){.g2,.g3{grid-template-columns:1fr}}
+.gc{background:var(--s2);border:1px solid var(--b2);border-radius:7px;padding:12px}
+.gc h4{font-size:11px;font-weight:700;margin-bottom:6px}
+.gc p,.gc li{font-size:11px;color:var(--muted);line-height:1.6}
+.ic{background:var(--s3);border:1px solid var(--b2);border-radius:4px;padding:1px 6px;font-family:monospace;font-size:11px;color:var(--blul)}
+a{color:var(--grnl)}
+</style>
+</head>
+<body>
+<nav><div class="nav-inner"><a href="roadmap.html">🗺 Roadmap</a><a href="android_core.html" class="active">📱 Android Core</a><a href="android_advanced.html">🔥 Advanced</a><a href="architecture.html">🏛 Architecture</a><a href="kotlin.html">🎯 Kotlin</a><a href="coroutines_flow.html">⚡ Coroutines</a><a href="compose.html">🎨 Compose</a><a href="dependency_injection.html">💉 DI</a><a href="networking_storage.html">🌐 Net & Storage</a><a href="testing.html">🧪 Testing</a><a href="system_design.html">🏗 System Design</a><a href="dsa_google.html">🧩 DSA</a></div></nav>
+<main>
+<h1>📱 Android Core — Interview Questions</h1>
+<p class="sub">Activity, Fragment, Intents, Services, Context, Lifecycle, Threading — the foundation every Android interviewer will probe deeply.</p>
+
+<h2>Activity & Lifecycle</h2>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q1</span><span class="qt">Explain the complete Activity lifecycle and when each callback is called</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p><strong>Complete lifecycle:</strong></p>
+<pre><code><span class="cm">// onCreate → onStart → onResume → [RUNNING]</span>
+<span class="cm">// [RUNNING] → onPause → onStop → onDestroy</span>
+
+<span class="kw">class</span> <span class="ty">MainActivity</span> : <span class="ty">AppCompatActivity</span>() {
+    <span class="kw">override fun</span> <span class="fn">onCreate</span>(savedInstanceState: <span class="ty">Bundle</span>?) {
+        <span class="cm">// Called once. Initialize UI, set content view, restore state</span>
+        <span class="cm">// Activity not visible yet</span>
+    }
+    <span class="kw">override fun</span> <span class="fn">onStart</span>() {
+        <span class="cm">// Activity becoming visible but not interactive yet</span>
+    }
+    <span class="kw">override fun</span> <span class="fn">onResume</span>() {
+        <span class="cm">// Activity in foreground, interactive. Register sensors, animations</span>
+    }
+    <span class="kw">override fun</span> <span class="fn">onPause</span>() {
+        <span class="cm">// Partially visible (another activity on top). Release sensors/camera</span>
+        <span class="cm">// MUST be fast — other activity waits for this to complete</span>
+    }
+    <span class="kw">override fun</span> <span class="fn">onStop</span>() {
+        <span class="cm">// Fully hidden. Release heavy resources, save data</span>
+    }
+    <span class="kw">override fun</span> <span class="fn">onDestroy</span>() {
+        <span class="cm">// Activity being destroyed. Check isFinishing() to know if user exited</span>
+    }
+    <span class="kw">override fun</span> <span class="fn">onRestart</span>() {
+        <span class="cm">// Called before onStart() when coming back from STOPPED state</span>
+    }
+}</code></pre>
+<p><strong>Key interview scenarios:</strong></p>
+<ul>
+<li><strong>Rotation:</strong> onPause → onStop → onDestroy → onCreate → onStart → onResume. Use ViewModel to survive!</li>
+<li><strong>Home button:</strong> onPause → onStop (activity still alive in memory)</li>
+<li><strong>Back button:</strong> onPause → onStop → onDestroy (activity finished)</li>
+<li><strong>Another activity on top:</strong> A.onPause → B.onCreate → B.onStart → B.onResume → A.onStop</li>
+<li><strong>Coming back from B to A:</strong> B.onPause → A.onRestart → A.onStart → A.onResume → B.onStop → B.onDestroy</li>
+</ul>
+<div class="note ngrn">✓ Google tip: onPause must be fast. Never do heavy operations here. Do them in onStop.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q2</span><span class="qt">What is the difference between onSaveInstanceState and ViewModel for state preservation?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p><strong>onSaveInstanceState (Bundle):</strong></p>
+<ul>
+<li>Survives: rotation, process death (system kills app while backgrounded)</li>
+<li>Capacity: small data only (~1MB limit, it's IPC binder transaction)</li>
+<li>Types: primitives, Parcelable, Serializable</li>
+<li>When called: before onStop() on API 28+, before onPause() on older</li>
+</ul>
+<p><strong>ViewModel:</strong></p>
+<ul>
+<li>Survives: rotation and configuration changes ONLY</li>
+<li>Does NOT survive process death — data is gone if system kills the process</li>
+<li>Capacity: unlimited (holds any object)</li>
+<li>Best for: complex objects, lists, network results</li>
+</ul>
+<pre><code><span class="cm">// Best practice: use BOTH together</span>
+<span class="kw">class</span> <span class="ty">MyViewModel</span>(<span class="kw">private val</span> <span class="cn">savedStateHandle</span>: <span class="ty">SavedStateHandle</span>) : <span class="ty">ViewModel</span>() {
+    <span class="cm">// SavedStateHandle bridges ViewModel + onSaveInstanceState</span>
+    <span class="cm">// Survives BOTH rotation AND process death</span>
+    <span class="kw">var</span> <span class="cn">searchQuery</span> = savedStateHandle.<span class="fn">getStateFlow</span>(<span class="st">"query"</span>, <span class="st">""</span>)
+
+    <span class="kw">fun</span> <span class="fn">setQuery</span>(query: <span class="ty">String</span>) {
+        savedStateHandle[<span class="st">"query"</span>] = query <span class="cm">// automatically persisted</span>
+    }
+}</code></pre>
+<div class="note namb">💡 SavedStateHandle is the modern solution — it gives you ViewModel + process death survival.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q3</span><span class="qt">Explain Fragment lifecycle and how it differs from Activity lifecycle</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// Fragment has ADDITIONAL callbacks vs Activity:</span>
+<span class="fn">onAttach</span>()        <span class="cm">// Fragment attached to host Activity</span>
+<span class="fn">onCreate</span>()        <span class="cm">// Fragment created (no view yet)</span>
+<span class="fn">onCreateView</span>()    <span class="cm">// Inflate layout, return view</span>
+<span class="fn">onViewCreated</span>()   <span class="cm">// View ready, set up UI here (not onCreateView!)</span>
+<span class="fn">onStart</span>()
+<span class="fn">onResume</span>()
+<span class="fn">onPause</span>()
+<span class="fn">onStop</span>()
+<span class="fn">onDestroyView</span>()   <span class="cm">// View destroyed but Fragment still alive (backstack)</span>
+<span class="fn">onDestroy</span>()
+<span class="fn">onDetach</span>()        <span class="cm">// Fragment detached from Activity</span></code></pre>
+<p><strong>Critical difference — onDestroyView:</strong> When a Fragment goes to the back stack, only its view is destroyed (onDestroyView), NOT the Fragment itself. The Fragment object stays alive. This is why you must use <strong>viewLifecycleOwner</strong> (not just lifecycleOwner) when observing LiveData in Fragments — to avoid memory leaks.</p>
+<pre><code><span class="cm">// WRONG - leaks if fragment goes to backstack</span>
+viewModel.data.<span class="fn">observe</span>(<span class="kw">this</span>) { ... }
+
+<span class="cm">// CORRECT - tied to view lifecycle</span>
+viewModel.data.<span class="fn">observe</span>(<span class="cn">viewLifecycleOwner</span>) { ... }</code></pre>
+<div class="note nred">⚠ This is one of the most common memory leak questions. Always use viewLifecycleOwner in Fragments.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q4</span><span class="qt">What are the different types of Context and when do you use each?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p><strong>Types:</strong></p>
+<ul>
+<li><strong>Application Context:</strong> Tied to application lifecycle. Use for: creating Singletons, accessing resources, starting Services, registering broadcast receivers when you want them alive as long as the app is alive.</li>
+<li><strong>Activity Context:</strong> Tied to Activity lifecycle. Use for: showing Dialogs, starting Activities (preserves task stack), inflating layouts (gets correct theme), loading theme-dependent resources.</li>
+<li><strong>Service Context:</strong> Tied to Service lifecycle.</li>
+</ul>
+<pre><code><span class="cm">// Application Context — for long-lived objects</span>
+<span class="kw">class</span> <span class="ty">ImageLoader</span>(<span class="kw">private val</span> <span class="cn">context</span>: <span class="ty">Context</span>) {
+    <span class="kw">init</span> {
+        <span class="cm">// Use applicationContext to avoid leaking Activity</span>
+        <span class="kw">val</span> <span class="cn">appContext</span> = context.<span class="fn">applicationContext</span>
+    }
+}
+
+<span class="cm">// Dialog NEEDS Activity context</span>
+<span class="ty">AlertDialog</span>.<span class="ty">Builder</span>(<span class="kw">this</span>) <span class="cm">// 'this' = Activity ✓</span>
+<span class="ty">AlertDialog</span>.<span class="ty">Builder</span>(applicationContext) <span class="cm">// CRASH! ✗</span></code></pre>
+<div class="note nred">⚠ Memory leak pattern: storing Activity context in a Singleton or static field. Always use application context for Singletons.</div>
+</div>
+</details>
+
+<h2>Intents & Components</h2>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q5</span><span class="qt">What is the difference between explicit and implicit intents? What is Intent resolution?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// Explicit — specifies exact component class</span>
+<span class="kw">val</span> <span class="cn">intent</span> = <span class="ty">Intent</span>(<span class="kw">this</span>, <span class="ty">DetailActivity</span>::<span class="kw">class</span>.java)
+intent.<span class="fn">putExtra</span>(<span class="st">"id"</span>, userId)
+<span class="fn">startActivity</span>(intent)
+
+<span class="cm">// Implicit — declares action, system resolves which app handles it</span>
+<span class="kw">val</span> <span class="cn">intent</span> = <span class="ty">Intent</span>(<span class="ty">Intent</span>.ACTION_VIEW).apply {
+    data = <span class="ty">Uri</span>.<span class="fn">parse</span>(<span class="st">"https://google.com"</span>)
+}
+<span class="kw">if</span> (intent.<span class="fn">resolveActivity</span>(packageManager) != <span class="kw">null</span>) {
+    <span class="fn">startActivity</span>(intent) <span class="cm">// Opens browser</span>
+}</code></pre>
+<p><strong>Intent resolution:</strong> Android's PackageManager matches implicit intents against all apps' AndroidManifest <span class="ic">intent-filter</span> declarations, comparing: action, category, and data (URI/MIME type). If multiple apps match, user sees a chooser.</p>
+<p><strong>PendingIntent:</strong> A token given to another process to start your Activity/Service/Broadcast on your behalf (e.g. notifications). Always specify mutability flag in API 31+.</p>
+<pre><code><span class="cm">// PendingIntent for notification</span>
+<span class="kw">val</span> <span class="cn">pendingIntent</span> = <span class="ty">PendingIntent</span>.<span class="fn">getActivity</span>(
+    context, <span class="cn">0</span>, intent,
+    <span class="ty">PendingIntent</span>.FLAG_IMMUTABLE <span class="cm">// Required API 31+</span>
+)</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q6</span><span class="qt">Explain Activity launch modes and how they affect the back stack</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<ul>
+<li><strong>standard (default):</strong> New instance created every time, even if already on stack. Stack: A→B→B→B possible.</li>
+<li><strong>singleTop:</strong> If target is at the TOP of stack, reuses it (calls onNewIntent()). If not on top, creates new. Good for: notifications that launch an activity already open.</li>
+<li><strong>singleTask:</strong> Only ONE instance in the entire task. If exists, all activities on top of it are POPPED and onNewIntent() called. Creates a new task if needed. Good for: deep links, main activity.</li>
+<li><strong>singleInstance:</strong> Like singleTask but the activity lives in its OWN isolated task — no other activities can be added to its task.</li>
+</ul>
+<pre><code><span class="cm">// Set via manifest:</span>
+&lt;activity android:name=".MainActivity"
+    android:launchMode=<span class="st">"singleTask"</span>/&gt;
+
+<span class="cm">// Or via Intent flags (overrides manifest):</span>
+intent.<span class="fn">addFlags</span>(<span class="ty">Intent</span>.FLAG_ACTIVITY_SINGLE_TOP)
+intent.<span class="fn">addFlags</span>(<span class="ty">Intent</span>.FLAG_ACTIVITY_CLEAR_TOP) <span class="cm">// like singleTask</span>
+intent.<span class="fn">addFlags</span>(<span class="ty">Intent</span>.FLAG_ACTIVITY_NEW_TASK) <span class="cm">// start in new task</span></code></pre>
+<div class="note namb">💡 Intent flags take precedence over manifest launchMode. FLAG_ACTIVITY_CLEAR_TOP + FLAG_ACTIVITY_SINGLE_TOP together = singleTask behavior.</div>
+</div>
+</details>
+
+<h2>Services & Background Work</h2>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q7</span><span class="qt">What are the different types of Services and when would you use each?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<ul>
+<li><strong>Started Service:</strong> Runs indefinitely after startService(). Must call stopSelf() or stopService(). Risk of being killed by OS under memory pressure.</li>
+<li><strong>Bound Service:</strong> Clients bind to it via bindService(). Lives as long as there are bound clients. Returns an IBinder interface. Good for: IPC, two-way communication.</li>
+<li><strong>Foreground Service:</strong> Requires a visible notification. Cannot be killed by OS. Mandatory for user-aware long tasks (music playback, navigation, file download).</li>
+<li><strong>IntentService (deprecated):</strong> Was a started service that ran on a background thread and stopped itself. Replaced by WorkManager or coroutines + Service.</li>
+</ul>
+<pre><code><span class="cm">// Foreground Service (API 26+)</span>
+<span class="kw">class</span> <span class="ty">MusicService</span> : <span class="ty">Service</span>() {
+    <span class="kw">override fun</span> <span class="fn">onStartCommand</span>(intent: <span class="ty">Intent</span>?, flags: <span class="ty">Int</span>, startId: <span class="ty">Int</span>): <span class="ty">Int</span> {
+        <span class="kw">val</span> <span class="cn">notification</span> = <span class="fn">buildNotification</span>()
+        <span class="fn">startForeground</span>(NOTIF_ID, notification) <span class="cm">// Must call within 5s</span>
+        <span class="kw">return</span> START_STICKY <span class="cm">// Restart if killed</span>
+    }
+}
+
+<span class="cm">// WorkManager is preferred for deferrable background work</span>
+<span class="kw">val</span> <span class="cn">request</span> = <span class="ty">OneTimeWorkRequestBuilder</span>&lt;<span class="ty">SyncWorker</span>&gt;()
+    .<span class="fn">setConstraints</span>(<span class="ty">Constraints</span>(<span class="cn">requiresNetwork</span> = <span class="kw">true</span>))
+    .<span class="fn">build</span>()
+<span class="ty">WorkManager</span>.<span class="fn">getInstance</span>(context).<span class="fn">enqueue</span>(request)</code></pre>
+<div class="note ngrn">✓ Modern recommendation: Use WorkManager for deferrable work, Foreground Service for user-aware work, coroutines for in-scope async operations.</div>
+</div>
+</details>
+
+<h2>Threading & Concurrency</h2>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q8</span><span class="qt">What is the main thread, why can't you do network/disk I/O on it, and what is ANR?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>The main thread (UI thread) is responsible for drawing UI frames. Android tries to render at 60fps, giving you <strong>~16ms per frame</strong>. If any operation blocks the main thread:</p>
+<ul>
+<li>UI becomes unresponsive</li>
+<li>If blocked for <strong>>5 seconds (user input)</strong> or <strong>>10 seconds (broadcast)</strong>: <strong>ANR dialog</strong> appears</li>
+</ul>
+<p><strong>Common ANR causes:</strong> Network call on main thread, slow database query, large bitmap decode, holding a lock that another thread owns, long computation.</p>
+<pre><code><span class="cm">// WRONG — Network on main thread (throws NetworkOnMainThreadException)</span>
+<span class="kw">val</span> <span class="cn">data</span> = apiService.<span class="fn">fetchData</span>() <span class="cm">// in Activity.onCreate()</span>
+
+<span class="cm">// CORRECT — Use coroutines with IO dispatcher</span>
+<span class="kw">class</span> <span class="ty">MyViewModel</span> : <span class="ty">ViewModel</span>() {
+    <span class="kw">fun</span> <span class="fn">loadData</span>() {
+        viewModelScope.<span class="fn">launch</span> {
+            <span class="kw">val</span> <span class="cn">data</span> = <span class="ty">withContext</span>(<span class="ty">Dispatchers</span>.IO) {
+                apiService.<span class="fn">fetchData</span>() <span class="cm">// off main thread</span>
+            }
+            _uiState.<span class="fn">update</span> { it.<span class="fn">copy</span>(data = data) } <span class="cm">// back on main thread</span>
+        }
+    }
+}</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q9</span><span class="qt">Explain Handler, Looper, and MessageQueue — how does Android's message system work?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p>This is the foundation of Android's threading model (predates coroutines):</p>
+<ul>
+<li><strong>Looper:</strong> Attached to a thread. Runs an infinite loop reading from MessageQueue. The main thread has a Looper by default (Looper.getMainLooper()).</li>
+<li><strong>MessageQueue:</strong> Ordered queue of Messages and Runnables for a specific Looper/thread.</li>
+<li><strong>Handler:</strong> Sends messages/runnables to a specific MessageQueue. When you create <span class="ic">Handler(Looper.getMainLooper())</span>, any <span class="ic">post()</span> call dispatches to the main thread.</li>
+</ul>
+<pre><code><span class="cm">// HandlerThread — creates a thread with a Looper</span>
+<span class="kw">val</span> <span class="cn">handlerThread</span> = <span class="ty">HandlerThread</span>(<span class="st">"BackgroundThread"</span>).apply { <span class="fn">start</span>() }
+<span class="kw">val</span> <span class="cn">bgHandler</span> = <span class="ty">Handler</span>(handlerThread.looper)
+<span class="kw">val</span> <span class="cn">mainHandler</span> = <span class="ty">Handler</span>(<span class="ty">Looper</span>.<span class="fn">getMainLooper</span>())
+
+bgHandler.<span class="fn">post</span> {
+    <span class="kw">val</span> <span class="cn">result</span> = <span class="fn">doHeavyWork</span>() <span class="cm">// background thread</span>
+    mainHandler.<span class="fn">post</span> { <span class="fn">updateUI</span>(result) } <span class="cm">// switch to main</span>
+}
+
+<span class="cm">// Modern equivalent with coroutines:</span>
+viewModelScope.<span class="fn">launch</span>(Dispatchers.IO) {
+    <span class="kw">val</span> <span class="cn">result</span> = <span class="fn">doHeavyWork</span>()
+    <span class="fn">withContext</span>(Dispatchers.Main) { <span class="fn">updateUI</span>(result) }
+}</code></pre>
+<div class="note nblu">💡 Coroutines abstract away Handler/Looper complexity, but understanding the underlying model helps debug threading issues.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q10</span><span class="qt">What are common memory leak patterns in Android and how do you detect them?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p><strong>Common leak patterns:</strong></p>
+<ul>
+<li><strong>Static reference to Activity/View:</strong> Static companion objects holding Context or View</li>
+<li><strong>Non-static inner class:</strong> AsyncTask, Handler inner class implicitly holds outer Activity reference</li>
+<li><strong>Fragment viewLifecycleOwner:</strong> Observing LiveData with <span class="ic">this</span> instead of <span class="ic">viewLifecycleOwner</span></li>
+<li><strong>Unregistered listeners:</strong> Registering BroadcastReceiver, SensorManager, LocationManager but not unregistering</li>
+<li><strong>Bitmap held in static:</strong> Large bitmaps held by static fields</li>
+<li><strong>RxJava/Flow subscriptions:</strong> Not disposing/cancelling subscriptions on destroy</li>
+</ul>
+<pre><code><span class="cm">// LEAK: static handler holds Activity reference</span>
+<span class="kw">class</span> <span class="ty">MainActivity</span> : <span class="ty">Activity</span>() {
+    <span class="kw">private val</span> <span class="cn">handler</span> = <span class="kw">object</span> : <span class="ty">Handler</span>(<span class="ty">Looper</span>.<span class="fn">getMainLooper</span>()) {
+        <span class="kw">override fun</span> <span class="fn">handleMessage</span>(msg: <span class="ty">Message</span>) {
+            <span class="cm">// Implicit reference to MainActivity — leaks if delayed message pending</span>
+        }
+    }
+    <span class="kw">override fun</span> <span class="fn">onDestroy</span>() {
+        handler.<span class="fn">removeCallbacksAndMessages</span>(<span class="kw">null</span>) <span class="cm">// Fix: remove pending messages</span>
+        <span class="kw">super</span>.<span class="fn">onDestroy</span>()
+    }
+}</code></pre>
+<p><strong>Detection:</strong></p>
+<ul>
+<li><strong>LeakCanary:</strong> Add to debugImplementation, it automatically detects and reports leaks</li>
+<li><strong>Android Profiler:</strong> Memory tab → take heap dump → look for Activity/Fragment instances that shouldn't exist</li>
+<li><strong>StrictMode:</strong> Enables strict VM/thread policies in debug builds</li>
+</ul>
+</div>
+</details>
+
+<h2>BroadcastReceiver & ContentProvider</h2>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q11</span><span class="qt">What is a BroadcastReceiver? Static vs dynamic registration?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<ul>
+<li><strong>Static (manifest):</strong> System can launch app to deliver broadcast even if app not running. Severely restricted since API 26 — only certain system broadcasts allowed (BOOT_COMPLETED, etc.).</li>
+<li><strong>Dynamic (code):</strong> Registered while app is running. Must unregister to avoid leaks.</li>
+</ul>
+<pre><code><span class="cm">// Dynamic registration — register in onStart, unregister in onStop</span>
+<span class="kw">private val</span> <span class="cn">receiver</span> = <span class="kw">object</span> : <span class="ty">BroadcastReceiver</span>() {
+    <span class="kw">override fun</span> <span class="fn">onReceive</span>(context: <span class="ty">Context</span>, intent: <span class="ty">Intent</span>) {
+        <span class="kw">when</span> (intent.action) {
+            <span class="ty">Intent</span>.ACTION_BATTERY_LOW -> <span class="fn">handleLowBattery</span>()
+        }
+    }
+}
+
+<span class="kw">override fun</span> <span class="fn">onStart</span>() {
+    <span class="kw">super</span>.<span class="fn">onStart</span>()
+    <span class="kw">val</span> <span class="cn">filter</span> = <span class="ty">IntentFilter</span>(<span class="ty">Intent</span>.ACTION_BATTERY_LOW)
+    <span class="fn">registerReceiver</span>(receiver, filter)
+}
+<span class="kw">override fun</span> <span class="fn">onStop</span>() {
+    <span class="fn">unregisterReceiver</span>(receiver) <span class="cm">// ALWAYS unregister</span>
+    <span class="kw">super</span>.<span class="fn">onStop</span>()
+}</code></pre>
+<div class="note namb">💡 Ordered broadcasts: receivers process in order of priority. A receiver can abort the chain with abortBroadcast().</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q12</span><span class="qt">When would you use a ContentProvider and how does it work?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>ContentProvider exposes structured data via a URI scheme, allowing cross-process data sharing with access control.</p>
+<p><strong>Use cases:</strong> Contacts, Calendar, MediaStore, sharing data between apps, providing data to system (SearchSuggestions).</p>
+<pre><code><span class="cm">// URI pattern: content://authority/path/id</span>
+<span class="kw">val</span> <span class="cn">uri</span> = <span class="ty">Uri</span>.<span class="fn">parse</span>(<span class="st">"content://com.example.provider/users/42"</span>)
+
+<span class="cm">// Querying (runs on binder thread pool — NOT main thread)</span>
+<span class="kw">val</span> <span class="cn">cursor</span> = contentResolver.<span class="fn">query</span>(uri, <span class="kw">null</span>, <span class="kw">null</span>, <span class="kw">null</span>, <span class="kw">null</span>)
+cursor?.<span class="fn">use</span> {
+    <span class="kw">while</span> (it.<span class="fn">moveToNext</span>()) {
+        <span class="kw">val</span> <span class="cn">name</span> = it.<span class="fn">getString</span>(it.<span class="fn">getColumnIndexOrThrow</span>(<span class="st">"name"</span>))
+    }
+}
+
+<span class="cm">// FileProvider — secure file sharing between apps</span>
+<span class="kw">val</span> <span class="cn">fileUri</span> = <span class="ty">FileProvider</span>.<span class="fn">getUriForFile</span>(
+    context, <span class="st">"com.example.fileprovider"</span>, file
+)</code></pre>
+</div>
+</details>
+</main>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Kotlin — Interview Q&A</title>
+<style>:root{--bg:#06090e;--s1:#0a0f18;--s2:#0e1520;--s3:#131d2a;--b1:#182030;--b2:#1e2c3e;--txt:#cce0ee;--muted:#4e6878;--grn:#10a060;--grnb:#031508;--grnl:#44d890;--blu:#1e60d8;--blub:#040e28;--blul:#6aaeff;--pur:#6848b8;--purb:#0f0828;--purl:#b090ff;--amb:#c09010;--ambb:#201500;--ambl:#f0c040;--red:#b03030;--redb:#1e0808;--redl:#f07070;--cya:#0e8898;--cyab:#041418;--cyal:#40d8e8;--ora:#c06020;--orab:#201008;--oral:#f0a060}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,sans-serif;font-size:13px;line-height:1.6;min-height:100vh}
+nav{background:var(--s1);border-bottom:1px solid var(--b1);position:sticky;top:0;z-index:100;overflow-x:auto}
+.nav-inner{display:flex;align-items:center;padding:0 12px;gap:0;min-width:max-content}
+nav a{color:var(--muted);text-decoration:none;font-size:11px;font-weight:500;padding:12px 9px;border-bottom:2px solid transparent;white-space:nowrap;display:block}
+nav a:hover{color:var(--txt)}
+nav a.active{color:var(--grnl);border-bottom-color:var(--grn)}
+main{max-width:980px;padding:28px 20px 80px;margin:0 auto}
+h1{font-size:20px;font-weight:700;margin-bottom:6px;letter-spacing:-.02em}
+.sub{font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.6}
+h2{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:24px 0 10px;display:flex;align-items:center;gap:8px}
+h2::after{content:'';flex:1;height:1px;background:var(--b2)}
+details{border-radius:9px;border:1px solid var(--b2);background:var(--s1);margin-bottom:7px;overflow:hidden}
+details[open]{border-color:#2e4458}
+summary{padding:12px 15px;cursor:pointer;display:flex;align-items:center;gap:9px;list-style:none;font-weight:500;font-size:13px;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:'\203A';font-size:16px;color:var(--muted);transition:.2s;flex-shrink:0;width:14px;display:inline-block}
+details[open] summary::before{transform:rotate(90deg);color:var(--grnl)}
+.qn{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;flex-shrink:0;font-family:monospace}
+.qt{flex:1}
+.dif{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;border:1px solid;flex-shrink:0;letter-spacing:.06em;text-transform:uppercase}
+.easy{background:var(--grnb);color:var(--grnl);border-color:var(--grn)}
+.med{background:var(--ambb);color:var(--ambl);border-color:var(--amb)}
+.hard{background:var(--redb);color:var(--redl);border-color:var(--red)}
+.goog{background:var(--purb);color:var(--purl);border-color:var(--pur)}
+.ans{padding:0 15px 14px;border-top:1px solid var(--b2)}
+.ans p{font-size:12px;color:var(--muted);line-height:1.7;margin:10px 0 0}
+.ans p strong{color:var(--txt)}
+.ans ul,.ans ol{padding-left:18px;font-size:12px;color:var(--muted);line-height:1.85;margin:8px 0}
+.ans li strong{color:var(--txt)}
+pre{background:#070d14;border:1px solid var(--b2);border-radius:7px;padding:12px 14px;overflow-x:auto;margin:10px 0;font-size:11px;line-height:1.7;color:#a8c8e8}
+code{font-family:'JetBrains Mono','Fira Mono',monospace;font-size:11px}
+.kw{color:#79b8ff}.cn{color:#44d890}.st{color:#f0a060}.cm{color:#4e6878}.fn{color:#40d8e8}.an{color:#f0c040}.ty{color:#b090ff}
+.note{border-radius:7px;border:1px solid;padding:9px 12px;font-size:11px;line-height:1.6;margin:10px 0}
+.ngrn{background:var(--grnb);border-color:var(--grn);color:var(--grnl)}
+.namb{background:var(--ambb);border-color:var(--amb);color:var(--ambl)}
+.nred{background:var(--redb);border-color:var(--red);color:var(--redl)}
+.nblu{background:var(--blub);border-color:var(--blu);color:var(--blul)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0}
+@media(max-width:680px){.g2,.g3{grid-template-columns:1fr}}
+.gc{background:var(--s2);border:1px solid var(--b2);border-radius:7px;padding:12px}
+.gc h4{font-size:11px;font-weight:700;margin-bottom:6px}
+.gc p,.gc li{font-size:11px;color:var(--muted);line-height:1.6}
+.ic{background:var(--s3);border:1px solid var(--b2);border-radius:4px;padding:1px 6px;font-family:monospace;font-size:11px;color:var(--blul)}
+a{color:var(--grnl)}
+</style>
+</head>
+<body>
+<nav><div class="nav-inner"><a href="roadmap.html">🗺 Roadmap</a><a href="android_core.html">📱 Android Core</a><a href="android_advanced.html">🔥 Advanced</a><a href="architecture.html">🏛 Architecture</a><a href="kotlin.html" class="active">🎯 Kotlin</a><a href="coroutines_flow.html">⚡ Coroutines</a><a href="compose.html">🎨 Compose</a><a href="dependency_injection.html">💉 DI</a><a href="networking_storage.html">🌐 Net & Storage</a><a href="testing.html">🧪 Testing</a><a href="system_design.html">🏗 System Design</a><a href="dsa_google.html">🧩 DSA</a></div></nav>
+<main>
+<h1>🎯 Kotlin — Interview Questions</h1>
+<p class="sub">Kotlin language mastery is expected at Google. Know the "why" behind every feature — not just the syntax.</p>
+
+<h2>Core Language Features</h2>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q1</span><span class="qt">Explain all scope functions: let, run, with, apply, also — when to use each</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// let: non-null receiver, returns lambda result, 'it' as reference</span>
+<span class="kw">val</span> <span class="cn">result</span> = user?.<span class="fn">let</span> {
+    <span class="fn">processUser</span>(it) <span class="cm">// returns processed value</span>
+}
+
+<span class="cm">// run: 'this' as reference, returns lambda result. Good for null checks + transform</span>
+<span class="kw">val</span> <span class="cn">result</span> = user?.<span class="fn">run</span> {
+    <span class="st">"Name: </span><span class="cn">$name</span><span class="st">, Age: </span><span class="cn">$age</span><span class="st">"</span> <span class="cm">// this = user</span>
+}
+
+<span class="cm">// with: 'this' as reference, NOT extension function, returns lambda result</span>
+<span class="kw">val</span> <span class="cn">result</span> = <span class="fn">with</span>(user) {
+    <span class="fn">println</span>(name) <span class="cm">// use on non-null objects</span>
+    email
+}
+
+<span class="cm">// apply: 'this' as reference, returns THE RECEIVER. Good for initialization</span>
+<span class="kw">val</span> <span class="cn">intent</span> = <span class="ty">Intent</span>().<span class="fn">apply</span> {
+    action = <span class="ty">Intent</span>.ACTION_VIEW
+    data = uri
+    <span class="fn">addFlags</span>(<span class="ty">Intent</span>.FLAG_ACTIVITY_NEW_TASK)
+} <span class="cm">// returns the Intent</span>
+
+<span class="cm">// also: 'it' as reference, returns THE RECEIVER. Good for side effects</span>
+<span class="kw">val</span> <span class="cn">users</span> = repository.<span class="fn">getUsers</span>()
+    .<span class="fn">also</span> { <span class="fn">log</span>(<span class="st">"Fetched </span><span class="cn">${it.size}</span><span class="st"> users"</span>) } <span class="cm">// returns the list</span>
+    .<span class="fn">filter</span> { it.isActive }
+</code></pre>
+<p><strong>Memory trick:</strong></p>
+<ul>
+<li><strong>let/also:</strong> use <span class="ic">it</span> | <strong>run/apply/with:</strong> use <span class="ic">this</span></li>
+<li><strong>let/run/with:</strong> return lambda result | <strong>apply/also:</strong> return receiver</li>
+<li><strong>apply:</strong> configure objects | <strong>also:</strong> side effects on existing objects</li>
+</ul>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q2</span><span class="qt">What is the difference between inline, noinline, and crossinline?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p><strong>inline:</strong> The compiler copies the function body at the call site (no lambda object created, no virtual dispatch). Reduces overhead for higher-order functions used in performance-critical code.</p>
+<pre><code><span class="cm">// WITHOUT inline: creates a lambda object on heap, indirect call</span>
+<span class="kw">fun</span> &lt;T&gt; <span class="fn">myWith</span>(receiver: T, block: T.() -> <span class="ty">Unit</span>) { receiver.<span class="fn">block</span>() }
+
+<span class="cm">// WITH inline: lambda body pasted inline, no object created</span>
+<span class="kw">inline fun</span> &lt;T&gt; <span class="fn">myWith</span>(receiver: T, block: T.() -> <span class="ty">Unit</span>) { receiver.<span class="fn">block</span>() }
+
+<span class="cm">// noinline: don't inline THIS specific lambda (when you need to pass it around)</span>
+<span class="kw">inline fun</span> <span class="fn">doSomething</span>(inlined: () -> <span class="ty">Unit</span>, <span class="an">noinline</span> notInlined: () -> <span class="ty">Unit</span>) {
+    <span class="fn">inlined</span>()
+    <span class="fn">storeForLater</span>(notInlined) <span class="cm">// can store because it's a real object</span>
+}
+
+<span class="cm">// crossinline: lambda can't use 'return' (non-local return not allowed)</span>
+<span class="kw">inline fun</span> <span class="fn">runOnMainThread</span>(<span class="an">crossinline</span> block: () -> <span class="ty">Unit</span>) {
+    <span class="ty">Handler</span>(Looper.getMainLooper()).<span class="fn">post</span> { <span class="fn">block</span>() }
+    <span class="cm">// Without crossinline: block() could 'return' from an outer function</span>
+    <span class="cm">// crossinline prevents non-local returns in this context</span>
+}
+
+<span class="cm">// reified: access type T at runtime (normally erased by JVM)</span>
+<span class="kw">inline fun</span> &lt;<span class="an">reified</span> T&gt; <span class="ty">Context</span>.<span class="fn">startActivity</span>() {
+    <span class="fn">startActivity</span>(<span class="ty">Intent</span>(<span class="kw">this</span>, T::<span class="kw">class</span>.java)) <span class="cm">// T::class.java works because reified</span>
+}
+<span class="fn">startActivity</span>&lt;<span class="ty">MainActivity</span>&gt;() <span class="cm">// Clean API!</span></code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q3</span><span class="qt">Explain sealed classes vs enums vs abstract classes</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// Enum: fixed set of constants, same type, no state variation</span>
+<span class="kw">enum class</span> <span class="ty">Direction</span> { NORTH, SOUTH, EAST, WEST }
+
+<span class="cm">// Sealed class: fixed set of TYPES, each can have different data</span>
+<span class="kw">sealed class</span> <span class="ty">Result</span>&lt;out T&gt; {
+    <span class="kw">data class</span> <span class="ty">Success</span>&lt;T&gt;(<span class="kw">val</span> data: T) : <span class="ty">Result</span>&lt;T&gt;()
+    <span class="kw">data class</span> <span class="ty">Error</span>(<span class="kw">val</span> exception: <span class="ty">Exception</span>) : <span class="ty">Result</span>&lt;<span class="ty">Nothing</span>&gt;()
+    <span class="kw">object</span> <span class="ty">Loading</span> : <span class="ty">Result</span>&lt;<span class="ty">Nothing</span>&gt;()
+}
+
+<span class="cm">// when() is exhaustive — compiler forces you to handle all cases</span>
+<span class="kw">when</span> (result) {
+    <span class="kw">is</span> <span class="ty">Result</span>.<span class="ty">Success</span> -> <span class="fn">showData</span>(result.data)   <span class="cm">// smart cast: result.data accessible</span>
+    <span class="kw">is</span> <span class="ty">Result</span>.<span class="ty">Error</span> -> <span class="fn">showError</span>(result.exception)
+    <span class="ty">Result</span>.<span class="ty">Loading</span> -> <span class="fn">showLoading</span>()
+    <span class="cm">// No 'else' needed — compiler knows all cases covered</span>
+}
+
+<span class="cm">// Sealed interface (Kotlin 1.5+) — more flexible, no single file restriction</span>
+<span class="kw">sealed interface</span> <span class="ty">UiState</span>
+<span class="kw">data class</span> <span class="ty">Loaded</span>(<span class="kw">val</span> items: <span class="ty">List</span>&lt;<span class="ty">Item</span>&gt;) : <span class="ty">UiState</span>
+<span class="kw">object</span> <span class="ty">Empty</span> : <span class="ty">UiState</span>
+<span class="kw">object</span> <span class="ty">Loading</span> : <span class="ty">UiState</span></code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q4</span><span class="qt">Explain Kotlin generics: variance, in/out, and when to use each</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// Invariant: default. Box&lt;Dog&gt; is NOT a subtype of Box&lt;Animal&gt;</span>
+<span class="kw">class</span> <span class="ty">Box</span>&lt;T&gt;(var item: T)
+
+<span class="cm">// Covariant (out): Producer. Box&lt;Dog&gt; IS a subtype of Box&lt;Animal&gt;</span>
+<span class="cm">// T can only be returned (produced), not consumed</span>
+<span class="kw">class</span> <span class="ty">Cage</span>&lt;<span class="kw">out</span> T&gt;(<span class="kw">val</span> animal: T) <span class="cm">// val, not var — only readable</span>
+<span class="kw">val</span> <span class="cn">dogCage</span>: <span class="ty">Cage</span>&lt;<span class="ty">Dog</span>&gt; = <span class="ty">Cage</span>(<span class="ty">Dog</span>())
+<span class="kw">val</span> <span class="cn">animalCage</span>: <span class="ty">Cage</span>&lt;<span class="ty">Animal</span>&gt; = dogCage <span class="cm">// OK with 'out'</span>
+
+<span class="cm">// Contravariant (in): Consumer. Accepts Animal where Dog expected</span>
+<span class="cm">// T can only be accepted (consumed), not returned</span>
+<span class="kw">class</span> <span class="ty">Feeder</span>&lt;<span class="kw">in</span> T&gt; {
+    <span class="kw">fun</span> <span class="fn">feed</span>(animal: T) { /* ... */ }
+}
+<span class="kw">val</span> <span class="cn">animalFeeder</span>: <span class="ty">Feeder</span>&lt;<span class="ty">Animal</span>&gt; = <span class="ty">Feeder</span>()
+<span class="kw">val</span> <span class="cn">dogFeeder</span>: <span class="ty">Feeder</span>&lt;<span class="ty">Dog</span>&gt; = animalFeeder <span class="cm">// OK with 'in'</span>
+
+<span class="cm">// Real example: List is covariant (out), MutableList is invariant</span>
+<span class="kw">val</span> <span class="cn">dogs</span>: <span class="ty">List</span>&lt;<span class="ty">Dog</span>&gt; = <span class="fn">listOf</span>(Dog())
+<span class="kw">val</span> <span class="cn">animals</span>: <span class="ty">List</span>&lt;<span class="ty">Animal</span>&gt; = dogs <span class="cm">// OK! List&lt;out T&gt;</span></code></pre>
+<p><strong>PECS rule:</strong> Producer = out (extends/covariant), Consumer = in (super/contravariant)</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q5</span><span class="qt">What is delegation in Kotlin? lazy, observable, and interface delegation</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// by lazy: computed once on first access, thread-safe by default</span>
+<span class="kw">val</span> <span class="cn">database</span>: <span class="ty">RoomDatabase</span> <span class="kw">by lazy</span> {
+    <span class="ty">Room</span>.<span class="fn">databaseBuilder</span>(context, <span class="ty">AppDb</span>::<span class="kw">class</span>.java, <span class="st">"app.db"</span>).<span class="fn">build</span>()
+}
+<span class="cm">// LazyThreadSafetyMode:</span>
+<span class="kw">val</span> <span class="cn">single</span> <span class="kw">by lazy</span>(LazyThreadSafetyMode.NONE) { <span class="fn">compute</span>() } <span class="cm">// single thread only</span>
+
+<span class="cm">// by observable: callback on every change</span>
+<span class="kw">var</span> <span class="cn">userName</span>: <span class="ty">String</span> <span class="kw">by</span> <span class="ty">Delegates</span>.<span class="fn">observable</span>(<span class="st">""</span>) { _, old, new ->
+    <span class="fn">println</span>(<span class="st">"Changed: </span><span class="cn">$old</span><span class="st"> -> </span><span class="cn">$new</span><span class="st">"</span>)
+}
+
+<span class="cm">// by vetoable: can reject changes</span>
+<span class="kw">var</span> <span class="cn">age</span>: <span class="ty">Int</span> <span class="kw">by</span> <span class="ty">Delegates</span>.<span class="fn">vetoable</span>(<span class="cn">0</span>) { _, _, new -> new >= <span class="cn">0</span> }
+
+<span class="cm">// Interface delegation — implement interface by forwarding to another object</span>
+<span class="kw">class</span> <span class="ty">LoggingList</span>&lt;T&gt;(<span class="kw">private val</span> <span class="cn">inner</span>: <span class="ty">MutableList</span>&lt;T&gt;) : <span class="ty">MutableList</span>&lt;T&gt; <span class="kw">by</span> inner {
+    <span class="kw">override fun</span> <span class="fn">add</span>(element: T): <span class="ty">Boolean</span> {
+        <span class="fn">println</span>(<span class="st">"Adding: </span><span class="cn">$element</span><span class="st">"</span>)
+        <span class="kw">return</span> inner.<span class="fn">add</span>(element) <span class="cm">// override only what you want</span>
+    }
+} <span class="cm">// All other MutableList methods automatically delegated to inner</span>
+
+<span class="cm">// Custom property delegate</span>
+<span class="kw">class</span> <span class="ty">PrefsDelegate</span>(<span class="kw">private val</span> <span class="cn">key</span>: <span class="ty">String</span>, <span class="kw">private val</span> <span class="cn">default</span>: <span class="ty">String</span>) {
+    <span class="kw">operator fun</span> <span class="fn">getValue</span>(thisRef: <span class="ty">Any</span>?, property: <span class="ty">KProperty</span>&lt;*&gt;) =
+        prefs.<span class="fn">getString</span>(key, default) ?: default
+    <span class="kw">operator fun</span> <span class="fn">setValue</span>(thisRef: <span class="ty">Any</span>?, property: <span class="ty">KProperty</span>&lt;*&gt;, value: <span class="ty">String</span>) =
+        prefs.<span class="fn">edit</span>().<span class="fn">putString</span>(key, value).<span class="fn">apply</span>()
+}
+<span class="kw">var</span> <span class="cn">username</span>: <span class="ty">String</span> <span class="kw">by</span> <span class="ty">PrefsDelegate</span>(<span class="st">"user_name"</span>, <span class="st">""</span>)</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q6</span><span class="qt">What is the difference between data class, regular class, and object?</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// data class: auto-generates equals(), hashCode(), toString(), copy(), componentN()</span>
+<span class="kw">data class</span> <span class="ty">User</span>(<span class="kw">val</span> id: <span class="ty">Int</span>, <span class="kw">val</span> name: <span class="ty">String</span>)
+
+<span class="kw">val</span> <span class="cn">u1</span> = <span class="ty">User</span>(<span class="cn">1</span>, <span class="st">"Alice"</span>)
+<span class="kw">val</span> <span class="cn">u2</span> = u1.<span class="fn">copy</span>(name = <span class="st">"Bob"</span>) <span class="cm">// User(1, "Bob")</span>
+<span class="kw">val</span> (id, name) = u1 <span class="cm">// destructuring</span>
+u1 == <span class="ty">User</span>(<span class="cn">1</span>, <span class="st">"Alice"</span>) <span class="cm">// true (structural equality)</span>
+
+<span class="cm">// object: singleton, thread-safe initialization</span>
+<span class="kw">object</span> <span class="ty">AppConfig</span> {
+    <span class="kw">const val</span> <span class="cn">BASE_URL</span> = <span class="st">"https://api.example.com"</span>
+}
+
+<span class="cm">// companion object: static-like members, can implement interfaces</span>
+<span class="kw">class</span> <span class="ty">MyClass</span> {
+    <span class="kw">companion object</span> <span class="ty">Factory</span> {
+        <span class="kw">fun</span> <span class="fn">create</span>(): <span class="ty">MyClass</span> = <span class="ty">MyClass</span>()
+        <span class="kw">const val</span> <span class="cn">TAG</span> = <span class="st">"MyClass"</span>
+    }
+}
+<span class="ty">MyClass</span>.<span class="fn">create</span>() <span class="cm">// accessed like static method</span>
+
+<span class="cm">// Differences to remember:</span>
+<span class="cm">// data class: primary purpose = holding data, can be instantiated multiple times</span>
+<span class="cm">// object: singleton, initialized lazily on first access</span>
+<span class="cm">// companion: belongs to a class, one per class</span></code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q7</span><span class="qt">What is the difference between == and === in Kotlin? What about equals()?</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<pre><code><span class="kw">val</span> <span class="cn">a</span> = <span class="ty">String</span>(<span class="st">"hello"</span>.<span class="fn">toCharArray</span>())
+<span class="kw">val</span> <span class="cn">b</span> = <span class="ty">String</span>(<span class="st">"hello"</span>.<span class="fn">toCharArray</span>())
+
+a == b   <span class="cm">// true — structural equality, calls equals() — SAME AS .equals()</span>
+a === b  <span class="cm">// false — referential equality, same object in memory?</span>
+
+<span class="cm">// For data classes: == uses generated equals() (compares fields)</span>
+<span class="kw">data class</span> <span class="ty">Point</span>(<span class="kw">val</span> x: <span class="ty">Int</span>, <span class="kw">val</span> y: <span class="ty">Int</span>)
+<span class="ty">Point</span>(<span class="cn">1</span>,<span class="cn">2</span>) == <span class="ty">Point</span>(<span class="cn">1</span>,<span class="cn">2</span>)  <span class="cm">// true</span>
+<span class="ty">Point</span>(<span class="cn">1</span>,<span class="cn">2</span>) === <span class="ty">Point</span>(<span class="cn">1</span>,<span class="cn">2</span>) <span class="cm">// false (different objects)</span>
+
+<span class="cm">// Null-safe: a == null compiles to a?.equals(null) ?: (b === null)</span>
+<span class="cm">// Never throws NPE unlike Java's a.equals(b)</span></code></pre>
+</div>
+</details>
+</main>
+</body>
+</html>

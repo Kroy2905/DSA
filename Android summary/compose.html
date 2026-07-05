@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Jetpack Compose — Interview Q&A</title>
+<style>:root{--bg:#06090e;--s1:#0a0f18;--s2:#0e1520;--s3:#131d2a;--b1:#182030;--b2:#1e2c3e;--txt:#cce0ee;--muted:#4e6878;--grn:#10a060;--grnb:#031508;--grnl:#44d890;--blu:#1e60d8;--blub:#040e28;--blul:#6aaeff;--pur:#6848b8;--purb:#0f0828;--purl:#b090ff;--amb:#c09010;--ambb:#201500;--ambl:#f0c040;--red:#b03030;--redb:#1e0808;--redl:#f07070;--cya:#0e8898;--cyab:#041418;--cyal:#40d8e8;--ora:#c06020;--orab:#201008;--oral:#f0a060}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,sans-serif;font-size:13px;line-height:1.6;min-height:100vh}
+nav{background:var(--s1);border-bottom:1px solid var(--b1);position:sticky;top:0;z-index:100;overflow-x:auto}
+.nav-inner{display:flex;align-items:center;padding:0 12px;gap:0;min-width:max-content}
+nav a{color:var(--muted);text-decoration:none;font-size:11px;font-weight:500;padding:12px 9px;border-bottom:2px solid transparent;white-space:nowrap;display:block}
+nav a:hover{color:var(--txt)}
+nav a.active{color:var(--grnl);border-bottom-color:var(--grn)}
+main{max-width:980px;padding:28px 20px 80px;margin:0 auto}
+h1{font-size:20px;font-weight:700;margin-bottom:6px;letter-spacing:-.02em}
+.sub{font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.6}
+h2{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:24px 0 10px;display:flex;align-items:center;gap:8px}
+h2::after{content:'';flex:1;height:1px;background:var(--b2)}
+details{border-radius:9px;border:1px solid var(--b2);background:var(--s1);margin-bottom:7px;overflow:hidden}
+details[open]{border-color:#2e4458}
+summary{padding:12px 15px;cursor:pointer;display:flex;align-items:center;gap:9px;list-style:none;font-weight:500;font-size:13px;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:'\203A';font-size:16px;color:var(--muted);transition:.2s;flex-shrink:0;width:14px;display:inline-block}
+details[open] summary::before{transform:rotate(90deg);color:var(--grnl)}
+.qn{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;flex-shrink:0;font-family:monospace}
+.qt{flex:1}
+.dif{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;border:1px solid;flex-shrink:0;letter-spacing:.06em;text-transform:uppercase}
+.easy{background:var(--grnb);color:var(--grnl);border-color:var(--grn)}
+.med{background:var(--ambb);color:var(--ambl);border-color:var(--amb)}
+.hard{background:var(--redb);color:var(--redl);border-color:var(--red)}
+.goog{background:var(--purb);color:var(--purl);border-color:var(--pur)}
+.ans{padding:0 15px 14px;border-top:1px solid var(--b2)}
+.ans p{font-size:12px;color:var(--muted);line-height:1.7;margin:10px 0 0}
+.ans p strong{color:var(--txt)}
+.ans ul,.ans ol{padding-left:18px;font-size:12px;color:var(--muted);line-height:1.85;margin:8px 0}
+.ans li strong{color:var(--txt)}
+pre{background:#070d14;border:1px solid var(--b2);border-radius:7px;padding:12px 14px;overflow-x:auto;margin:10px 0;font-size:11px;line-height:1.7;color:#a8c8e8}
+code{font-family:'JetBrains Mono','Fira Mono',monospace;font-size:11px}
+.kw{color:#79b8ff}.cn{color:#44d890}.st{color:#f0a060}.cm{color:#4e6878}.fn{color:#40d8e8}.an{color:#f0c040}.ty{color:#b090ff}
+.note{border-radius:7px;border:1px solid;padding:9px 12px;font-size:11px;line-height:1.6;margin:10px 0}
+.ngrn{background:var(--grnb);border-color:var(--grn);color:var(--grnl)}
+.namb{background:var(--ambb);border-color:var(--amb);color:var(--ambl)}
+.nred{background:var(--redb);border-color:var(--red);color:var(--redl)}
+.nblu{background:var(--blub);border-color:var(--blu);color:var(--blul)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0}
+@media(max-width:680px){.g2,.g3{grid-template-columns:1fr}}
+.gc{background:var(--s2);border:1px solid var(--b2);border-radius:7px;padding:12px}
+.gc h4{font-size:11px;font-weight:700;margin-bottom:6px}
+.gc p,.gc li{font-size:11px;color:var(--muted);line-height:1.6}
+.ic{background:var(--s3);border:1px solid var(--b2);border-radius:4px;padding:1px 6px;font-family:monospace;font-size:11px;color:var(--blul)}
+a{color:var(--grnl)}
+</style>
+</head>
+<body>
+<nav><div class="nav-inner"><a href="roadmap.html">🗺 Roadmap</a><a href="android_core.html">📱 Android Core</a><a href="android_advanced.html">🔥 Advanced</a><a href="architecture.html">🏛 Architecture</a><a href="kotlin.html">🎯 Kotlin</a><a href="coroutines_flow.html">⚡ Coroutines</a><a href="compose.html" class="active">🎨 Compose</a><a href="dependency_injection.html">💉 DI</a><a href="networking_storage.html">🌐 Net & Storage</a><a href="testing.html">🧪 Testing</a><a href="system_design.html">🏗 System Design</a><a href="dsa_google.html">🧩 DSA</a></div></nav>
+<main>
+<h1>🎨 Jetpack Compose — Interview Questions</h1>
+<p class="sub">Compose is now standard Android. Google expects deep knowledge of recomposition, state, side effects, and how it differs from the View system.</p>
+
+<h2>Recomposition & State</h2>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q1</span><span class="qt">What is recomposition? What triggers it and how can you optimize it?</span><span class="dif hard">Hard — Must Know</span></summary>
+<div class="ans">
+<p>Recomposition = Compose re-executing a Composable function because its inputs (state/parameters) changed. Compose uses <strong>smart recomposition</strong> — only re-runs functions whose inputs actually changed, not the entire tree.</p>
+<pre><code><span class="cm">// Triggers recomposition:</span>
+<span class="cm">// 1. State read inside the composable changes</span>
+<span class="cm">// 2. Parameters passed to composable change</span>
+
+<span class="an">@Composable</span>
+<span class="kw">fun</span> <span class="fn">Counter</span>() {
+    <span class="kw">var</span> <span class="cn">count</span> <span class="kw">by</span> <span class="fn">remember</span> { <span class="fn">mutableStateOf</span>(<span class="cn">0</span>) }
+    <span class="cm">// Clicking triggers recomposition of Counter() only</span>
+    <span class="ty">Button</span>(<span class="cn">onClick</span> = { count++ }) { <span class="ty">Text</span>(<span class="st">"Count: </span><span class="cn">$count</span><span class="st">"</span>) }
+}
+
+<span class="cm">// OPTIMIZATION 1: Stable types avoid unnecessary recomposition</span>
+<span class="cm">// Compose considers a type "stable" if:</span>
+<span class="cm">// - All public properties are immutable (val), OR</span>
+<span class="cm">// - Annotated with @Stable/@Immutable</span>
+<span class="an">@Immutable</span> <span class="cm">// tells Compose: this never changes internally</span>
+<span class="kw">data class</span> <span class="ty">UserUiState</span>(<span class="kw">val</span> name: <span class="ty">String</span>, <span class="kw">val</span> age: <span class="ty">Int</span>)
+
+<span class="cm">// OPTIMIZATION 2: derivedStateOf — avoid recomposing when derived value unchanged</span>
+<span class="kw">val</span> <span class="cn">showTopBar</span> <span class="kw">by</span> <span class="fn">remember</span> { <span class="fn">derivedStateOf</span> { scrollState.value == <span class="cn">0</span> } }
+<span class="cm">// Without derivedStateOf: recomposes on EVERY scroll pixel</span>
+<span class="cm">// With derivedStateOf: only recomposes when showTopBar CHANGES (true↔false)</span>
+
+<span class="cm">// OPTIMIZATION 3: key() — give items stable identity</span>
+<span class="fn">LazyColumn</span> {
+    <span class="fn">items</span>(users, <span class="cn">key</span> = { it.id }) { user -> <span class="cm">// stable key = proper recomposition</span>
+        <span class="fn">UserItem</span>(user = user)
+    }
+}
+
+<span class="cm">// OPTIMIZATION 4: Move state down — lambda captures avoid recomposition</span>
+<span class="cm">// WRONG: count change recomposes Parent AND Button unnecessarily</span>
+<span class="an">@Composable</span>
+<span class="kw">fun</span> <span class="fn">Parent</span>() {
+    <span class="kw">var</span> <span class="cn">count</span> <span class="kw">by</span> <span class="fn">remember</span> { <span class="fn">mutableStateOf</span>(<span class="cn">0</span>) }
+    <span class="fn">ExpensiveChild</span>(count = count, onClick = { count++ }) <span class="cm">// recomposes every click</span>
+}
+<span class="cm">// BETTER: pass lambda instead of value</span>
+<span class="an">@Composable</span>
+<span class="kw">fun</span> <span class="fn">Parent</span>() {
+    <span class="kw">var</span> <span class="cn">count</span> <span class="kw">by</span> <span class="fn">remember</span> { <span class="fn">mutableStateOf</span>(<span class="cn">0</span>) }
+    <span class="fn">ExpensiveChild</span>(onClick = { count++ }) <span class="cm">// lambda is stable — no recompose</span>
+}</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q2</span><span class="qt">remember vs rememberSaveable — what is the difference?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// remember: survives RECOMPOSITION. Lost on rotation or process death.</span>
+<span class="kw">var</span> <span class="cn">count</span> <span class="kw">by</span> <span class="fn">remember</span> { <span class="fn">mutableStateOf</span>(<span class="cn">0</span>) }
+
+<span class="cm">// rememberSaveable: survives recomposition AND configuration changes (rotation)</span>
+<span class="cm">// Stores in Bundle — same limits as onSaveInstanceState</span>
+<span class="kw">var</span> <span class="cn">text</span> <span class="kw">by</span> <span class="fn">rememberSaveable</span> { <span class="fn">mutableStateOf</span>(<span class="st">""</span>) } <span class="cm">// survives rotation</span>
+
+<span class="cm">// For complex types: use custom Saver</span>
+<span class="kw">val</span> <span class="cn">userSaver</span> = <span class="fn">listSaver</span>&lt;<span class="ty">User</span>, <span class="ty">Any</span>&gt;(
+    save = { <span class="fn">listOf</span>(it.id, it.name) },
+    restore = { <span class="ty">User</span>(it[<span class="cn">0</span>] <span class="kw">as</span> <span class="ty">String</span>, it[<span class="cn">1</span>] <span class="kw">as</span> <span class="ty">String</span>) }
+)
+<span class="kw">var</span> <span class="cn">user</span> <span class="kw">by</span> <span class="fn">rememberSaveable</span>(stateSaver = userSaver) { <span class="fn">mutableStateOf</span>(<span class="ty">User</span>(<span class="st">""</span>, <span class="st">""</span>)) }
+
+<span class="cm">// When to use which:</span>
+<span class="cm">// remember: ephemeral UI state (animation values, expanded state while visible)</span>
+<span class="cm">// rememberSaveable: user-entered data, scroll position, selection state</span>
+<span class="cm">// ViewModel state: everything that outlives the screen (data from network)</span></code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q3</span><span class="qt">What is State Hoisting and why is it important?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>State hoisting = moving state up to the caller, making the composable <strong>stateless</strong> (just renders what it's given). Pattern: replace internal state with a parameter + callback pair.</p>
+<pre><code><span class="cm">// STATEFUL (hard to test, hard to reuse)</span>
+<span class="an">@Composable</span>
+<span class="kw">fun</span> <span class="fn">SearchBar</span>() {
+    <span class="kw">var</span> <span class="cn">query</span> <span class="kw">by</span> <span class="fn">remember</span> { <span class="fn">mutableStateOf</span>(<span class="st">""</span>) }
+    <span class="ty">TextField</span>(value = query, <span class="cn">onValueChange</span> = { query = it })
+}
+
+<span class="cm">// STATELESS — hoisted (easy to test, reusable)</span>
+<span class="an">@Composable</span>
+<span class="kw">fun</span> <span class="fn">SearchBar</span>(query: <span class="ty">String</span>, <span class="cn">onQueryChange</span>: (<span class="ty">String</span>) -> <span class="ty">Unit</span>) {
+    <span class="ty">TextField</span>(value = query, <span class="cn">onValueChange</span> = onQueryChange)
+}
+
+<span class="cm">// Stateful wrapper (ViewModel owns state)</span>
+<span class="an">@Composable</span>
+<span class="kw">fun</span> <span class="fn">SearchScreen</span>(viewModel: <span class="ty">SearchViewModel</span> = <span class="fn">hiltViewModel</span>()) {
+    <span class="kw">val</span> <span class="cn">query</span> <span class="kw">by</span> viewModel.query.<span class="fn">collectAsStateWithLifecycle</span>()
+    <span class="fn">SearchBar</span>(query = query, <span class="cn">onQueryChange</span> = viewModel::<span class="fn">onQueryChange</span>)
+}
+<span class="cm">// Benefits: SearchBar is pure function — preview works, easy to test, reusable</span></code></pre>
+</div>
+</details>
+
+<h2>Side Effects</h2>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q4</span><span class="qt">Explain all Compose side effects: LaunchedEffect, SideEffect, DisposableEffect, produceState</span><span class="dif hard">Hard — Google Favorite</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// LaunchedEffect: launch a coroutine scoped to the composable's lifecycle</span>
+<span class="cm">// Restarts when keys change. Cancelled when composable leaves composition.</span>
+<span class="an">@Composable</span>
+<span class="kw">fun</span> <span class="fn">UserProfile</span>(userId: <span class="ty">String</span>) {
+    <span class="fn">LaunchedEffect</span>(userId) { <span class="cm">// re-runs when userId changes</span>
+        viewModel.<span class="fn">loadUser</span>(userId) <span class="cm">// suspend call ok here</span>
+    }
+}
+<span class="cm">// LaunchedEffect(Unit) = run once on first composition</span>
+<span class="cm">// LaunchedEffect(key1, key2) = re-run when either key changes</span>
+
+<span class="cm">// SideEffect: runs after every SUCCESSFUL recomposition</span>
+<span class="cm">// Use to sync Compose state to non-Compose code</span>
+<span class="an">@Composable</span>
+<span class="kw">fun</span> <span class="fn">TrackScreen</span>(screenName: <span class="ty">String</span>, <span class="cn">analytics</span>: <span class="ty">Analytics</span>) {
+    <span class="fn">SideEffect</span> {
+        analytics.<span class="fn">logScreenView</span>(screenName) <span class="cm">// sync analytics after every recompose</span>
+    }
+}
+
+<span class="cm">// DisposableEffect: setup + cleanup for non-coroutine effects</span>
+<span class="cm">// onDispose called when keys change OR composable leaves composition</span>
+<span class="an">@Composable</span>
+<span class="kw">fun</span> <span class="fn">LocationTracker</span>(onLocationUpdate: (<span class="ty">Location</span>) -> <span class="ty">Unit</span>) {
+    <span class="kw">val</span> <span class="cn">context</span> = <span class="fn">LocalContext</span>.current
+    <span class="fn">DisposableEffect</span>(<span class="ty">Unit</span>) {
+        <span class="kw">val</span> <span class="cn">listener</span> = <span class="ty">LocationListener</span> { onLocationUpdate(it) }
+        locationManager.<span class="fn">requestUpdates</span>(listener)
+        <span class="fn">onDispose</span> {
+            locationManager.<span class="fn">removeUpdates</span>(listener) <span class="cm">// cleanup!</span>
+        }
+    }
+}
+
+<span class="cm">// produceState: convert non-Compose async data to State</span>
+<span class="an">@Composable</span>
+<span class="kw">fun</span> <span class="fn">remoteImage</span>(url: <span class="ty">String</span>): <span class="ty">State</span>&lt;<span class="ty">Bitmap</span>?&gt; = <span class="fn">produceState</span>&lt;<span class="ty">Bitmap</span>?&gt;(<span class="cn">initialValue</span> = <span class="kw">null</span>, url) {
+    value = imageLoader.<span class="fn">load</span>(url) <span class="cm">// suspend call, sets value when done</span>
+    <span class="fn">awaitDispose</span> { imageLoader.<span class="fn">cancel</span>(url) }
+}
+
+<span class="cm">// rememberCoroutineScope: get scope tied to composition (for event-triggered coroutines)</span>
+<span class="an">@Composable</span>
+<span class="kw">fun</span> <span class="fn">SnackbarDemo</span>() {
+    <span class="kw">val</span> <span class="cn">scope</span> = <span class="fn">rememberCoroutineScope</span>() <span class="cm">// tied to composition</span>
+    <span class="kw">val</span> <span class="cn">snackbarHost</span> = <span class="fn">remember</span> { <span class="ty">SnackbarHostState</span>() }
+    <span class="ty">Button</span>(<span class="cn">onClick</span> = {
+        scope.<span class="fn">launch</span> { snackbarHost.<span class="fn">showSnackbar</span>(<span class="st">"Done!"</span>) } <span class="cm">// triggered by event</span>
+    }) { <span class="ty">Text</span>(<span class="st">"Show"</span>) }
+}</code></pre>
+<div class="note nred">⚠ Never start coroutines directly in composable body — they run on every recomposition! Use LaunchedEffect or rememberCoroutineScope.</div>
+</div>
+</details>
+
+<h2>Navigation & Architecture</h2>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q5</span><span class="qt">How does Navigation in Compose work? Type-safe navigation?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// Basic Navigation (Navigation Compose)</span>
+<span class="kw">val</span> <span class="cn">navController</span> = <span class="fn">rememberNavController</span>()
+<span class="ty">NavHost</span>(<span class="cn">navController</span> = navController, <span class="cn">startDestination</span> = <span class="st">"home"</span>) {
+    <span class="fn">composable</span>(<span class="st">"home"</span>) { <span class="fn">HomeScreen</span>(<span class="cn">onNavigate</span> = { navController.<span class="fn">navigate</span>(<span class="st">"detail/42"</span>) }) }
+    <span class="fn">composable</span>(<span class="st">"detail/{id}"</span>, <span class="cn">arguments</span> = <span class="fn">listOf</span>(<span class="fn">navArgument</span>(<span class="st">"id"</span>) { type = <span class="ty">NavType</span>.IntType })) {
+        <span class="kw">val</span> <span class="cn">id</span> = it.arguments?.getInt(<span class="st">"id"</span>)
+        <span class="fn">DetailScreen</span>(id = id)
+    }
+}
+
+<span class="cm">// Type-safe navigation (Navigation 2.8+ with Kotlin Serialization)</span>
+<span class="an">@Serializable</span> <span class="kw">object</span> <span class="ty">Home</span>
+<span class="an">@Serializable</span> <span class="kw">data class</span> <span class="ty">Detail</span>(<span class="kw">val</span> id: <span class="ty">Int</span>)
+
+<span class="ty">NavHost</span>(<span class="cn">navController</span>, <span class="cn">startDestination</span> = <span class="ty">Home</span>) {
+    <span class="fn">composable</span>&lt;<span class="ty">Home</span>&gt; { <span class="fn">HomeScreen</span>(<span class="cn">onNavigate</span> = { navController.<span class="fn">navigate</span>(<span class="ty">Detail</span>(<span class="cn">42</span>)) }) }
+    <span class="fn">composable</span>&lt;<span class="ty">Detail</span>&gt; { backStackEntry ->
+        <span class="kw">val</span> <span class="cn">detail</span> = backStackEntry.<span class="fn">toRoute</span>&lt;<span class="ty">Detail</span>&gt;()
+        <span class="fn">DetailScreen</span>(id = detail.id)
+    }
+}
+
+<span class="cm">// Navigate to ViewModel via Hilt</span>
+<span class="an">@Composable</span>
+<span class="kw">fun</span> <span class="fn">HomeScreen</span>(viewModel: <span class="ty">HomeViewModel</span> = <span class="fn">hiltViewModel</span>()) {
+    <span class="kw">val</span> <span class="cn">uiState</span> <span class="kw">by</span> viewModel.uiState.<span class="fn">collectAsStateWithLifecycle</span>()
+}</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q6</span><span class="qt">How do you collect flows safely in Compose?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// collectAsState — always collecting, even when screen is in background</span>
+<span class="kw">val</span> <span class="cn">state</span> = viewModel.uiState.<span class="fn">collectAsState</span>()
+
+<span class="cm">// collectAsStateWithLifecycle — CORRECT approach for production</span>
+<span class="cm">// Stops collection when lifecycle is below STARTED (app backgrounded)</span>
+<span class="cm">// Saves battery, prevents background processing</span>
+<span class="kw">val</span> <span class="cn">state</span> <span class="kw">by</span> viewModel.uiState.<span class="fn">collectAsStateWithLifecycle</span>()
+
+<span class="cm">// For one-time events from ViewModel</span>
+<span class="an">@Composable</span>
+<span class="kw">fun</span> <span class="fn">MyScreen</span>(viewModel: <span class="ty">MyViewModel</span> = <span class="fn">hiltViewModel</span>(), <span class="cn">navController</span>: <span class="ty">NavController</span>) {
+    <span class="fn">LaunchedEffect</span>(<span class="ty">Unit</span>) {
+        viewModel.events.<span class="fn">collect</span> { event ->
+            <span class="kw">when</span> (event) {
+                <span class="kw">is</span> <span class="ty">Event</span>.<span class="ty">Navigate</span> -> navController.<span class="fn">navigate</span>(event.route)
+                <span class="kw">is</span> <span class="ty">Event</span>.<span class="ty">ShowError</span> -> <span class="cm">/* show snackbar */</span>
+            }
+        }
+    }
+}</code></pre>
+<div class="note ngrn">✓ Google's lifecycle-aware library: implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q7</span><span class="qt">What is CompositionLocal and when should you use it?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// CompositionLocal: implicit data passing down the composition tree</span>
+<span class="cm">// Like React Context — avoids passing params through every layer</span>
+
+<span class="cm">// Built-in CompositionLocals:</span>
+<span class="kw">val</span> <span class="cn">context</span> = <span class="ty">LocalContext</span>.current
+<span class="kw">val</span> <span class="cn">density</span> = <span class="ty">LocalDensity</span>.current
+<span class="kw">val</span> <span class="cn">colorScheme</span> = <span class="ty">MaterialTheme</span>.colorScheme <span class="cm">// uses CompositionLocal internally</span>
+
+<span class="cm">// Custom CompositionLocal</span>
+<span class="kw">val</span> <span class="ty">LocalAnalytics</span> = <span class="fn">compositionLocalOf</span>&lt;<span class="ty">Analytics</span>&gt; { error(<span class="st">"No analytics provided"</span>) }
+
+<span class="an">@Composable</span>
+<span class="kw">fun</span> <span class="fn">App</span>() {
+    <span class="ty">CompositionLocalProvider</span>(<span class="ty">LocalAnalytics</span> provides <span class="ty">AnalyticsImpl</span>()) {
+        <span class="fn">MainNavigation</span>() <span class="cm">// all descendants can access LocalAnalytics.current</span>
+    }
+}
+
+<span class="an">@Composable</span>
+<span class="kw">fun</span> <span class="fn">SomeDeepChild</span>() {
+    <span class="kw">val</span> <span class="cn">analytics</span> = <span class="ty">LocalAnalytics</span>.current <span class="cm">// no need to pass through every parent</span>
+}
+
+<span class="cm">// compositionLocalOf vs staticCompositionLocalOf:</span>
+<span class="cm">// compositionLocalOf: only recomposes READERS when value changes (smart)</span>
+<span class="cm">// staticCompositionLocalOf: recomposes ALL children when value changes (use for truly static data)</span></code></pre>
+</div>
+</details>
+</main>
+</body>
+</html>

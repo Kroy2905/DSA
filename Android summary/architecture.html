@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Android Architecture — Interview Q&A</title>
+<style>:root{--bg:#06090e;--s1:#0a0f18;--s2:#0e1520;--s3:#131d2a;--b1:#182030;--b2:#1e2c3e;--txt:#cce0ee;--muted:#4e6878;--grn:#10a060;--grnb:#031508;--grnl:#44d890;--blu:#1e60d8;--blub:#040e28;--blul:#6aaeff;--pur:#6848b8;--purb:#0f0828;--purl:#b090ff;--amb:#c09010;--ambb:#201500;--ambl:#f0c040;--red:#b03030;--redb:#1e0808;--redl:#f07070;--cya:#0e8898;--cyab:#041418;--cyal:#40d8e8;--ora:#c06020;--orab:#201008;--oral:#f0a060}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,sans-serif;font-size:13px;line-height:1.6;min-height:100vh}
+nav{background:var(--s1);border-bottom:1px solid var(--b1);position:sticky;top:0;z-index:100;overflow-x:auto}
+.nav-inner{display:flex;align-items:center;padding:0 12px;gap:0;min-width:max-content}
+nav a{color:var(--muted);text-decoration:none;font-size:11px;font-weight:500;padding:12px 9px;border-bottom:2px solid transparent;white-space:nowrap;display:block}
+nav a:hover{color:var(--txt)}
+nav a.active{color:var(--grnl);border-bottom-color:var(--grn)}
+main{max-width:980px;padding:28px 20px 80px;margin:0 auto}
+h1{font-size:20px;font-weight:700;margin-bottom:6px;letter-spacing:-.02em}
+.sub{font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.6}
+h2{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:24px 0 10px;display:flex;align-items:center;gap:8px}
+h2::after{content:'';flex:1;height:1px;background:var(--b2)}
+details{border-radius:9px;border:1px solid var(--b2);background:var(--s1);margin-bottom:7px;overflow:hidden}
+details[open]{border-color:#2e4458}
+summary{padding:12px 15px;cursor:pointer;display:flex;align-items:center;gap:9px;list-style:none;font-weight:500;font-size:13px;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:'\203A';font-size:16px;color:var(--muted);transition:.2s;flex-shrink:0;width:14px;display:inline-block}
+details[open] summary::before{transform:rotate(90deg);color:var(--grnl)}
+.qn{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;flex-shrink:0;font-family:monospace}
+.qt{flex:1}
+.dif{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;border:1px solid;flex-shrink:0;letter-spacing:.06em;text-transform:uppercase}
+.easy{background:var(--grnb);color:var(--grnl);border-color:var(--grn)}
+.med{background:var(--ambb);color:var(--ambl);border-color:var(--amb)}
+.hard{background:var(--redb);color:var(--redl);border-color:var(--red)}
+.goog{background:var(--purb);color:var(--purl);border-color:var(--pur)}
+.ans{padding:0 15px 14px;border-top:1px solid var(--b2)}
+.ans p{font-size:12px;color:var(--muted);line-height:1.7;margin:10px 0 0}
+.ans p strong{color:var(--txt)}
+.ans ul,.ans ol{padding-left:18px;font-size:12px;color:var(--muted);line-height:1.85;margin:8px 0}
+.ans li strong{color:var(--txt)}
+pre{background:#070d14;border:1px solid var(--b2);border-radius:7px;padding:12px 14px;overflow-x:auto;margin:10px 0;font-size:11px;line-height:1.7;color:#a8c8e8}
+code{font-family:'JetBrains Mono','Fira Mono',monospace;font-size:11px}
+.kw{color:#79b8ff}.cn{color:#44d890}.st{color:#f0a060}.cm{color:#4e6878}.fn{color:#40d8e8}.an{color:#f0c040}.ty{color:#b090ff}
+.note{border-radius:7px;border:1px solid;padding:9px 12px;font-size:11px;line-height:1.6;margin:10px 0}
+.ngrn{background:var(--grnb);border-color:var(--grn);color:var(--grnl)}
+.namb{background:var(--ambb);border-color:var(--amb);color:var(--ambl)}
+.nred{background:var(--redb);border-color:var(--red);color:var(--redl)}
+.nblu{background:var(--blub);border-color:var(--blu);color:var(--blul)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0}
+@media(max-width:680px){.g2,.g3{grid-template-columns:1fr}}
+.gc{background:var(--s2);border:1px solid var(--b2);border-radius:7px;padding:12px}
+.gc h4{font-size:11px;font-weight:700;margin-bottom:6px}
+.gc p,.gc li{font-size:11px;color:var(--muted);line-height:1.6}
+.ic{background:var(--s3);border:1px solid var(--b2);border-radius:4px;padding:1px 6px;font-family:monospace;font-size:11px;color:var(--blul)}
+a{color:var(--grnl)}
+</style>
+</head>
+<body>
+<nav><div class="nav-inner"><a href="roadmap.html">🗺 Roadmap</a><a href="android_core.html">📱 Android Core</a><a href="android_advanced.html">🔥 Advanced</a><a href="architecture.html" class="active">🏛 Architecture</a><a href="kotlin.html">🎯 Kotlin</a><a href="coroutines_flow.html">⚡ Coroutines</a><a href="compose.html">🎨 Compose</a><a href="dependency_injection.html">💉 DI</a><a href="networking_storage.html">🌐 Net & Storage</a><a href="testing.html">🧪 Testing</a><a href="system_design.html">🏗 System Design</a><a href="dsa_google.html">🧩 DSA</a></div></nav>
+<main>
+<h1>🏛 Architecture — Interview Questions</h1>
+<p class="sub">MVVM, MVI, Clean Architecture, Repository pattern, ViewModel, State management — Google expects you to justify every architectural decision.</p>
+
+<h2>Architecture Patterns</h2>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q1</span><span class="qt">Compare MVVM, MVP, and MVI — when would you choose each?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<div class="g3">
+<div class="gc" style="border-color:var(--grn)"><h4 style="color:var(--grnl)">MVVM</h4><p><strong>View</strong> observes <strong>ViewModel</strong> state. ViewModel doesn't know about View. Uses LiveData/StateFlow. Default recommendation for Android (Google). Best for: most apps, especially with Jetpack.</p></div>
+<div class="gc" style="border-color:var(--blu)"><h4 style="color:var(--blul)">MVP</h4><p><strong>Presenter</strong> has direct reference to <strong>View</strong> interface. Bidirectional — tight coupling. Good: simple screens, legacy codebases. Bad: boilerplate, hard to test without mocking View.</p></div>
+<div class="gc" style="border-color:var(--pur)"><h4 style="color:var(--purl)">MVI</h4><p>Unidirectional: <strong>Intent → Model → View</strong>. Single immutable state, one-way data flow, deterministic. Best for: complex UIs, screens with many states, real-time updates. Harder to set up.</p></div>
+</div>
+<pre><code><span class="cm">// MVVM — ViewModel exposes state, View observes</span>
+<span class="kw">class</span> <span class="ty">LoginViewModel</span> : <span class="ty">ViewModel</span>() {
+    <span class="kw">private val</span> <span class="cn">_uiState</span> = <span class="ty">MutableStateFlow</span>(<span class="ty">LoginUiState</span>())
+    <span class="kw">val</span> <span class="cn">uiState</span>: <span class="ty">StateFlow</span>&lt;<span class="ty">LoginUiState</span>&gt; = _uiState.<span class="fn">asStateFlow</span>()
+
+    <span class="kw">fun</span> <span class="fn">login</span>(email: <span class="ty">String</span>, password: <span class="ty">String</span>) {
+        _uiState.<span class="fn">update</span> { it.<span class="fn">copy</span>(isLoading = <span class="kw">true</span>) }
+        viewModelScope.<span class="fn">launch</span> {
+            <span class="kw">val</span> <span class="cn">result</span> = repository.<span class="fn">login</span>(email, password)
+            _uiState.<span class="fn">update</span> { it.<span class="fn">copy</span>(isLoading = <span class="kw">false</span>, user = result) }
+        }
+    }
+}
+
+<span class="cm">// MVI — Single sealed intent, reducer pattern</span>
+<span class="kw">sealed class</span> <span class="ty">LoginIntent</span> {
+    <span class="kw">data class</span> <span class="ty">Login</span>(<span class="kw">val</span> email: <span class="ty">String</span>, <span class="kw">val</span> password: <span class="ty">String</span>) : <span class="ty">LoginIntent</span>()
+    <span class="kw">object</span> <span class="ty">Logout</span> : <span class="ty">LoginIntent</span>()
+}
+<span class="kw">fun</span> <span class="fn">processIntent</span>(intent: <span class="ty">LoginIntent</span>) { <span class="cm">/* reduces state */</span> }</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q2</span><span class="qt">Explain Clean Architecture in Android — layers, dependencies, why each exists</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// Dependency rule: outer layers depend on inner, never inward</span>
+<span class="cm">// Presentation → Domain ← Data</span>
+
+<span class="cm">// DOMAIN LAYER (pure Kotlin, no Android dependencies)</span>
+<span class="kw">data class</span> <span class="ty">User</span>(<span class="kw">val</span> id: <span class="ty">String</span>, <span class="kw">val</span> name: <span class="ty">String</span>) <span class="cm">// Entity</span>
+
+<span class="kw">interface</span> <span class="ty">UserRepository</span> { <span class="cm">// Repository interface</span>
+    <span class="kw">suspend fun</span> <span class="fn">getUser</span>(id: <span class="ty">String</span>): <span class="ty">User</span>
+}
+
+<span class="kw">class</span> <span class="ty">GetUserUseCase</span>(<span class="kw">private val</span> <span class="cn">repo</span>: <span class="ty">UserRepository</span>) { <span class="cm">// UseCase</span>
+    <span class="kw">suspend operator fun</span> <span class="fn">invoke</span>(id: <span class="ty">String</span>): <span class="ty">User</span> = repo.<span class="fn">getUser</span>(id)
+}
+
+<span class="cm">// DATA LAYER (implements domain interfaces)</span>
+<span class="kw">class</span> <span class="ty">UserRepositoryImpl</span>(
+    <span class="kw">private val</span> <span class="cn">api</span>: <span class="ty">UserApi</span>,    <span class="cm">// remote data source</span>
+    <span class="kw">private val</span> <span class="cn">dao</span>: <span class="ty">UserDao</span>     <span class="cm">// local data source</span>
+) : <span class="ty">UserRepository</span> {
+    <span class="kw">override suspend fun</span> <span class="fn">getUser</span>(id: <span class="ty">String</span>): <span class="ty">User</span> {
+        <span class="kw">return</span> dao.<span class="fn">getUser</span>(id) ?: api.<span class="fn">fetchUser</span>(id).<span class="fn">also</span> { dao.<span class="fn">insert</span>(it) }
+    }
+}
+
+<span class="cm">// PRESENTATION LAYER (MVVM with ViewModel)</span>
+<span class="kw">class</span> <span class="ty">UserViewModel</span>(<span class="kw">private val</span> <span class="cn">getUser</span>: <span class="ty">GetUserUseCase</span>) : <span class="ty">ViewModel</span>() {
+    <span class="kw">fun</span> <span class="fn">loadUser</span>(id: <span class="ty">String</span>) = viewModelScope.<span class="fn">launch</span> {
+        <span class="kw">val</span> <span class="cn">user</span> = <span class="fn">getUser</span>(id) <span class="cm">// calls UseCase, not repository directly</span>
+    }
+}</code></pre>
+<p><strong>Why UseCases?</strong> Single responsibility — each use case does ONE thing. Reusable across ViewModels. Easy to unit test (pure Kotlin, no Android). Encapsulates business logic away from UI.</p>
+<div class="note ngrn">✓ Testability is the killer benefit: domain layer has zero Android imports — test with plain JUnit, no mocking framework needed.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q3</span><span class="qt">Why does ViewModel survive configuration changes? How is it implemented?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p>When a configuration change occurs (rotation, language change), Android calls <span class="ic">onDestroy()</span> and recreates the Activity. But before destroying, it calls <span class="ic">onRetainNonConfigurationInstance()</span> internally and saves the <strong>ViewModelStore</strong>.</p>
+<p>The <strong>ViewModelStore</strong> is a HashMap kept alive by the Activity's <strong>NonConfigurationInstances</strong>. The new Activity receives the same ViewModelStore, so <span class="ic">ViewModelProvider.get()</span> returns the existing ViewModel instead of creating a new one.</p>
+<pre><code><span class="cm">// Under the hood (simplified)</span>
+<span class="kw">class</span> <span class="ty">ViewModelStore</span> {
+    <span class="kw">private val</span> <span class="cn">map</span> = <span class="ty">HashMap</span>&lt;<span class="ty">String</span>, <span class="ty">ViewModel</span>&gt;()
+    <span class="kw">fun</span> <span class="fn">put</span>(key: <span class="ty">String</span>, vm: <span class="ty">ViewModel</span>) = map.<span class="fn">put</span>(key, vm)
+    <span class="kw">fun</span> <span class="fn">get</span>(key: <span class="ty">String</span>) = map[key]
+    <span class="kw">fun</span> <span class="fn">clear</span>() = map.values.<span class="fn">forEach</span> { it.<span class="fn">onCleared</span>() }
+    <span class="cm">// clear() called when user FINISHES the activity (not on rotation)</span>
+}
+
+<span class="cm">// ViewModelProvider uses the store:</span>
+<span class="kw">val</span> <span class="cn">viewModel</span> = <span class="ty">ViewModelProvider</span>(<span class="kw">this</span>)[<span class="ty">MyViewModel</span>::<span class="kw">class</span>.java]
+<span class="cm">// First call: creates new ViewModel, stores it</span>
+<span class="cm">// After rotation: returns SAME ViewModel from store</span></code></pre>
+<p>ViewModel's <span class="ic">onCleared()</span> is called only when the Activity is truly finishing (user pressed back, <span class="ic">finish()</span> called) — not on rotation.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q4</span><span class="qt">LiveData vs StateFlow vs SharedFlow — which to use when and why?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<div class="g3">
+<div class="gc" style="border-color:var(--ambb)"><h4 style="color:var(--ambl)">LiveData</h4><p>Lifecycle-aware. Auto-disposes. Only on main thread. Limited operators. Good for: UI state in legacy code with Views. Bad: no backpressure, can't do complex transformations.</p></div>
+<div class="gc" style="border-color:var(--grn)"><h4 style="color:var(--grnl)">StateFlow</h4><p>Hot, always has value, replays last to new subscribers. Requires CoroutineScope. Works on any thread. Good for: UI state in MVVM (replaces LiveData). Must collect with lifecycle awareness.</p></div>
+<div class="gc" style="border-color:var(--blu)"><h4 style="color:var(--blul)">SharedFlow</h4><p>Hot, no initial value, configurable replay. Good for: one-time events (navigation, toasts), events that shouldn't be replayed to late subscribers.</p></div>
+</div>
+<pre><code><span class="kw">class</span> <span class="ty">MyViewModel</span> : <span class="ty">ViewModel</span>() {
+    <span class="cm">// StateFlow for UI state — replays last state to new observers</span>
+    <span class="kw">private val</span> <span class="cn">_uiState</span> = <span class="ty">MutableStateFlow</span>(<span class="ty">UiState</span>())
+    <span class="kw">val</span> <span class="cn">uiState</span> = _uiState.<span class="fn">asStateFlow</span>()
+
+    <span class="cm">// SharedFlow for events — don't replay old navigation events</span>
+    <span class="kw">private val</span> <span class="cn">_events</span> = <span class="ty">MutableSharedFlow</span>&lt;<span class="ty">UiEvent</span>&gt;()
+    <span class="kw">val</span> <span class="cn">events</span> = _events.<span class="fn">asSharedFlow</span>()
+
+    <span class="kw">fun</span> <span class="fn">onLoginSuccess</span>() {
+        _events.<span class="fn">tryEmit</span>(<span class="ty">UiEvent</span>.NavigateToHome) <span class="cm">// one-time event</span>
+    }
+}
+
+<span class="cm">// In Fragment — collect with lifecycle awareness</span>
+viewLifecycleOwner.lifecycleScope.<span class="fn">launch</span> {
+    <span class="fn">repeatOnLifecycle</span>(<span class="ty">Lifecycle</span>.<span class="ty">State</span>.STARTED) {
+        <span class="cm">// Suspends when STOPPED, resumes when STARTED</span>
+        viewModel.uiState.<span class="fn">collect</span> { state -> <span class="fn">renderUi</span>(state) }
+    }
+}</code></pre>
+<div class="note nred">⚠ Never use lifecycleScope.launch { flow.collect {} } directly — it doesn't auto-cancel when app is backgrounded. Always use repeatOnLifecycle(STARTED) or flowWithLifecycle.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q5</span><span class="qt">What is the Repository pattern? What problem does it solve?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>Repository is an abstraction layer between data sources and the rest of the app. It decides where data comes from (network, cache, database) — the ViewModel doesn't care.</p>
+<pre><code><span class="kw">class</span> <span class="ty">UserRepository</span>(
+    <span class="kw">private val</span> <span class="cn">remoteSource</span>: <span class="ty">UserRemoteDataSource</span>,
+    <span class="kw">private val</span> <span class="cn">localSource</span>: <span class="ty">UserLocalDataSource</span>
+) {
+    <span class="kw">fun</span> <span class="fn">getUsers</span>(): <span class="ty">Flow</span>&lt;<span class="ty">List</span>&lt;<span class="ty">User</span>&gt;&gt; = <span class="fn">flow</span> {
+        <span class="cm">// 1. Emit cached data immediately</span>
+        <span class="kw">val</span> <span class="cn">cached</span> = localSource.<span class="fn">getUsers</span>()
+        <span class="kw">if</span> (cached.<span class="fn">isNotEmpty</span>()) <span class="fn">emit</span>(cached)
+
+        <span class="cm">// 2. Fetch fresh data</span>
+        <span class="kw">val</span> <span class="cn">fresh</span> = remoteSource.<span class="fn">fetchUsers</span>()
+
+        <span class="cm">// 3. Cache and emit fresh data</span>
+        localSource.<span class="fn">insertAll</span>(fresh)
+        <span class="fn">emit</span>(fresh)
+    }
+}
+
+<span class="cm">// ViewModel just asks repository — doesn't know about network/DB</span>
+<span class="kw">class</span> <span class="ty">UsersViewModel</span>(<span class="kw">private val</span> <span class="cn">repo</span>: <span class="ty">UserRepository</span>) : <span class="ty">ViewModel</span>() {
+    <span class="kw">val</span> <span class="cn">users</span> = repo.<span class="fn">getUsers</span>().<span class="fn">stateIn</span>(viewModelScope, <span class="ty">SharingStarted</span>.WhileSubscribed(<span class="cn">5000</span>), emptyList())
+}</code></pre>
+<p><strong>Benefits:</strong> Single source of truth · Easy to switch data sources · Testable (mock the repository) · Consistent data strategy across app</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q6</span><span class="qt">How do you handle one-time events (navigation, toasts) in MVVM to avoid issues on rotation?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p>This is a known problem: if you use StateFlow/LiveData for events and the user rotates, the event gets replayed. Solutions:</p>
+<pre><code><span class="cm">// Option 1: SharedFlow with replay=0 (won't replay to new subscribers)</span>
+<span class="kw">private val</span> <span class="cn">_events</span> = <span class="ty">MutableSharedFlow</span>&lt;<span class="ty">UiEvent</span>&gt;(replay = <span class="cn">0</span>)
+<span class="kw">val</span> <span class="cn">events</span>: <span class="ty">SharedFlow</span>&lt;<span class="ty">UiEvent</span>&gt; = _events.<span class="fn">asSharedFlow</span>()
+
+<span class="cm">// Option 2: Channel (delivers to one consumer, drops if nobody listening)</span>
+<span class="kw">private val</span> <span class="cn">_events</span> = <span class="ty">Channel</span>&lt;<span class="ty">UiEvent</span>&gt;(<span class="ty">Channel</span>.BUFFERED)
+<span class="kw">val</span> <span class="cn">events</span>: <span class="ty">Flow</span>&lt;<span class="ty">UiEvent</span>&gt; = _events.<span class="fn">receiveAsFlow</span>()
+
+<span class="cm">// Option 3: Wrapper class (old approach, works with LiveData)</span>
+<span class="kw">class</span> <span class="ty">Event</span>&lt;T&gt;(<span class="kw">private val</span> <span class="cn">content</span>: T) {
+    <span class="kw">private var</span> <span class="cn">hasBeenHandled</span> = <span class="kw">false</span>
+    <span class="kw">fun</span> <span class="fn">getContentIfNotHandled</span>() = <span class="kw">if</span> (!hasBeenHandled) { hasBeenHandled = <span class="kw">true</span>; content } <span class="kw">else null</span>
+}
+
+<span class="cm">// Google's current recommendation: use sealed class + Channel</span>
+<span class="kw">sealed class</span> <span class="ty">UiEvent</span> {
+    <span class="kw">data class</span> <span class="ty">NavigateTo</span>(<span class="kw">val</span> route: <span class="ty">String</span>) : <span class="ty">UiEvent</span>()
+    <span class="kw">data class</span> <span class="ty">ShowToast</span>(<span class="kw">val</span> message: <span class="ty">String</span>) : <span class="ty">UiEvent</span>()
+    <span class="kw">object</span> <span class="ty">Logout</span> : <span class="ty">UiEvent</span>()
+}</code></pre>
+</div>
+</details>
+</main>
+</body>
+</html>

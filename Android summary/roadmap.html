@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Android Interview Roadmap</title>
+<style>:root{--bg:#06090e;--s1:#0a0f18;--s2:#0e1520;--s3:#131d2a;--b1:#182030;--b2:#1e2c3e;--txt:#cce0ee;--muted:#4e6878;--grn:#10a060;--grnb:#031508;--grnl:#44d890;--blu:#1e60d8;--blub:#040e28;--blul:#6aaeff;--pur:#6848b8;--purb:#0f0828;--purl:#b090ff;--amb:#c09010;--ambb:#201500;--ambl:#f0c040;--red:#b03030;--redb:#1e0808;--redl:#f07070;--cya:#0e8898;--cyab:#041418;--cyal:#40d8e8;--ora:#c06020;--orab:#201008;--oral:#f0a060}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,sans-serif;font-size:13px;line-height:1.6;min-height:100vh}
+nav{background:var(--s1);border-bottom:1px solid var(--b1);position:sticky;top:0;z-index:100;overflow-x:auto}
+.nav-inner{display:flex;align-items:center;padding:0 12px;gap:0;min-width:max-content}
+nav a{color:var(--muted);text-decoration:none;font-size:11px;font-weight:500;padding:12px 9px;border-bottom:2px solid transparent;white-space:nowrap;display:block}
+nav a:hover{color:var(--txt)}
+nav a.active{color:var(--grnl);border-bottom-color:var(--grn)}
+main{max-width:980px;padding:28px 20px 80px;margin:0 auto}
+h1{font-size:20px;font-weight:700;margin-bottom:6px;letter-spacing:-.02em}
+.sub{font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.6}
+h2{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:24px 0 10px;display:flex;align-items:center;gap:8px}
+h2::after{content:'';flex:1;height:1px;background:var(--b2)}
+details{border-radius:9px;border:1px solid var(--b2);background:var(--s1);margin-bottom:7px;overflow:hidden}
+details[open]{border-color:#2e4458}
+summary{padding:12px 15px;cursor:pointer;display:flex;align-items:center;gap:9px;list-style:none;font-weight:500;font-size:13px;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:'\203A';font-size:16px;color:var(--muted);transition:.2s;flex-shrink:0;width:14px;display:inline-block}
+details[open] summary::before{transform:rotate(90deg);color:var(--grnl)}
+.qn{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;flex-shrink:0;font-family:monospace}
+.qt{flex:1}
+.dif{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;border:1px solid;flex-shrink:0;letter-spacing:.06em;text-transform:uppercase}
+.easy{background:var(--grnb);color:var(--grnl);border-color:var(--grn)}
+.med{background:var(--ambb);color:var(--ambl);border-color:var(--amb)}
+.hard{background:var(--redb);color:var(--redl);border-color:var(--red)}
+.goog{background:var(--purb);color:var(--purl);border-color:var(--pur)}
+.ans{padding:0 15px 14px;border-top:1px solid var(--b2)}
+.ans p{font-size:12px;color:var(--muted);line-height:1.7;margin:10px 0 0}
+.ans p strong{color:var(--txt)}
+.ans ul,.ans ol{padding-left:18px;font-size:12px;color:var(--muted);line-height:1.85;margin:8px 0}
+.ans li strong{color:var(--txt)}
+pre{background:#070d14;border:1px solid var(--b2);border-radius:7px;padding:12px 14px;overflow-x:auto;margin:10px 0;font-size:11px;line-height:1.7;color:#a8c8e8}
+code{font-family:'JetBrains Mono','Fira Mono',monospace;font-size:11px}
+.kw{color:#79b8ff}.cn{color:#44d890}.st{color:#f0a060}.cm{color:#4e6878}.fn{color:#40d8e8}.an{color:#f0c040}.ty{color:#b090ff}
+.note{border-radius:7px;border:1px solid;padding:9px 12px;font-size:11px;line-height:1.6;margin:10px 0}
+.ngrn{background:var(--grnb);border-color:var(--grn);color:var(--grnl)}
+.namb{background:var(--ambb);border-color:var(--amb);color:var(--ambl)}
+.nred{background:var(--redb);border-color:var(--red);color:var(--redl)}
+.nblu{background:var(--blub);border-color:var(--blu);color:var(--blul)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0}
+@media(max-width:680px){.g2,.g3{grid-template-columns:1fr}}
+.gc{background:var(--s2);border:1px solid var(--b2);border-radius:7px;padding:12px}
+.gc h4{font-size:11px;font-weight:700;margin-bottom:6px}
+.gc p,.gc li{font-size:11px;color:var(--muted);line-height:1.6}
+.ic{background:var(--s3);border:1px solid var(--b2);border-radius:4px;padding:1px 6px;font-family:monospace;font-size:11px;color:var(--blul)}
+a{color:var(--grnl)}
+</style>
+</head>
+<body>
+<nav><div class="nav-inner"><a href="roadmap.html" class="active">🗺 Roadmap</a><a href="android_core.html">📱 Android Core</a><a href="android_advanced.html">🔥 Advanced</a><a href="architecture.html">🏛 Architecture</a><a href="kotlin.html">🎯 Kotlin</a><a href="coroutines_flow.html">⚡ Coroutines</a><a href="compose.html">🎨 Compose</a><a href="dependency_injection.html">💉 DI</a><a href="networking_storage.html">🌐 Net & Storage</a><a href="testing.html">🧪 Testing</a><a href="system_design.html">🏗 System Design</a><a href="dsa_google.html">🧩 DSA</a></div></nav>
+<main>
+<h1>🗺 Android Interview Roadmap</h1>
+<p class="sub">Targeting Google, Meta, FAANG-level Android roles. 4–6 month structured plan from fundamentals to system design.</p>
+
+<h2>What Google Tests</h2>
+<div class="g3">
+<div class="gc" style="border-color:var(--red)"><h4 style="color:var(--redl)">40% — DSA</h4><p>LeetCode medium-hard. 2 coding rounds. Trees, Graphs, DP, Sliding Window, BFS/DFS. Purely CS — no Android in these.</p></div>
+<div class="gc" style="border-color:var(--blu)"><h4 style="color:var(--blul)">30% — System Design</h4><p>Design a mobile app at scale. Offline-first, caching, pagination, architecture decisions. 1 dedicated round.</p></div>
+<div class="gc" style="border-color:var(--grn)"><h4 style="color:var(--grnl)">30% — Android Depth</h4><p>Lifecycle, threading, Jetpack, Compose, architecture, Kotlin, performance. Expect "why" not just "what".</p></div>
+</div>
+
+<h2>Month-by-Month Plan</h2>
+
+<details open>
+<summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">M1</span><span class="qt">Android Core + Kotlin Fundamentals</span><span class="dif easy">Start here</span></summary>
+<div class="ans">
+<p><strong>Week 1-2 — Android Fundamentals:</strong></p>
+<ul>
+<li>Activity &amp; Fragment lifecycle — draw it from memory</li>
+<li>Intent types (explicit/implicit), PendingIntent</li>
+<li>Task, Back Stack, Launch Modes (standard, singleTop, singleTask, singleInstance)</li>
+<li>Context types — Activity, Application, Service context; when to use each</li>
+<li>BroadcastReceiver (static vs dynamic), Service (started, bound, foreground)</li>
+<li>ContentProvider, ANR causes, Memory leak patterns</li>
+</ul>
+<p><strong>Week 3-4 — Kotlin Mastery:</strong></p>
+<ul>
+<li>Scope functions: let, apply, run, also, with — know exactly when to use each</li>
+<li>Sealed classes, data classes, object declarations</li>
+<li>Extension functions, Higher-order functions, Lambdas</li>
+<li>Null safety — ?., !!, let/run for null checks</li>
+<li>Generics, variance (in/out covariance), reified type parameters</li>
+<li>Delegation — by lazy, by observable, interface delegation</li>
+<li>inline, noinline, crossinline — understand bytecode implications</li>
+</ul>
+<p><strong>Daily DSA (30 min):</strong> Arrays, Strings, HashMaps. LeetCode Easy. Target 1-2 problems/day.</p>
+</div>
+</details>
+
+<details>
+<summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">M2</span><span class="qt">Architecture + Coroutines + Flow</span><span class="dif med">Intermediate</span></summary>
+<div class="ans">
+<p><strong>Architecture:</strong></p>
+<ul>
+<li>MVVM, MVP, MVI — differences, tradeoffs, when to choose each</li>
+<li>Clean Architecture — Domain / Data / Presentation layers</li>
+<li>Repository pattern — single source of truth</li>
+<li>UseCase (Interactor) layer — pure business logic, easy to test</li>
+<li>ViewModel — why it survives rotation (ViewModelStore, retain fragment)</li>
+<li>LiveData vs StateFlow vs SharedFlow — lifecycle awareness, hot vs cold</li>
+<li>UiState pattern — sealed class for loading/success/error</li>
+</ul>
+<p><strong>Coroutines &amp; Flow:</strong></p>
+<ul>
+<li>suspend functions, coroutine builders: launch, async, runBlocking</li>
+<li>Dispatchers — Main (UI), IO (network/disk), Default (CPU), Unconfined</li>
+<li>Structured concurrency — scope, Job, SupervisorJob, cancellation</li>
+<li>Flow (cold) vs StateFlow/SharedFlow (hot)</li>
+<li>Flow operators: map, filter, flatMapLatest, combine, zip, debounce</li>
+<li>Exception handling — try/catch in suspend, CoroutineExceptionHandler</li>
+</ul>
+<p><strong>DSA:</strong> Trees, Linked Lists, Two Pointers. LeetCode Easy-Medium.</p>
+</div>
+</details>
+
+<details>
+<summary><span class="qn" style="background:var(--purb);color:var(--purl)">M3</span><span class="qt">Jetpack Compose + DI + Networking/Storage</span><span class="dif med">Intermediate</span></summary>
+<div class="ans">
+<p><strong>Jetpack Compose:</strong></p>
+<ul>
+<li>Composable functions, recomposition, smart recomposition</li>
+<li>State: remember, rememberSaveable, State hoisting pattern</li>
+<li>Side effects: LaunchedEffect, SideEffect, DisposableEffect, derivedStateOf</li>
+<li>Navigation: NavHost, NavController, type-safe args, deep links</li>
+<li>Custom layouts, Modifiers (order matters!), Canvas drawing</li>
+</ul>
+<p><strong>DI — Hilt (Google's recommended):</strong></p>
+<ul>
+<li>@HiltAndroidApp, @AndroidEntryPoint, @HiltViewModel</li>
+<li>@Inject, @Provides, @Binds, @Module, @InstallIn</li>
+<li>Scopes: SingletonComponent, ViewModelComponent, ActivityComponent</li>
+<li>Dagger 2 fundamentals (Hilt is built on it)</li>
+</ul>
+<p><strong>Networking &amp; Storage:</strong></p>
+<ul>
+<li>Retrofit + OkHttp interceptors (logging, auth token)</li>
+<li>Room: Entity, DAO, Database, TypeConverters, migrations</li>
+<li>DataStore (Preferences + Proto) vs SharedPreferences</li>
+<li>Offline-first architecture with single source of truth</li>
+</ul>
+<p><strong>DSA:</strong> Graphs, BFS/DFS, Binary Search, Stack/Queue. LeetCode Medium.</p>
+</div>
+</details>
+
+<details>
+<summary><span class="qn" style="background:var(--redb);color:var(--redl)">M4</span><span class="qt">Advanced Android + Testing + Performance</span><span class="dif hard">Advanced</span></summary>
+<div class="ans">
+<ul>
+<li>Custom Views: measure/layout/draw cycle, onMeasure/onLayout/onDraw</li>
+<li>RecyclerView internals: RecycledViewPool, DiffUtil, ItemAnimator, ConcatAdapter</li>
+<li>Paging 3: PagingSource, RemoteMediator, PagingData</li>
+<li>WorkManager: Worker, CoroutineWorker, constraints, chaining</li>
+<li>Performance: Systrace, Profiler, Jank/janky frames, overdraw, hierarchy viewer</li>
+<li>Memory: LeakCanary, weak/soft references, bitmap recycling</li>
+<li>Animations: Property animator, ObjectAnimator, Transition API, Compose animations</li>
+<li>Testing: JUnit5, MockK, Turbine (Flow testing), Espresso, Compose UI tests</li>
+</ul>
+<p><strong>DSA:</strong> Dynamic Programming, Backtracking, Heap/Priority Queue. LeetCode Medium-Hard.</p>
+</div>
+</details>
+
+<details>
+<summary><span class="qn" style="background:var(--cyab);color:var(--cyal)">M5–6</span><span class="qt">System Design + Mock Interviews + Behavioral</span><span class="dif goog">Google Level</span></summary>
+<div class="ans">
+<p><strong>Mobile System Design (practice these):</strong></p>
+<ul>
+<li>Design Instagram Feed (infinite scroll, caching, offline)</li>
+<li>Design WhatsApp (messaging, delivery receipts, encryption)</li>
+<li>Design Uber (real-time location, maps, surge pricing)</li>
+<li>Design an Image Loading Library (like Glide/Coil)</li>
+<li>Design a Video Streaming app (YouTube)</li>
+<li>Design Twitter (Timeline, trending, notifications)</li>
+</ul>
+<p><strong>Framework for any mobile design question:</strong></p>
+<ol>
+<li>Clarify requirements (functional + non-functional)</li>
+<li>High-level architecture (layers, components)</li>
+<li>Data models (what data do we store)</li>
+<li>API design (what does the app call)</li>
+<li>Key screens and navigation</li>
+<li>Networking strategy (pagination, caching, offline)</li>
+<li>Performance and optimization</li>
+</ol>
+<p><strong>DSA:</strong> LeetCode Hard problems. Practice timed coding (45 min per problem).</p>
+<p><strong>Behavioral (STAR format):</strong> Prepare 5-6 stories about impact, conflict resolution, technical leadership, failure and learning.</p>
+</div>
+</details>
+
+<h2>All Domains</h2>
+<div class="g3">
+<div class="gc"><h4><a href="android_core.html">📱 Android Core</a></h4><p>Activity, Fragment, Intent, Service, BroadcastReceiver, Context, Lifecycle, Handler/Looper, ANR</p></div>
+<div class="gc"><h4><a href="android_advanced.html">🔥 Advanced Android</a></h4><p>Custom Views, RecyclerView, Performance, Memory, WorkManager, Paging, Animations</p></div>
+<div class="gc"><h4><a href="architecture.html">🏛 Architecture</a></h4><p>MVVM, MVI, Clean Architecture, Repository, UseCase, ViewModel, State management</p></div>
+<div class="gc"><h4><a href="kotlin.html">🎯 Kotlin</a></h4><p>Extension functions, Sealed classes, Generics, Delegation, Inline, DSL building</p></div>
+<div class="gc"><h4><a href="coroutines_flow.html">⚡ Coroutines &amp; Flow</a></h4><p>Dispatchers, Structured concurrency, Flow, StateFlow, SharedFlow, Exception handling</p></div>
+<div class="gc"><h4><a href="compose.html">🎨 Jetpack Compose</a></h4><p>Recomposition, State, Side effects, Navigation, Layouts, Canvas, Animations</p></div>
+<div class="gc"><h4><a href="dependency_injection.html">💉 DI</a></h4><p>Hilt, Dagger 2, Koin — modules, components, scopes, qualifiers</p></div>
+<div class="gc"><h4><a href="networking_storage.html">🌐 Net &amp; Storage</a></h4><p>Retrofit, OkHttp, Room, DataStore, Offline-first, Paging 3</p></div>
+<div class="gc"><h4><a href="testing.html">🧪 Testing</a></h4><p>JUnit, MockK, Turbine, Espresso, Compose tests, TDD</p></div>
+<div class="gc"><h4><a href="system_design.html">🏗 System Design</a></h4><p>Design Instagram, WhatsApp, Image loader, Chat app, Video streaming</p></div>
+<div class="gc"><h4><a href="dsa_google.html">🧩 DSA for Google</a></h4><p>Top patterns — Arrays, Trees, DP, Graphs, Two Pointers, Sliding Window</p></div>
+</div>
+</main>
+</body>
+</html>

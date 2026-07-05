@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Advanced Android — Interview Q&A</title>
+<style>:root{--bg:#06090e;--s1:#0a0f18;--s2:#0e1520;--s3:#131d2a;--b1:#182030;--b2:#1e2c3e;--txt:#cce0ee;--muted:#4e6878;--grn:#10a060;--grnb:#031508;--grnl:#44d890;--blu:#1e60d8;--blub:#040e28;--blul:#6aaeff;--pur:#6848b8;--purb:#0f0828;--purl:#b090ff;--amb:#c09010;--ambb:#201500;--ambl:#f0c040;--red:#b03030;--redb:#1e0808;--redl:#f07070;--cya:#0e8898;--cyab:#041418;--cyal:#40d8e8;--ora:#c06020;--orab:#201008;--oral:#f0a060}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,sans-serif;font-size:13px;line-height:1.6;min-height:100vh}
+nav{background:var(--s1);border-bottom:1px solid var(--b1);position:sticky;top:0;z-index:100;overflow-x:auto}
+.nav-inner{display:flex;align-items:center;padding:0 12px;gap:0;min-width:max-content}
+nav a{color:var(--muted);text-decoration:none;font-size:11px;font-weight:500;padding:12px 9px;border-bottom:2px solid transparent;white-space:nowrap;display:block}
+nav a:hover{color:var(--txt)}
+nav a.active{color:var(--grnl);border-bottom-color:var(--grn)}
+main{max-width:980px;padding:28px 20px 80px;margin:0 auto}
+h1{font-size:20px;font-weight:700;margin-bottom:6px;letter-spacing:-.02em}
+.sub{font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.6}
+h2{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:24px 0 10px;display:flex;align-items:center;gap:8px}
+h2::after{content:'';flex:1;height:1px;background:var(--b2)}
+details{border-radius:9px;border:1px solid var(--b2);background:var(--s1);margin-bottom:7px;overflow:hidden}
+details[open]{border-color:#2e4458}
+summary{padding:12px 15px;cursor:pointer;display:flex;align-items:center;gap:9px;list-style:none;font-weight:500;font-size:13px;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:'\203A';font-size:16px;color:var(--muted);transition:.2s;flex-shrink:0;width:14px;display:inline-block}
+details[open] summary::before{transform:rotate(90deg);color:var(--grnl)}
+.qn{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;flex-shrink:0;font-family:monospace}
+.qt{flex:1}
+.dif{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;border:1px solid;flex-shrink:0;letter-spacing:.06em;text-transform:uppercase}
+.easy{background:var(--grnb);color:var(--grnl);border-color:var(--grn)}
+.med{background:var(--ambb);color:var(--ambl);border-color:var(--amb)}
+.hard{background:var(--redb);color:var(--redl);border-color:var(--red)}
+.goog{background:var(--purb);color:var(--purl);border-color:var(--pur)}
+.ans{padding:0 15px 14px;border-top:1px solid var(--b2)}
+.ans p{font-size:12px;color:var(--muted);line-height:1.7;margin:10px 0 0}
+.ans p strong{color:var(--txt)}
+.ans ul,.ans ol{padding-left:18px;font-size:12px;color:var(--muted);line-height:1.85;margin:8px 0}
+.ans li strong{color:var(--txt)}
+pre{background:#070d14;border:1px solid var(--b2);border-radius:7px;padding:12px 14px;overflow-x:auto;margin:10px 0;font-size:11px;line-height:1.7;color:#a8c8e8}
+code{font-family:'JetBrains Mono','Fira Mono',monospace;font-size:11px}
+.kw{color:#79b8ff}.cn{color:#44d890}.st{color:#f0a060}.cm{color:#4e6878}.fn{color:#40d8e8}.an{color:#f0c040}.ty{color:#b090ff}
+.note{border-radius:7px;border:1px solid;padding:9px 12px;font-size:11px;line-height:1.6;margin:10px 0}
+.ngrn{background:var(--grnb);border-color:var(--grn);color:var(--grnl)}
+.namb{background:var(--ambb);border-color:var(--amb);color:var(--ambl)}
+.nred{background:var(--redb);border-color:var(--red);color:var(--redl)}
+.nblu{background:var(--blub);border-color:var(--blu);color:var(--blul)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0}
+@media(max-width:680px){.g2,.g3{grid-template-columns:1fr}}
+.gc{background:var(--s2);border:1px solid var(--b2);border-radius:7px;padding:12px}
+.gc h4{font-size:11px;font-weight:700;margin-bottom:6px}
+.gc p,.gc li{font-size:11px;color:var(--muted);line-height:1.6}
+.ic{background:var(--s3);border:1px solid var(--b2);border-radius:4px;padding:1px 6px;font-family:monospace;font-size:11px;color:var(--blul)}
+a{color:var(--grnl)}
+</style>
+</head>
+<body>
+<nav><div class="nav-inner"><a href="roadmap.html">🗺 Roadmap</a><a href="android_core.html">📱 Android Core</a><a href="android_advanced.html" class="active">🔥 Advanced</a><a href="architecture.html">🏛 Architecture</a><a href="kotlin.html">🎯 Kotlin</a><a href="coroutines_flow.html">⚡ Coroutines</a><a href="compose.html">🎨 Compose</a><a href="dependency_injection.html">💉 DI</a><a href="networking_storage.html">🌐 Net & Storage</a><a href="testing.html">🧪 Testing</a><a href="system_design.html">🏗 System Design</a><a href="dsa_google.html">🧩 DSA</a></div></nav>
+<main>
+<h1>🔥 Advanced Android — Interview Questions</h1>
+<p class="sub">Custom Views, RecyclerView internals, Performance, Memory, WorkManager, Animations — the topics that separate senior engineers from mid-level ones.</p>
+
+<h2>Custom Views & Drawing</h2>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q1</span><span class="qt">Explain the View drawing lifecycle: measure → layout → draw</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p>Every View goes through three phases before it appears on screen:</p>
+<pre><code><span class="kw">class</span> <span class="ty">CustomProgressBar</span>(<span class="cn">context</span>: <span class="ty">Context</span>, <span class="cn">attrs</span>: <span class="ty">AttributeSet</span>? = <span class="kw">null</span>) : <span class="ty">View</span>(context, attrs) {
+
+    <span class="kw">private var</span> <span class="cn">progress</span> = <span class="cn">0f</span>
+    <span class="kw">private val</span> <span class="cn">paint</span> = <span class="ty">Paint</span>(<span class="ty">Paint</span>.ANTI_ALIAS_FLAG)
+    <span class="kw">private val</span> <span class="cn">rectF</span> = <span class="ty">RectF</span>()
+
+    <span class="cm">// PHASE 1: MEASURE — How big should this view be?</span>
+    <span class="kw">override fun</span> <span class="fn">onMeasure</span>(widthMeasureSpec: <span class="ty">Int</span>, heightMeasureSpec: <span class="ty">Int</span>) {
+        <span class="kw">val</span> <span class="cn">desiredW</span> = <span class="cn">300</span>; <span class="kw">val</span> <span class="cn">desiredH</span> = <span class="cn">50</span>
+        <span class="cm">// Reconcile our desired size with parent's constraints</span>
+        <span class="kw">val</span> <span class="cn">w</span> = <span class="fn">resolveSize</span>(desiredW, widthMeasureSpec)
+        <span class="kw">val</span> <span class="cn">h</span> = <span class="fn">resolveSize</span>(desiredH, heightMeasureSpec)
+        <span class="fn">setMeasuredDimension</span>(w, h) <span class="cm">// MUST call this</span>
+    }
+
+    <span class="cm">// PHASE 2: LAYOUT — Where should children be placed? (for ViewGroups)</span>
+    <span class="cm">// For leaf views: onLayout() is usually empty</span>
+    <span class="kw">override fun</span> <span class="fn">onLayout</span>(changed: <span class="ty">Boolean</span>, l: <span class="ty">Int</span>, t: <span class="ty">Int</span>, r: <span class="ty">Int</span>, b: <span class="ty">Int</span>) {
+        rectF.<span class="fn">set</span>(<span class="cn">0f</span>, <span class="cn">0f</span>, width.<span class="fn">toFloat</span>(), height.<span class="fn">toFloat</span>())
+    }
+
+    <span class="cm">// PHASE 3: DRAW — Paint pixels on canvas</span>
+    <span class="kw">override fun</span> <span class="fn">onDraw</span>(canvas: <span class="ty">Canvas</span>) {
+        <span class="cm">// Background track</span>
+        paint.color = <span class="cn">0xFFE0E0E0.toInt</span>()
+        canvas.<span class="fn">drawRoundRect</span>(rectF, <span class="cn">25f</span>, <span class="cn">25f</span>, paint)
+        <span class="cm">// Progress fill</span>
+        paint.color = <span class="cn">0xFF6200EE.toInt</span>()
+        <span class="kw">val</span> <span class="cn">progressRect</span> = <span class="ty">RectF</span>(rectF.left, rectF.top, rectF.right * progress, rectF.bottom)
+        canvas.<span class="fn">drawRoundRect</span>(progressRect, <span class="cn">25f</span>, <span class="cn">25f</span>, paint)
+    }
+
+    <span class="kw">fun</span> <span class="fn">setProgress</span>(value: <span class="ty">Float</span>) {
+        progress = value.<span class="fn">coerceIn</span>(<span class="cn">0f</span>, <span class="cn">1f</span>)
+        <span class="fn">invalidate</span>() <span class="cm">// schedules onDraw() — use for appearance changes</span>
+        <span class="cm">// requestLayout() — use when size changes too</span>
+    }
+}</code></pre>
+<p><strong>MeasureSpec modes:</strong></p>
+<ul>
+<li><strong>EXACTLY:</strong> Parent says "you must be exactly this size" (e.g. match_parent, fixed dp)</li>
+<li><strong>AT_MOST:</strong> Parent says "you can be up to this size" (wrap_content)</li>
+<li><strong>UNSPECIFIED:</strong> Parent doesn't care (e.g. ScrollView child, ListView)</li>
+</ul>
+<div class="note namb">💡 Never allocate objects in onDraw() — it causes GC during animation. Pre-allocate Paint, Path, RectF in init or constructor.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q2</span><span class="qt">What is the difference between invalidate() and requestLayout()?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<ul>
+<li><strong>invalidate():</strong> Only triggers <strong>draw phase</strong>. Use when appearance changes but size doesn't (progress, color, text content in fixed-size view). Cheaper.</li>
+<li><strong>requestLayout():</strong> Triggers <strong>measure + layout + draw</strong>. Use when view's size or position changes (adding/removing children, text that changes view size). More expensive — triggers full traversal from root.</li>
+<li><strong>postInvalidate():</strong> Thread-safe version of invalidate() — use from background threads.</li>
+</ul>
+<pre><code><span class="cm">// Rule of thumb:</span>
+<span class="cm">// Content changed, same size → invalidate()</span>
+<span class="cm">// Size might change → requestLayout()</span>
+<span class="cm">// Size AND content changed → requestLayout() alone is enough (includes draw)</span>
+
+<span class="cm">// Batching: Android batches invalidate() calls in one frame</span>
+<span class="cm">// Multiple invalidate() calls before next frame = only ONE draw pass</span></code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q3</span><span class="qt">How do you create a custom ViewGroup (e.g. a simple FlowLayout)?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="kw">class</span> <span class="ty">FlowLayout</span>(<span class="cn">context</span>: <span class="ty">Context</span>, <span class="cn">attrs</span>: <span class="ty">AttributeSet</span>? = <span class="kw">null</span>) : <span class="ty">ViewGroup</span>(context, attrs) {
+
+    <span class="kw">override fun</span> <span class="fn">onMeasure</span>(widthSpec: <span class="ty">Int</span>, heightSpec: <span class="ty">Int</span>) {
+        <span class="kw">val</span> <span class="cn">maxWidth</span> = <span class="ty">MeasureSpec</span>.<span class="fn">getSize</span>(widthSpec)
+        <span class="kw">var</span> <span class="cn">currentX</span> = <span class="cn">0</span>; <span class="kw">var</span> <span class="cn">currentY</span> = <span class="cn">0</span>; <span class="kw">var</span> <span class="cn">rowHeight</span> = <span class="cn">0</span>
+        <span class="kw">for</span> (i <span class="kw">in</span> <span class="cn">0</span> until childCount) {
+            <span class="kw">val</span> <span class="cn">child</span> = <span class="fn">getChildAt</span>(i)
+            <span class="fn">measureChild</span>(child, widthSpec, heightSpec) <span class="cm">// let child measure itself</span>
+            <span class="kw">if</span> (currentX + child.measuredWidth > maxWidth) { <span class="cm">// wrap to next line</span>
+                currentX = <span class="cn">0</span>; currentY += rowHeight; rowHeight = <span class="cn">0</span>
+            }
+            currentX += child.measuredWidth
+            rowHeight = <span class="fn">maxOf</span>(rowHeight, child.measuredHeight)
+        }
+        <span class="fn">setMeasuredDimension</span>(maxWidth, currentY + rowHeight)
+    }
+
+    <span class="kw">override fun</span> <span class="fn">onLayout</span>(changed: <span class="ty">Boolean</span>, l: <span class="ty">Int</span>, t: <span class="ty">Int</span>, r: <span class="ty">Int</span>, b: <span class="ty">Int</span>) {
+        <span class="kw">var</span> <span class="cn">currentX</span> = <span class="cn">0</span>; <span class="kw">var</span> <span class="cn">currentY</span> = <span class="cn">0</span>; <span class="kw">var</span> <span class="cn">rowHeight</span> = <span class="cn">0</span>
+        <span class="kw">for</span> (i <span class="kw">in</span> <span class="cn">0</span> until childCount) {
+            <span class="kw">val</span> <span class="cn">child</span> = <span class="fn">getChildAt</span>(i)
+            <span class="kw">if</span> (currentX + child.measuredWidth > width) {
+                currentX = <span class="cn">0</span>; currentY += rowHeight; rowHeight = <span class="cn">0</span>
+            }
+            child.<span class="fn">layout</span>(currentX, currentY, currentX + child.measuredWidth, currentY + child.measuredHeight)
+            currentX += child.measuredWidth
+            rowHeight = <span class="fn">maxOf</span>(rowHeight, child.measuredHeight)
+        }
+    }
+}</code></pre>
+</div>
+</details>
+
+<h2>RecyclerView Internals</h2>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q4</span><span class="qt">How does RecyclerView recycling work internally? What are the different caches?</span><span class="dif hard">Hard — Google Favorite</span></summary>
+<div class="ans">
+<p>RecyclerView has a 4-level caching system for ViewHolders:</p>
+<ul>
+<li><strong>Scrap cache (mAttachedScrap / mChangedScrap):</strong> ViewHolders currently in layout but temporarily detached during animation/relayout. Reused without rebinding. Instant reuse.</li>
+<li><strong>Cache (mCachedViews):</strong> Recently scrolled-off views. Default size = 2. Returned to exact same position — NO rebind needed. Like a "just in case" buffer for scroll-back.</li>
+<li><strong>RecycledViewPool (mRecyclerPool):</strong> ViewHolders keyed by viewType. Shared across multiple RecyclerViews. Requires rebind when reused (onBindViewHolder called). Default size = 5 per type.</li>
+<li><strong>ViewCacheExtension:</strong> Custom cache layer. Rarely used.</li>
+</ul>
+<pre><code><span class="cm">// Optimization: share pool across multiple RecyclerViews (e.g. ViewPager tabs)</span>
+<span class="kw">val</span> <span class="cn">pool</span> = <span class="ty">RecyclerView</span>.<span class="ty">RecycledViewPool</span>()
+pool.<span class="fn">setMaxRecycledViews</span>(<span class="ty">VIEW_TYPE_POST</span>, <span class="cn">20</span>) <span class="cm">// increase pool size</span>
+recyclerView1.<span class="fn">setRecycledViewPool</span>(pool)
+recyclerView2.<span class="fn">setRecycledViewPool</span>(pool)
+
+<span class="cm">// Increase mCachedViews size for heavy-scroll screens</span>
+recyclerView.<span class="fn">setItemViewCacheSize</span>(<span class="cn">20</span>) <span class="cm">// avoid rebinding on slight scroll-back</span>
+
+<span class="cm">// DiffUtil: calculate minimal diff, animate only changed items</span>
+<span class="kw">class</span> <span class="ty">PostDiffCallback</span> : <span class="ty">DiffUtil</span>.<span class="ty">ItemCallback</span>&lt;<span class="ty">Post</span>&gt;() {
+    <span class="kw">override fun</span> <span class="fn">areItemsTheSame</span>(old: <span class="ty">Post</span>, new: <span class="ty">Post</span>) = old.id == new.id
+    <span class="kw">override fun</span> <span class="fn">areContentsTheSame</span>(old: <span class="ty">Post</span>, new: <span class="ty">Post</span>) = old == new
+    <span class="kw">override fun</span> <span class="fn">getChangePayload</span>(old: <span class="ty">Post</span>, new: <span class="ty">Post</span>): <span class="ty">Any</span>? {
+        <span class="cm">// Return only what changed — avoids full rebind (flicker)</span>
+        <span class="kw">return if</span> (old.likes != new.likes) PAYLOAD_LIKES <span class="kw">else</span> <span class="kw">null</span>
+    }
+}</code></pre>
+<div class="note ngrn">✓ Use stable IDs (setHasStableIds(true)) if your items have unique IDs — RecyclerView uses them for better animation decisions.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q5</span><span class="qt">What is ConcatAdapter and when would you use it over nested RecyclerViews?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// ConcatAdapter: combine multiple adapters into one RecyclerView</span>
+<span class="cm">// NEVER nest RecyclerViews — ruins recycling, breaks scroll</span>
+
+<span class="kw">val</span> <span class="cn">headerAdapter</span> = <span class="ty">HeaderAdapter</span>()
+<span class="kw">val</span> <span class="cn">storiesAdapter</span> = <span class="ty">StoriesAdapter</span>()   <span class="cm">// horizontal scroll row</span>
+<span class="kw">val</span> <span class="cn">postsAdapter</span> = <span class="ty">PostsAdapter</span>()       <span class="cm">// main feed</span>
+<span class="kw">val</span> <span class="cn">loadingAdapter</span> = <span class="ty">LoadingAdapter</span>()  <span class="cm">// footer loading spinner</span>
+
+<span class="cm">// Merge all into single RecyclerView</span>
+<span class="kw">val</span> <span class="cn">concatConfig</span> = <span class="ty">ConcatAdapter</span>.<span class="ty">Config</span>.<span class="ty">Builder</span>()
+    .<span class="fn">setIsolateViewTypes</span>(<span class="kw">false</span>) <span class="cm">// share ViewHolder types across adapters</span>
+    .<span class="fn">build</span>()
+recyclerView.adapter = <span class="ty">ConcatAdapter</span>(concatConfig, headerAdapter, storiesAdapter, postsAdapter, loadingAdapter)
+
+<span class="cm">// Update only the section that changed:</span>
+postsAdapter.<span class="fn">submitList</span>(newPosts)  <span class="cm">// headerAdapter untouched</span></code></pre>
+<div class="note namb">💡 ConcatAdapter was introduced in RecyclerView 1.2.0. Each sub-adapter manages its own data and animations independently.</div>
+</div>
+</details>
+
+<h2>Performance & Memory</h2>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q6</span><span class="qt">How do you diagnose and fix jank (dropped frames) in Android?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p>Jank = frames that take longer than 16ms (60fps) or 8.3ms (120fps) to render.</p>
+<p><strong>Diagnosis tools:</strong></p>
+<ul>
+<li><strong>Android Profiler → CPU:</strong> Record trace, look for long frames on main thread</li>
+<li><strong>Systrace / Perfetto:</strong> Frame timeline, identify slow phases (measure, layout, draw, animate)</li>
+<li><strong>GPU Rendering bars:</strong> Developer options → "Profile GPU rendering" — bars above green line = jank</li>
+<li><strong>StrictMode:</strong> Catches disk/network I/O on main thread in dev builds</li>
+</ul>
+<p><strong>Common causes and fixes:</strong></p>
+<ul>
+<li><strong>Heavy onDraw():</strong> Move object allocation out, pre-compute values. Never call invalidate() in a loop.</li>
+<li><strong>Deep view hierarchy:</strong> Flatten with ConstraintLayout. Use <span class="ic">merge</span> and <span class="ic">include</span> tags.</li>
+<li><strong>Overdraw:</strong> Remove unnecessary background paints. Check with "Show overdraw areas" in dev options.</li>
+<li><strong>RecyclerView bind too slow:</strong> Move heavy computation off bind, cache formatted strings.</li>
+<li><strong>Image decode on main thread:</strong> Always use Coil/Glide which decode on background thread.</li>
+</ul>
+<pre><code><span class="cm">// StrictMode setup in Application.onCreate() for debug builds</span>
+<span class="kw">if</span> (<span class="ty">BuildConfig</span>.DEBUG) {
+    <span class="ty">StrictMode</span>.<span class="fn">setThreadPolicy</span>(
+        <span class="ty">StrictMode</span>.<span class="ty">ThreadPolicy</span>.<span class="ty">Builder</span>()
+            .<span class="fn">detectAll</span>()
+            .<span class="fn">penaltyLog</span>()
+            .<span class="fn">build</span>()
+    )
+}</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q7</span><span class="qt">What is overdraw and how do you reduce it?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>Overdraw = a pixel drawn multiple times in a single frame. 1x overdraw = drawn twice. Colors in GPU overdraw visualization: blue (1x), green (2x), pink (3x), red (4x+).</p>
+<ul>
+<li>Remove unnecessary backgrounds on ViewGroups (if parent already paints the background)</li>
+<li>Don't set a Window background if your content fills the screen: <span class="ic">window.setBackgroundDrawable(null)</span></li>
+<li>Use <span class="ic">clipRect()</span> in custom drawing to skip drawing outside visible bounds</li>
+<li>Use <span class="ic">quickReject()</span> to skip drawing entirely when outside clip bounds</li>
+</ul>
+<pre><code><span class="cm">// In theme: remove default window background if content fills screen</span>
+<span class="cm">&lt;style name="Theme.App"&gt;</span>
+<span class="cm">    &lt;item name="android:windowBackground"&gt;@null&lt;/item&gt;</span>
+<span class="cm">&lt;/style&gt;</span>
+
+<span class="cm">// clipRect in custom draw — only draw visible portion</span>
+<span class="kw">override fun</span> <span class="fn">onDraw</span>(canvas: <span class="ty">Canvas</span>) {
+    <span class="kw">for</span> (card <span class="kw">in</span> cards) {
+        canvas.<span class="fn">save</span>()
+        canvas.<span class="fn">clipRect</span>(card.left, card.top, card.right, card.bottom)
+        card.<span class="fn">draw</span>(canvas)
+        canvas.<span class="fn">restore</span>()
+    }
+}</code></pre>
+</div>
+</details>
+
+<h2>WorkManager & Background Work</h2>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q8</span><span class="qt">When to use WorkManager vs Coroutines vs Service? How does WorkManager work?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<div class="g2">
+<div class="gc" style="border-color:var(--grn)"><h4 style="color:var(--grnl)">Coroutines (viewModelScope)</h4><p>In-scope async work. Tied to ViewModel/Activity lifecycle. Cancelled when scope is cancelled. Best for: UI operations, network calls while user is in the screen.</p></div>
+<div class="gc" style="border-color:var(--blu)"><h4 style="color:var(--blul)">WorkManager</h4><p>Guaranteed execution even after app restart/kill. Survives device reboot. Supports constraints (WiFi, charging). Best for: sync, upload, cache cleanup — anything that MUST complete.</p></div>
+</div>
+<pre><code><span class="cm">// WorkManager with coroutines</span>
+<span class="kw">class</span> <span class="ty">SyncWorker</span>(<span class="cn">context</span>: <span class="ty">Context</span>, <span class="cn">params</span>: <span class="ty">WorkerParameters</span>) : <span class="ty">CoroutineWorker</span>(context, params) {
+    <span class="kw">override suspend fun</span> <span class="fn">doWork</span>(): <span class="ty">Result</span> {
+        <span class="kw">return try</span> {
+            <span class="kw">val</span> <span class="cn">userId</span> = inputData.<span class="fn">getString</span>(<span class="st">"USER_ID"</span>) ?: <span class="kw">return</span> <span class="ty">Result</span>.<span class="fn">failure</span>()
+            repository.<span class="fn">sync</span>(userId)
+            <span class="ty">Result</span>.<span class="fn">success</span>()
+        } <span class="kw">catch</span> (e: <span class="ty">Exception</span>) {
+            <span class="kw">if</span> (runAttemptCount &lt; <span class="cn">3</span>) <span class="ty">Result</span>.<span class="fn">retry</span>() <span class="kw">else</span> <span class="ty">Result</span>.<span class="fn">failure</span>()
+        }
+    }
+}
+
+<span class="cm">// Schedule with constraints</span>
+<span class="kw">val</span> <span class="cn">syncRequest</span> = <span class="ty">PeriodicWorkRequestBuilder</span>&lt;<span class="ty">SyncWorker</span>&gt;(<span class="cn">15</span>, <span class="ty">TimeUnit</span>.MINUTES)
+    .<span class="fn">setConstraints</span>(<span class="ty">Constraints</span>.<span class="ty">Builder</span>()
+        .<span class="fn">setRequiredNetworkType</span>(<span class="ty">NetworkType</span>.UNMETERED) <span class="cm">// WiFi only</span>
+        .<span class="fn">setRequiresBatteryNotLow</span>(<span class="kw">true</span>)
+        .<span class="fn">build</span>())
+    .<span class="fn">setInputData</span>(<span class="fn">workDataOf</span>(<span class="st">"USER_ID"</span> to userId))
+    .<span class="fn">setBackoffCriteria</span>(<span class="ty">BackoffPolicy</span>.EXPONENTIAL, <span class="cn">10</span>, <span class="ty">TimeUnit</span>.SECONDS)
+    .<span class="fn">build</span>()
+
+<span class="ty">WorkManager</span>.<span class="fn">getInstance</span>(context)
+    .<span class="fn">enqueueUniquePeriodicWork</span>(<span class="st">"sync"</span>, <span class="ty">ExistingPeriodicWorkPolicy</span>.KEEP, syncRequest)</code></pre>
+</div>
+</details>
+
+<h2>Animations</h2>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q9</span><span class="qt">What are the different animation APIs in Android?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// 1. Property Animator (API 11+) — animates actual object properties</span>
+<span class="ty">ObjectAnimator</span>.<span class="fn">ofFloat</span>(view, <span class="st">"translationX"</span>, <span class="cn">0f</span>, <span class="cn">200f</span>).<span class="fn">apply</span> {
+    duration = <span class="cn">300</span>
+    interpolator = <span class="ty">DecelerateInterpolator</span>()
+    <span class="fn">start</span>()
+}
+
+<span class="cm">// 2. ValueAnimator — animate a value, apply manually</span>
+<span class="ty">ValueAnimator</span>.<span class="fn">ofFloat</span>(<span class="cn">0f</span>, <span class="cn">1f</span>).<span class="fn">apply</span> {
+    duration = <span class="cn">500</span>
+    <span class="fn">addUpdateListener</span> { view.alpha = it.animatedValue <span class="kw">as</span> <span class="ty">Float</span> }
+    <span class="fn">start</span>()
+}
+
+<span class="cm">// 3. AnimatorSet — chain/combine animations</span>
+<span class="ty">AnimatorSet</span>().<span class="fn">apply</span> {
+    <span class="fn">play</span>(fadeIn).<span class="fn">before</span>(slideUp)  <span class="cm">// sequence</span>
+    <span class="fn">play</span>(fadeIn).<span class="fn">with</span>(scaleUp)   <span class="cm">// parallel</span>
+    <span class="fn">start</span>()
+}
+
+<span class="cm">// 4. Transition API — animate between two states of a ViewGroup</span>
+<span class="ty">TransitionManager</span>.<span class="fn">beginDelayedTransition</span>(rootLayout, <span class="ty">AutoTransition</span>())
+view.visibility = <span class="ty">View</span>.VISIBLE <span class="cm">// Android animates the change automatically</span>
+
+<span class="cm">// 5. MotionLayout (declarative, XML-driven)</span>
+<span class="cm">// Define start/end ConstraintSets + keyframes in MotionScene XML</span>
+motionLayout.<span class="fn">transitionToEnd</span>() <span class="cm">// or bind to drag gesture</span>
+
+<span class="cm">// 6. Compose Animation (modern approach)</span>
+<span class="kw">val</span> <span class="cn">alpha</span> <span class="kw">by</span> <span class="fn">animateFloatAsState</span>(targetValue = <span class="kw">if</span> (visible) <span class="cn">1f</span> <span class="kw">else</span> <span class="cn">0f</span>)</code></pre>
+<div class="note ngrn">✓ For Google interviews: understand that all View Property Animators operate on the View's rendering properties (alpha, translationX, scaleX, rotation) — they don't trigger layout. This is why they're faster than animating margin/width.</div>
+</div>
+</details>
+</main>
+</body>
+</html>
