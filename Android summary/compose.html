@@ -107,6 +107,34 @@ a{color:var(--grnl)}
     <span class="kw">var</span> <span class="cn">count</span> <span class="kw">by</span> <span class="fn">remember</span> { <span class="fn">mutableStateOf</span>(<span class="cn">0</span>) }
     <span class="fn">ExpensiveChild</span>(onClick = { count++ }) <span class="cm">// lambda is stable — no recompose</span>
 }</code></pre>
+<div class="gc" style="overflow-x:auto;padding:14px;margin-top:10px">
+<h4 style="margin-bottom:8px">Smart recomposition: only the scope on the state's read-path re-runs</h4>
+<svg viewBox="0 0 600 250" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-rt-skip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="var(--muted)"/></marker>
+<marker id="arrow-rt-hit" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="var(--redl)"/></marker>
+</defs>
+<rect x="230" y="16" width="140" height="42" rx="7" fill="var(--s2)" stroke="var(--b2)"/>
+<text x="300" y="41" text-anchor="middle" font-size="12" font-weight="700" fill="var(--txt)">App()</text>
+<line x1="280" y1="58" x2="150" y2="99" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-rt-skip)"/>
+<line x1="320" y1="58" x2="470" y2="99" stroke="var(--redl)" stroke-width="1.5" marker-end="url(#arrow-rt-hit)"/>
+<rect x="30" y="100" width="200" height="46" rx="7" fill="var(--s2)" stroke="var(--b2)"/>
+<text x="130" y="122" text-anchor="middle" font-size="12" font-weight="700" fill="var(--muted)">Header()</text>
+<text x="130" y="137" text-anchor="middle" font-size="9" fill="var(--muted)">skipped — no state read here</text>
+<rect x="380" y="100" width="200" height="46" rx="7" fill="var(--redb)" stroke="var(--red)"/>
+<text x="480" y="122" text-anchor="middle" font-size="12" font-weight="700" fill="var(--redl)">Counter()</text>
+<text x="480" y="137" text-anchor="middle" font-size="9" fill="var(--redl)">reads count — recomposes</text>
+<line x1="480" y1="146" x2="480" y2="182" stroke="var(--redl)" stroke-width="1.5" marker-end="url(#arrow-rt-hit)"/>
+<rect x="380" y="184" width="200" height="46" rx="7" fill="var(--redb)" stroke="var(--red)"/>
+<text x="480" y="206" text-anchor="middle" font-size="12" font-weight="700" fill="var(--redl)">Text("$count")</text>
+<text x="480" y="221" text-anchor="middle" font-size="9" fill="var(--redl)">reads count — recomposes</text>
+<rect x="30" y="196" width="12" height="12" fill="var(--redb)" stroke="var(--red)"/>
+<text x="48" y="206" font-size="9" fill="var(--redl)">recomposed (on the changed state's read-path)</text>
+<rect x="30" y="214" width="12" height="12" fill="var(--s2)" stroke="var(--b2)"/>
+<text x="48" y="224" font-size="9" fill="var(--muted)">skipped (sibling scope — never read the state)</text>
+</svg>
+<p style="margin-top:8px">When <span class="ic">count</span> changes, only <span class="ic">Counter()</span> and its child <span class="ic">Text()</span> — the functions that actually <em>read</em> <span class="ic">count</span> — are re-invoked. <span class="ic">Header()</span> is an unrelated sibling scope that never read the state, so Compose's slot table diffing skips it entirely rather than walking the whole tree.</p>
+</div>
 </div>
 </details>
 
@@ -305,6 +333,218 @@ a{color:var(--grnl)}
 <span class="cm">// compositionLocalOf vs staticCompositionLocalOf:</span>
 <span class="cm">// compositionLocalOf: only recomposes READERS when value changes (smart)</span>
 <span class="cm">// staticCompositionLocalOf: recomposes ALL children when value changes (use for truly static data)</span></code></pre>
+</div>
+</details>
+
+<h2>Performance & Interop</h2>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">Q8</span><span class="qt">What are the three phases of Compose (Composition, Layout, Drawing)? What do "recomposition", "re-layout", and "redraw" each mean?</span><span class="dif hard">Hard — Must Know</span></summary>
+<div class="ans">
+<p>Every frame, Compose runs up to three independent phases. Each one can be <strong>skipped on its own</strong> if its inputs didn't change — that's the real source of Compose's performance, not just "smart recomposition" at the Composition level.</p>
+<ul>
+<li><strong>Composition</strong> — runs composable functions, builds/updates the in-memory tree of what to emit. Triggered by a state read inside a composable changing. Output: a tree of <span class="ic">LayoutNode</span>s with their emitted modifiers/params.</li>
+<li><strong>Layout</strong> — each node's <span class="ic">measure()</span>/<span class="ic">place()</span> runs to decide size and position. Triggered when Composition changed something a node measures/places by (size, padding, weight, arrangement). Can run without Composition re-running (e.g. a constraint from a parent changes).</li>
+<li><strong>Drawing</strong> — pixels are actually rasterized to the canvas/layer. Triggered whenever Layout finishes, or independently when only draw-time properties change (color, alpha, translation, shadow via <span class="ic">graphicsLayer</span>). This is the cheapest phase to hit alone.</li>
+</ul>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 760 270" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-ph-flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="var(--muted)"/></marker>
+<marker id="arrow-ph-skip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="var(--purl)"/></marker>
+<marker id="arrow-ph-fb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="var(--redl)"/></marker>
+</defs>
+<path d="M110,70 C110,20 650,20 650,70" fill="none" stroke="var(--purl)" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrow-ph-skip)"/>
+<text x="380" y="13" text-anchor="middle" font-size="9" fill="var(--purl)">graphicsLayer { alpha = state.value } read deferred to draw → skips Composition &amp; Layout</text>
+<rect x="20" y="70" width="180" height="70" rx="8" fill="var(--grnb)" stroke="var(--grn)"/>
+<text x="110" y="100" text-anchor="middle" font-size="13" font-weight="700" fill="var(--grnl)">Composition</text>
+<text x="110" y="118" text-anchor="middle" font-size="9" fill="var(--muted)">builds/updates UI tree</text>
+<text x="110" y="132" text-anchor="middle" font-size="9" fill="var(--grnl)">skip if: stable params, no state read</text>
+<rect x="290" y="70" width="180" height="70" rx="8" fill="var(--blub)" stroke="var(--blu)"/>
+<text x="380" y="100" text-anchor="middle" font-size="13" font-weight="700" fill="var(--blul)">Layout</text>
+<text x="380" y="118" text-anchor="middle" font-size="9" fill="var(--muted)">measures &amp; places nodes</text>
+<text x="380" y="132" text-anchor="middle" font-size="9" fill="var(--blul)">skip if: size/position unchanged</text>
+<rect x="560" y="70" width="180" height="70" rx="8" fill="var(--orab)" stroke="var(--ora)"/>
+<text x="650" y="100" text-anchor="middle" font-size="13" font-weight="700" fill="var(--oral)">Drawing</text>
+<text x="650" y="118" text-anchor="middle" font-size="9" fill="var(--muted)">rasterizes pixels to canvas</text>
+<text x="650" y="132" text-anchor="middle" font-size="9" fill="var(--oral)">runs whenever Layout finishes</text>
+<line x1="200" y1="105" x2="286" y2="105" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-ph-flow)"/>
+<line x1="470" y1="105" x2="556" y2="105" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-ph-flow)"/>
+<rect x="560" y="190" width="180" height="30" rx="15" fill="var(--redb)" stroke="var(--red)"/>
+<text x="650" y="209" text-anchor="middle" font-size="10" fill="var(--redl)">state change (e.g. click)</text>
+<line x1="650" y1="140" x2="650" y2="188" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-ph-flow)"/>
+<path d="M560,205 C300,252 110,222 110,142" fill="none" stroke="var(--redl)" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrow-ph-fb)"/>
+<text x="335" y="250" text-anchor="middle" font-size="9" fill="var(--redl)">next pass restarts at Composition — only the scope that read the state re-runs</text>
+</svg>
+</div>
+<pre><code><span class="an">@Composable</span>
+<span class="kw">fun</span> <span class="fn">FadingBox</span>(alphaState: <span class="ty">State</span>&lt;<span class="ty">Float</span>&gt;) {
+    <span class="ty">Box</span>(
+        modifier = <span class="ty">Modifier</span>.<span class="fn">size</span>(<span class="cn">100</span>.dp).<span class="fn">graphicsLayer</span> {
+            <span class="kw">this</span>.alpha = alphaState.value <span class="cm">// read happens in the DRAW phase, not Composition</span>
+        }
+    )
+}
+<span class="cm">// alphaState.value changes -> Composition: SKIPPED, Layout: SKIPPED, Drawing: RUNS only</span>
+<span class="cm">// Compare: fun FadingBoxSlow(alpha: Float) reads alpha as a normal PARAMETER —</span>
+<span class="cm">// that read happens during Composition, so every change forces all three phases</span></code></pre>
+<div class="note namb">Recomposition, re-layout, and redraw are three separate, independently-skippable operations. Interviewers probe this to see if you know Compose's performance model goes deeper than "does it recompose or not."</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--cyab);color:var(--cyal)">Q9</span><span class="qt">What makes a type "stable" to the Compose compiler? Difference between @Stable and @Immutable?</span><span class="dif hard">Hard — Google Favorite</span></summary>
+<div class="ans">
+<p>Stability determines whether Compose can safely <strong>skip</strong> recomposing a function when its parameters are "equal" to last time. The compiler infers stability structurally; when it can't prove a type is stable, it marks it unstable and disables skipping for any composable that takes it as a parameter.</p>
+<ul>
+<li><strong>A type is inferred stable</strong> when: all its public properties are <span class="ic">val</span> and are themselves stable types (primitives, <span class="ic">String</span>, function types/lambdas, or other stable classes) — <strong>or</strong> it's explicitly annotated <span class="ic">@Stable</span>/<span class="ic">@Immutable</span>.</li>
+<li><strong>@Immutable</strong> — a promise that once constructed, the object <em>never changes</em> (every property is permanently fixed for the object's lifetime). Use on plain data classes with <span class="ic">val</span> properties whose types the compiler can't otherwise prove are stable (e.g. they come from another module without stability metadata).</li>
+<li><strong>@Stable</strong> — a weaker promise: the object <em>can</em> mutate over time, but (1) <span class="ic">equals()</span> is consistent — if two instances are equal, they'll stay equal — and (2) any change to a publicly-readable property is reported to Compose (typically because it's backed by <span class="ic">MutableState</span>). Use on state-holder classes that expose mutable, observable state.</li>
+</ul>
+<pre><code><span class="cm">// interface types are ALWAYS unstable — the compiler can't prove the</span>
+<span class="cm">// caller won't pass a MutableList that mutates in place at runtime</span>
+<span class="an">@Composable</span>
+<span class="kw">fun</span> <span class="fn">UserList</span>(users: <span class="ty">List</span>&lt;<span class="ty">User</span>&gt;) { <span class="cm">// unstable param -> skipping disabled</span>
+    <span class="fn">LazyColumn</span> { <span class="fn">items</span>(users) { <span class="fn">UserRow</span>(it) } }
+}
+
+<span class="cm">// fix: a genuinely immutable, stable collection type</span>
+<span class="kw">fun</span> <span class="fn">UserList</span>(users: <span class="ty">ImmutableList</span>&lt;<span class="ty">User</span>&gt;) { <span class="cm">// stable -> Compose can skip</span>
+    <span class="fn">LazyColumn</span> { <span class="fn">items</span>(users) { <span class="fn">UserRow</span>(it) } }
+}
+
+<span class="cm">// @Stable: object MUTATES, but every change is observable via MutableState</span>
+<span class="an">@Stable</span>
+<span class="kw">class</span> <span class="ty">SearchFieldState</span> {
+    <span class="kw">var</span> <span class="cn">query</span> <span class="kw">by</span> <span class="fn">mutableStateOf</span>(<span class="st">""</span>)
+        <span class="kw">private set</span>
+}</code></pre>
+<div class="note nred">A single unstable parameter disables skipping for the WHOLE composable — not just for that parameter. Check the Compose Compiler Metrics report (<span class="ic">reportsDestination</span> Gradle option) to find "unstable" params in a real codebase.</div>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 600 190" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-st-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="var(--red)"/></marker>
+<marker id="arrow-st-grn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="var(--grn)"/></marker>
+</defs>
+<rect x="30" y="15" width="250" height="36" rx="6" fill="var(--s2)" stroke="var(--b2)"/>
+<text x="155" y="38" text-anchor="middle" font-size="10" fill="var(--txt)">param: List&lt;User&gt; (interface)</text>
+<rect x="320" y="15" width="250" height="36" rx="6" fill="var(--s2)" stroke="var(--b2)"/>
+<text x="445" y="38" text-anchor="middle" font-size="10" fill="var(--txt)">param: ImmutableList&lt;User&gt;</text>
+<line x1="155" y1="51" x2="155" y2="79" stroke="var(--red)" stroke-width="1.5" marker-end="url(#arrow-st-red)"/>
+<line x1="445" y1="51" x2="445" y2="79" stroke="var(--grn)" stroke-width="1.5" marker-end="url(#arrow-st-grn)"/>
+<rect x="30" y="82" width="250" height="34" rx="6" fill="var(--redb)" stroke="var(--red)"/>
+<text x="155" y="103" text-anchor="middle" font-size="10" fill="var(--redl)">compiler: UNSTABLE</text>
+<rect x="320" y="82" width="250" height="34" rx="6" fill="var(--grnb)" stroke="var(--grn)"/>
+<text x="445" y="103" text-anchor="middle" font-size="10" fill="var(--grnl)">compiler: STABLE</text>
+<line x1="155" y1="116" x2="155" y2="141" stroke="var(--red)" stroke-width="1.5" marker-end="url(#arrow-st-red)"/>
+<line x1="445" y1="116" x2="445" y2="141" stroke="var(--grn)" stroke-width="1.5" marker-end="url(#arrow-st-grn)"/>
+<rect x="30" y="144" width="250" height="34" rx="6" fill="var(--redb)" stroke="var(--red)"/>
+<text x="155" y="165" text-anchor="middle" font-size="10" fill="var(--redl)">recomposes every time</text>
+<rect x="320" y="144" width="250" height="34" rx="6" fill="var(--grnb)" stroke="var(--grn)"/>
+<text x="445" y="165" text-anchor="middle" font-size="10" fill="var(--grnl)">skipped when unchanged</text>
+</svg>
+</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--blub);color:var(--blul)">Q10</span><span class="qt">When do you actually need derivedStateOf vs a plain remember(key) { ... }?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>Use <span class="ic">derivedStateOf</span> specifically when you're computing a value from state that <strong>changes far more often than the derived result itself</strong> — it converts a high-frequency input into a low-frequency output, so <em>readers</em> of the derived state only recompose when that output actually flips.</p>
+<pre><code><span class="cm">// NEEDS derivedStateOf: scrollState.firstVisibleItemIndex changes on EVERY pixel</span>
+<span class="cm">// scrolled, but "show scroll-to-top button" only flips true/false rarely</span>
+<span class="kw">val</span> <span class="cn">listState</span> = <span class="fn">rememberLazyListState</span>()
+<span class="kw">val</span> <span class="cn">showButton</span> <span class="kw">by</span> <span class="fn">remember</span> {
+    <span class="fn">derivedStateOf</span> { listState.firstVisibleItemIndex &gt; <span class="cn">0</span> }
+}
+<span class="cm">// WITHOUT derivedStateOf (reading listState.firstVisibleItemIndex directly):</span>
+<span class="cm">// the composable reading it recomposes on every single scroll tick</span>
+<span class="cm">// WITH derivedStateOf: it only recomposes when showButton flips true<->false</span>
+<span class="kw">if</span> (showButton) { <span class="fn">ScrollToTopFab</span>() }
+
+<span class="cm">// DOESN'T need derivedStateOf: value only changes when its own key changes —</span>
+<span class="cm">// there's no "high frequency source, low frequency output" mismatch to exploit</span>
+<span class="kw">val</span> <span class="cn">formattedDate</span> = <span class="fn">remember</span>(timestamp) { <span class="fn">formatDate</span>(timestamp) } <span class="cm">// fine: recomputes only when timestamp itself changes</span>
+<span class="cm">// Using derivedStateOf here adds overhead for nothing — timestamp doesn't</span>
+<span class="cm">// change more often than formattedDate would; there's no extra reads to dedupe</span></code></pre>
+<div class="note ngrn">Rule of thumb: reach for <span class="ic">derivedStateOf</span> only when profiling/reasoning shows a composable re-running many times per "meaningful" change — e.g. scroll offsets, drag deltas, animation progress feeding a boolean/threshold. For everything else, <span class="ic">remember(key)</span> is simpler and cheaper (derivedStateOf still re-evaluates its lambda on every underlying change — it just skips notifying readers when the result is unchanged).</div>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 600 220" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-ds-1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="var(--muted)"/></marker>
+</defs>
+<rect x="150" y="10" width="300" height="36" rx="6" fill="var(--s2)" stroke="var(--b2)"/>
+<text x="300" y="33" text-anchor="middle" font-size="10" fill="var(--txt)">source state reads happen very often</text>
+<line x1="300" y1="46" x2="300" y2="72" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-ds-1)"/>
+<polygon points="300,74 400,112 300,150 200,112" fill="var(--s2)" stroke="var(--b2)"/>
+<text x="300" y="108" text-anchor="middle" font-size="9" fill="var(--txt)">does the value you need</text>
+<text x="300" y="120" text-anchor="middle" font-size="9" fill="var(--txt)">change LESS often than that?</text>
+<line x1="240" y1="128" x2="140" y2="168" stroke="var(--grn)" stroke-width="1.5" marker-end="url(#arrow-ds-1)"/>
+<text x="150" y="160" text-anchor="middle" font-size="9" fill="var(--grnl)">yes</text>
+<line x1="360" y1="128" x2="460" y2="168" stroke="var(--blu)" stroke-width="1.5" marker-end="url(#arrow-ds-1)"/>
+<text x="450" y="160" text-anchor="middle" font-size="9" fill="var(--blul)">no</text>
+<rect x="20" y="170" width="240" height="40" rx="6" fill="var(--grnb)" stroke="var(--grn)"/>
+<text x="140" y="194" text-anchor="middle" font-size="10" fill="var(--grnl)">derivedStateOf { }</text>
+<rect x="340" y="170" width="240" height="40" rx="6" fill="var(--blub)" stroke="var(--blu)"/>
+<text x="460" y="194" text-anchor="middle" font-size="10" fill="var(--blul)">remember(key) { compute() }</text>
+</svg>
+</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--orab);color:var(--oral)">Q11</span><span class="qt">How do you build a custom layout with the Layout composable? What are intrinsic measurements for?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p>The <span class="ic">Layout</span> composable is the primitive every built-in layout (<span class="ic">Row</span>, <span class="ic">Column</span>, <span class="ic">Box</span>) is built on. You get the raw list of child <span class="ic">Measurable</span>s and the incoming <span class="ic">Constraints</span>, measure each child yourself, then declare this layout's own size and place the children at custom offsets.</p>
+<pre><code><span class="fn">Layout</span>(content = content) { measurables, constraints -&gt;
+    <span class="kw">val</span> <span class="cn">placeables</span> = measurables.<span class="fn">map</span> { it.<span class="fn">measure</span>(constraints) } <span class="cm">// 1. measure children</span>
+    <span class="fn">layout</span>(placeables.<span class="fn">sumOf</span> { it.width }, placeables.<span class="fn">maxOf</span> { it.height }) { <span class="cm">// 2. declare own size</span>
+        <span class="kw">var</span> <span class="cn">x</span> = <span class="cn">0</span>
+        placeables.<span class="fn">forEach</span> { it.<span class="fn">placeRelative</span>(x, <span class="cn">0</span>); x += it.width } <span class="cm">// 3. place children</span>
+    }
+}</code></pre>
+<p><strong>Intrinsic measurements</strong> answer "how big would this child be" without a real measure pass — needed when a parent must size sibling A based on sibling B before either is measured for real (e.g. <span class="ic">Modifier.height(IntrinsicSize.Min)</span> so a divider matches its sibling <span class="ic">Text</span>'s height). You implement <span class="ic">minIntrinsicWidth</span>/<span class="ic">maxIntrinsicHeight</span> etc. alongside <span class="ic">measure()</span> on a custom <span class="ic">MeasurePolicy</span> — it costs an <em>extra</em> measure pass under the hood, so reserve it for cases you can't solve by restructuring constraints.</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 700 130" style="width:100%;height:auto">
+<defs><marker id="arrow-lay-1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="var(--muted)"/></marker></defs>
+<rect x="10" y="40" width="150" height="46" rx="6" fill="var(--s2)" stroke="var(--b2)"/>
+<text x="85" y="67" text-anchor="middle" font-size="10" fill="var(--txt)">Constraints in</text>
+<line x1="160" y1="63" x2="195" y2="63" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-lay-1)"/>
+<rect x="200" y="40" width="150" height="46" rx="6" fill="var(--blub)" stroke="var(--blu)"/>
+<text x="275" y="67" text-anchor="middle" font-size="10" fill="var(--blul)">measure() children</text>
+<line x1="350" y1="63" x2="385" y2="63" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-lay-1)"/>
+<rect x="390" y="40" width="150" height="46" rx="6" fill="var(--purb)" stroke="var(--pur)"/>
+<text x="465" y="67" text-anchor="middle" font-size="10" fill="var(--purl)">layout(w, h) { }</text>
+<line x1="540" y1="63" x2="575" y2="63" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-lay-1)"/>
+<rect x="580" y="40" width="110" height="46" rx="6" fill="var(--grnb)" stroke="var(--grn)"/>
+<text x="635" y="60" text-anchor="middle" font-size="10" fill="var(--grnl)">place</text>
+<text x="635" y="73" text-anchor="middle" font-size="10" fill="var(--grnl)">children</text>
+<text x="350" y="112" text-anchor="middle" font-size="9" fill="var(--muted)">intrinsics ask this pipeline to run early, on a sibling, just to answer "how big?"</text>
+</svg>
+</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q12</span><span class="qt">How does Compose interop with the View system, and how does Compose UI testing differ from Espresso?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p><span class="ic">AndroidView</span> embeds a legacy View inside Compose (<span class="ic">factory</span> runs once, <span class="ic">update</span> runs on relevant recompositions); <span class="ic">ComposeView</span> does the reverse, embedding a Compose hierarchy inside a legacy View/Fragment tree. Compose UI tests query the <strong>semantics tree</strong> instead of view IDs — there's no <span class="ic">R.id.*</span> to reference, so tests match by text, role, or an explicit <span class="ic">Modifier.testTag()</span>.</p>
+<pre><code><span class="fn">AndroidView</span>(factory = { <span class="ty">MapView</span>(<span class="kw">it</span>) }, update = { it.<span class="fn">moveCamera</span>(target) })
+
+<span class="cm">// Compose test: queries the semantics tree, not a view id</span>
+composeRule.<span class="fn">onNodeWithTag</span>(<span class="st">"increment_btn"</span>).<span class="fn">performClick</span>()
+composeRule.<span class="fn">onNodeWithText</span>(<span class="st">"Count: 1"</span>).<span class="fn">assertIsDisplayed</span>()</code></pre>
+<div class="note nblu">Espresso matches the rendered View hierarchy by resource id/type; <span class="ic">SemanticsNodeInteraction</span> queries walk the same semantics tree TalkBack/accessibility services use — good <span class="ic">testTag</span>/content-description coverage improves accessibility for free.</div>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 700 140" style="width:100%;height:auto">
+<defs><marker id="arrow-interop-1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="var(--muted)"/></marker></defs>
+<rect x="20" y="15" width="300" height="42" rx="6" fill="var(--s2)" stroke="var(--b2)"/>
+<text x="170" y="41" text-anchor="middle" font-size="10" fill="var(--txt)">View system: R.id.* hierarchy</text>
+<line x1="170" y1="57" x2="170" y2="82" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-interop-1)"/>
+<rect x="20" y="85" width="300" height="42" rx="6" fill="var(--blub)" stroke="var(--blu)"/>
+<text x="170" y="111" text-anchor="middle" font-size="10" fill="var(--blul)">queried by: Espresso (onView)</text>
+<rect x="380" y="15" width="300" height="42" rx="6" fill="var(--s2)" stroke="var(--b2)"/>
+<text x="530" y="41" text-anchor="middle" font-size="10" fill="var(--txt)">Compose: semantics tree</text>
+<line x1="530" y1="57" x2="530" y2="82" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-interop-1)"/>
+<rect x="380" y="85" width="300" height="42" rx="6" fill="var(--grnb)" stroke="var(--grn)"/>
+<text x="530" y="111" text-anchor="middle" font-size="10" fill="var(--grnl)">queried by: ComposeTestRule (onNode)</text>
+</svg>
+</div>
 </div>
 </details>
 </main>

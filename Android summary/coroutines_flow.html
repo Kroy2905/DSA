@@ -149,6 +149,70 @@ scope.<span class="fn">launch</span> { <span class="fn">task2</span>() }
     }
 }</code></pre>
 <div class="note nred">⚠ CancellationException must never be caught without re-throwing. It's how coroutines cooperate with cancellation.</div>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 760 235" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-cor-3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--redl)"/></marker>
+</defs>
+<line x1="380" y1="0" x2="380" y2="235" stroke="var(--b2)" stroke-width="1" stroke-dasharray="4,4"/>
+<text x="190" y="12" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--redl)">Job() — one failure cancels ALL children</text>
+<text x="570" y="12" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--grnl)">SupervisorJob() — failure stays isolated</text>
+
+<rect x="120" y="20" width="140" height="44" rx="8" fill="var(--redb)" stroke="var(--redl)" stroke-width="1.5"/>
+<text x="190" y="38" text-anchor="middle" font-size="11" font-weight="700" fill="var(--redl)">Job (parent)</text>
+<text x="190" y="52" text-anchor="middle" font-size="9" fill="var(--redl)">CANCELLED</text>
+
+<line x1="170" y1="64" x2="70" y2="170" stroke="var(--b2)" stroke-width="1.5"/>
+<line x1="190" y1="64" x2="190" y2="170" stroke="var(--b2)" stroke-width="1.5"/>
+<line x1="210" y1="64" x2="310" y2="170" stroke="var(--b2)" stroke-width="1.5"/>
+
+<rect x="25" y="170" width="90" height="44" rx="8" fill="var(--redb)" stroke="var(--redl)" stroke-width="1.5"/>
+<text x="70" y="190" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--redl)">Job A</text>
+<text x="70" y="204" text-anchor="middle" font-size="9" fill="var(--redl)">CANCELLED</text>
+
+<rect x="145" y="170" width="90" height="44" rx="8" fill="var(--red)" stroke="var(--redl)" stroke-width="2"/>
+<text x="190" y="190" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--txt)">Job B</text>
+<text x="190" y="204" text-anchor="middle" font-size="9" fill="var(--txt)">FAILED ✕</text>
+
+<rect x="265" y="170" width="90" height="44" rx="8" fill="var(--redb)" stroke="var(--redl)" stroke-width="1.5"/>
+<text x="310" y="190" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--redl)">Job C</text>
+<text x="310" y="204" text-anchor="middle" font-size="9" fill="var(--redl)">CANCELLED</text>
+
+<line x1="199" y1="168" x2="199" y2="66" stroke="var(--redl)" stroke-width="2" marker-end="url(#arrow-cor-3)"/>
+<text x="206" y="120" font-size="9" fill="var(--redl)">① throws</text>
+<line x1="178" y1="68" x2="80" y2="166" stroke="var(--redl)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-cor-3)"/>
+<line x1="202" y1="68" x2="300" y2="166" stroke="var(--redl)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-cor-3)"/>
+<text x="190" y="90" text-anchor="middle" font-size="9" fill="var(--redl)">② cancels siblings</text>
+
+<rect x="500" y="20" width="140" height="44" rx="8" fill="var(--grnb)" stroke="var(--grnl)" stroke-width="1.5"/>
+<text x="570" y="38" text-anchor="middle" font-size="11" font-weight="700" fill="var(--grnl)">SupervisorJob</text>
+<text x="570" y="52" text-anchor="middle" font-size="9" fill="var(--grnl)">ACTIVE</text>
+
+<line x1="550" y1="64" x2="450" y2="170" stroke="var(--b2)" stroke-width="1.5"/>
+<line x1="570" y1="64" x2="570" y2="170" stroke="var(--b2)" stroke-width="1.5"/>
+<line x1="590" y1="64" x2="690" y2="170" stroke="var(--b2)" stroke-width="1.5"/>
+
+<rect x="405" y="170" width="90" height="58" rx="8" fill="var(--grnb)" stroke="var(--grnl)" stroke-width="1.5"/>
+<text x="450" y="188" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--grnl)">Job A</text>
+<text x="450" y="201" text-anchor="middle" font-size="9" fill="var(--grnl)">ACTIVE</text>
+<text x="450" y="214" text-anchor="middle" font-size="8" fill="var(--grnl)">(unaffected)</text>
+
+<rect x="525" y="170" width="90" height="58" rx="8" fill="var(--red)" stroke="var(--redl)" stroke-width="2"/>
+<text x="570" y="188" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--txt)">Job B</text>
+<text x="570" y="201" text-anchor="middle" font-size="9" fill="var(--txt)">FAILED ✕</text>
+<text x="570" y="214" text-anchor="middle" font-size="8" fill="var(--txt)">(isolated)</text>
+
+<rect x="645" y="170" width="90" height="58" rx="8" fill="var(--grnb)" stroke="var(--grnl)" stroke-width="1.5"/>
+<text x="690" y="188" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--grnl)">Job C</text>
+<text x="690" y="201" text-anchor="middle" font-size="9" fill="var(--grnl)">ACTIVE</text>
+<text x="690" y="214" text-anchor="middle" font-size="8" fill="var(--grnl)">(unaffected)</text>
+
+<line x1="575" y1="168" x2="575" y2="95" stroke="var(--redl)" stroke-width="2" stroke-dasharray="4,3"/>
+<circle cx="575" cy="95" r="6" fill="var(--redb)" stroke="var(--redl)" stroke-width="1.5"/>
+<text x="588" y="92" font-size="9" fill="var(--redl)">fails, but</text>
+<text x="588" y="103" font-size="9" fill="var(--redl)">absorbed here</text>
+</svg>
+</div>
 </div>
 </details>
 
@@ -293,6 +357,226 @@ viewLifecycleOwner.lifecycleScope.<span class="fn">launch</span> {
         viewModel.state.<span class="fn">collect</span> { <span class="fn">render</span>(it) }
     }
 }</code></pre>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 720 215" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-cor-1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker>
+<marker id="arrow-cor-2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--grnl)"/></marker>
+</defs>
+<text x="20" y="18" font-size="10" fill="var(--muted)">upstream — cold Flow&lt;Int&gt; emitting 3, 4, 7, 8, 2</text>
+<line x1="40" y1="55" x2="670" y2="55" stroke="var(--b2)" stroke-width="2" marker-end="url(#arrow-cor-1)"/>
+<circle cx="110" cy="55" r="17" fill="var(--blub)" stroke="var(--blul)" stroke-width="2"/><text x="110" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="var(--blul)">3</text>
+<circle cx="230" cy="55" r="17" fill="var(--blub)" stroke="var(--blul)" stroke-width="2"/><text x="230" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="var(--blul)">4</text>
+<circle cx="350" cy="55" r="17" fill="var(--blub)" stroke="var(--blul)" stroke-width="2"/><text x="350" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="var(--blul)">7</text>
+<circle cx="470" cy="55" r="17" fill="var(--blub)" stroke="var(--blul)" stroke-width="2"/><text x="470" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="var(--blul)">8</text>
+<circle cx="590" cy="55" r="17" fill="var(--blub)" stroke="var(--blul)" stroke-width="2"/><text x="590" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="var(--blul)">2</text>
+<line x1="110" y1="72" x2="110" y2="95" stroke="var(--b2)" stroke-width="1.5"/>
+<line x1="230" y1="72" x2="230" y2="95" stroke="var(--b2)" stroke-width="1.5"/>
+<line x1="350" y1="72" x2="350" y2="95" stroke="var(--b2)" stroke-width="1.5"/>
+<line x1="470" y1="72" x2="470" y2="95" stroke="var(--b2)" stroke-width="1.5"/>
+<line x1="590" y1="72" x2="590" y2="95" stroke="var(--b2)" stroke-width="1.5"/>
+<rect x="280" y="95" width="180" height="46" rx="10" fill="var(--purb)" stroke="var(--pur)" stroke-width="1.5"/>
+<text x="370" y="115" text-anchor="middle" font-size="9.5" fill="var(--purl)">.filter { it % 2 == 0 }</text>
+<text x="370" y="130" text-anchor="middle" font-size="9.5" fill="var(--purl)">.map { it * 10 }</text>
+<line x1="110" y1="141" x2="110" y2="156" stroke="var(--redl)" stroke-width="1.5" stroke-dasharray="3,3"/>
+<text x="110" y="168" text-anchor="middle" font-size="13" fill="var(--redl)">✕</text>
+<line x1="350" y1="141" x2="350" y2="156" stroke="var(--redl)" stroke-width="1.5" stroke-dasharray="3,3"/>
+<text x="350" y="168" text-anchor="middle" font-size="13" fill="var(--redl)">✕</text>
+<line x1="230" y1="141" x2="230" y2="157" stroke="var(--grnl)" stroke-width="1.5" marker-end="url(#arrow-cor-2)"/>
+<line x1="470" y1="141" x2="470" y2="157" stroke="var(--grnl)" stroke-width="1.5" marker-end="url(#arrow-cor-2)"/>
+<line x1="590" y1="141" x2="590" y2="157" stroke="var(--grnl)" stroke-width="1.5" marker-end="url(#arrow-cor-2)"/>
+<line x1="40" y1="172" x2="670" y2="172" stroke="var(--b2)" stroke-width="2" marker-end="url(#arrow-cor-1)"/>
+<circle cx="230" cy="172" r="15" fill="var(--grnb)" stroke="var(--grnl)" stroke-width="2"/><text x="230" y="177" text-anchor="middle" font-size="11" font-weight="700" fill="var(--grnl)">40</text>
+<circle cx="470" cy="172" r="15" fill="var(--grnb)" stroke="var(--grnl)" stroke-width="2"/><text x="470" y="177" text-anchor="middle" font-size="11" font-weight="700" fill="var(--grnl)">80</text>
+<circle cx="590" cy="172" r="15" fill="var(--grnb)" stroke="var(--grnl)" stroke-width="2"/><text x="590" y="177" text-anchor="middle" font-size="11" font-weight="700" fill="var(--grnl)">20</text>
+<text x="20" y="204" font-size="10" fill="var(--muted)">downstream — odd numbers dropped, survivors ×10 (a new collector re-runs this whole pipeline)</text>
+</svg>
+</div>
+</div>
+</details>
+
+<h2>Testing & Advanced Patterns</h2>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">Q8</span><span class="qt">coroutineScope{} vs supervisorScope{} vs a stored CoroutineScope — why do they fail differently?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p><strong>coroutineScope{}</strong> and <strong>supervisorScope{}</strong> are <em>suspend functions</em>, not objects. They borrow the calling coroutine's context, create a fresh child <span class="ic">Job</span>, and <strong>suspend the caller</strong> until every coroutine launched inside completes — so an exception thrown inside can be rethrown straight back to the caller. A stored <span class="ic">CoroutineScope</span> (like <span class="ic">viewModelScope</span>) is a long-lived object instead: <span class="ic">scope.launch{}</span> returns immediately and is decoupled from whoever called it.</p>
+<p>The two builders also differ in failure semantics. <span class="ic">coroutineScope{}</span> keeps a regular Job's all-or-nothing rule: one child failing cancels every sibling launched in that block, and the exception propagates out — use it when the whole group is meaningless if any one piece fails (e.g. two calls that feed one combined result). <span class="ic">supervisorScope{}</span> installs a SupervisorJob instead: a failing child does <strong>not</strong> cancel its siblings, so independent, best-effort pieces of work can fail on their own. This is exactly why <span class="ic">viewModelScope</span>/<span class="ic">lifecycleScope</span> are built on SupervisorJob — one crashing <span class="ic">launch{}</span> must never take down every other coroutine owned by that ViewModel.</p>
+<pre><code><span class="cm">// coroutineScope: all-or-nothing — one failure cancels every sibling</span>
+<span class="kw">suspend fun</span> <span class="fn">loadDashboard</span>() = <span class="fn">coroutineScope</span> {
+    <span class="kw">val</span> <span class="cn">user</span>  = <span class="fn">async</span> { api.<span class="fn">getUser</span>() }   <span class="cm">// if this throws...</span>
+    <span class="kw">val</span> <span class="cn">posts</span> = <span class="fn">async</span> { api.<span class="fn">getPosts</span>() }  <span class="cm">// ...this gets cancelled too</span>
+    <span class="ty">Dashboard</span>(user.<span class="fn">await</span>(), posts.<span class="fn">await</span>())
+}
+
+<span class="cm">// supervisorScope: isolated — a failing child doesn't touch its siblings</span>
+<span class="kw">suspend fun</span> <span class="fn">loadWidgets</span>() = <span class="fn">supervisorScope</span> {
+    <span class="kw">val</span> <span class="cn">weather</span> = <span class="fn">async</span> { <span class="fn">fetchWeather</span>() }  <span class="cm">// may fail on its own</span>
+    <span class="kw">val</span> <span class="cn">stocks</span>  = <span class="fn">async</span> { <span class="fn">fetchStocks</span>() }   <span class="cm">// keeps running either way</span>
+    <span class="fn">listOf</span>(weather, stocks).<span class="fn">map</span> { <span class="fn">runCatching</span> { it.<span class="fn">await</span>() } }
+}</code></pre>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 640 130" style="width:100%;height:auto">
+<defs><marker id="arrow-cor-4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--redl)"/></marker></defs>
+<text x="150" y="16" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--redl)">coroutineScope { }</text>
+<rect x="20" y="35" width="120" height="42" rx="8" fill="var(--redb)" stroke="var(--redl)" stroke-width="1.5"/>
+<text x="80" y="60" text-anchor="middle" font-size="10" fill="var(--redl)">async { user }</text>
+<rect x="170" y="35" width="120" height="42" rx="8" fill="var(--red)" stroke="var(--redl)" stroke-width="2"/>
+<text x="230" y="60" text-anchor="middle" font-size="10" fill="var(--txt)">async { posts } ✕</text>
+<line x1="170" y1="56" x2="145" y2="56" stroke="var(--redl)" stroke-width="1.5" marker-end="url(#arrow-cor-4)"/>
+<text x="150" y="105" text-anchor="middle" font-size="9" fill="var(--redl)">posts fails → user cancelled → rethrown to caller</text>
+<text x="480" y="16" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--grnl)">supervisorScope { }</text>
+<rect x="350" y="35" width="120" height="42" rx="8" fill="var(--grnb)" stroke="var(--grnl)" stroke-width="1.5"/>
+<text x="410" y="60" text-anchor="middle" font-size="10" fill="var(--grnl)">async { weather }</text>
+<rect x="500" y="35" width="120" height="42" rx="8" fill="var(--red)" stroke="var(--redl)" stroke-width="2"/>
+<text x="560" y="60" text-anchor="middle" font-size="10" fill="var(--txt)">async { stocks } ✕</text>
+<text x="480" y="105" text-anchor="middle" font-size="9" fill="var(--grnl)">stocks fails — weather keeps running, isolated</text>
+</svg>
+</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--cyab);color:var(--cyal)">Q9</span><span class="qt">How does callbackFlow bridge a callback API into Flow? How is a Channel different from a Flow?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p><span class="ic">callbackFlow{}</span> is the standard way to wrap a callback-based API (location updates, a SDK listener, a BroadcastReceiver) as a <span class="ic">Flow</span>. Inside the block you register the callback and push values out with <span class="ic">trySend()</span> (non-suspending, safe to call from any thread). <span class="ic">awaitClose {}</span> is mandatory — it suspends until the collecting coroutine is cancelled or the flow completes, and is the one guaranteed place to unregister the listener, so you never leak it.</p>
+<p>Under the hood <span class="ic">callbackFlow</span> is backed by a <span class="ic">Channel</span>, and that surfaces the key conceptual difference: a <strong>Channel is hot</strong> — it exists independently of collectors, and every value sent to it is delivered to exactly <em>one</em> receiver (competing consumers), never broadcast to all of them. A <strong>Flow is cold</strong> — nothing runs until <span class="ic">collect()</span> is called, and each collector gets its own independent run of the block. That's why you build a Flow <em>on top of</em> a Channel rather than exposing the Channel directly: it gives you automatic cleanup via <span class="ic">awaitClose{}</span> plus the whole standard operator toolkit (map, filter, flowOn…).</p>
+<pre><code><span class="kw">fun</span> <span class="fn">locationUpdates</span>(client: <span class="ty">FusedLocationProviderClient</span>) = <span class="fn">callbackFlow</span> {
+    <span class="kw">val</span> <span class="cn">cb</span> = <span class="kw">object</span> : <span class="ty">LocationCallback</span>() {
+        <span class="kw">override fun</span> <span class="fn">onLocationResult</span>(r: <span class="ty">LocationResult</span>) { <span class="fn">trySend</span>(r.lastLocation) }
+    }
+    client.<span class="fn">requestLocationUpdates</span>(request, cb, <span class="ty">Looper</span>.getMainLooper())
+    <span class="fn">awaitClose</span> { client.<span class="fn">removeLocationUpdates</span>(cb) }  <span class="cm">// fires on cancel — no leak</span>
+}
+
+<span class="cm">// Channel: each value goes to exactly ONE receiver, never both</span>
+<span class="kw">val</span> <span class="cn">channel</span> = <span class="ty">Channel</span>&lt;<span class="ty">Int</span>&gt;()
+<span class="fn">launch</span> { <span class="fn">repeat</span>(<span class="cn">3</span>) { channel.<span class="fn">send</span>(it) } }
+<span class="fn">launch</span> { <span class="kw">for</span> (v <span class="kw">in</span> channel) <span class="fn">log</span>(<span class="st">"A: </span><span class="cn">$v</span><span class="st">"</span>) }  <span class="cm">// competes with B</span></code></pre>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 680 150" style="width:100%;height:auto">
+<defs><marker id="arrow-cor-5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>
+<rect x="20" y="30" width="170" height="46" rx="8" fill="var(--blub)" stroke="var(--blul)" stroke-width="1.5"/>
+<text x="105" y="49" text-anchor="middle" font-size="10" fill="var(--blul)">Location API</text>
+<text x="105" y="63" text-anchor="middle" font-size="9" fill="var(--blul)">onLocationResult()</text>
+<line x1="190" y1="53" x2="238" y2="53" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-cor-5)"/>
+<rect x="240" y="30" width="190" height="46" rx="8" fill="var(--purb)" stroke="var(--pur)" stroke-width="1.5"/>
+<text x="335" y="49" text-anchor="middle" font-size="10" fill="var(--purl)">callbackFlow {</text>
+<text x="335" y="63" text-anchor="middle" font-size="9" fill="var(--purl)">trySend(it) }</text>
+<line x1="430" y1="53" x2="478" y2="53" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-cor-5)"/>
+<rect x="480" y="30" width="160" height="46" rx="8" fill="var(--grnb)" stroke="var(--grnl)" stroke-width="1.5"/>
+<text x="560" y="53" text-anchor="middle" font-size="10" fill="var(--grnl)">collect { render() }</text>
+<line x1="335" y1="76" x2="335" y2="98" stroke="var(--redl)" stroke-width="1.5" stroke-dasharray="3,3"/>
+<text x="345" y="93" font-size="8.5" fill="var(--redl)">on cancel</text>
+<rect x="230" y="100" width="210" height="36" rx="8" fill="var(--redb)" stroke="var(--redl)" stroke-width="1.5"/>
+<text x="335" y="122" text-anchor="middle" font-size="9.5" fill="var(--redl)">awaitClose { removeListener() }</text>
+</svg>
+</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--blub);color:var(--blul)">Q10</span><span class="qt">How do you test coroutines? Why runTest instead of runBlocking, and Standard vs Unconfined TestDispatcher?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p><span class="ic">runTest{}</span> is the entry point from <span class="ic">kotlinx-coroutines-test</span>: it runs the test body on a <span class="ic">TestScope</span> backed by a <span class="ic">TestDispatcher</span> with a <strong>virtual clock</strong>, so calls to <span class="ic">delay()</span> fast-forward instead of actually waiting. <span class="ic">runBlocking</span> has no virtual clock — a real <span class="ic">delay(5000)</span> really waits 5 real seconds — and it gives you no control over when coroutines launched on an unrelated scope (like <span class="ic">viewModelScope</span>, which defaults to <span class="ic">Dispatchers.Main</span>) actually run; on the JVM there is no real Main thread, so those coroutines would need <span class="ic">Dispatchers.setMain(testDispatcher)</span> just to execute at all.</p>
+<p><span class="ic">StandardTestDispatcher</span> (the default) <strong>queues</strong> launched coroutines instead of running them — you must call <span class="ic">advanceUntilIdle()</span> (or <span class="ic">runCurrent()</span>) to pump the queue. This mirrors production behavior more faithfully and lets you assert an intermediate state (e.g. still <span class="ic">Loading</span>) before the work has run. <span class="ic">UnconfinedTestDispatcher</span> runs everything eagerly up to the first suspension point, so you often skip <span class="ic">advanceUntilIdle()</span> — convenient, but it can mask real dispatch-ordering bugs your app would actually have in production.</p>
+<pre><code><span class="an">@Test</span>
+<span class="kw">fun</span> <span class="fn">loadUser_emitsLoadingThenSuccess</span>() = <span class="fn">runTest</span> {
+    <span class="ty">Dispatchers</span>.<span class="fn">setMain</span>(<span class="ty">StandardTestDispatcher</span>(testScheduler))
+    <span class="kw">val</span> <span class="cn">vm</span> = <span class="ty">UserViewModel</span>(fakeRepo)
+
+    vm.<span class="fn">loadUser</span>()                                 <span class="cm">// launch{} — just QUEUED, not run yet</span>
+    <span class="fn">assertEquals</span>(<span class="ty">UiState</span>.Loading, vm.state.value)   <span class="cm">// nothing executed yet</span>
+
+    <span class="fn">advanceUntilIdle</span>()                             <span class="cm">// pump the queue to completion</span>
+    <span class="fn">assertEquals</span>(<span class="ty">UiState</span>.Success(fakeUser), vm.state.value)
+}</code></pre>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 680 150" style="width:100%;height:auto">
+<defs><marker id="arrow-cor-6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--ambl)"/></marker></defs>
+<text x="40" y="15" font-size="10" font-weight="700" fill="var(--blul)">StandardTestDispatcher — queued</text>
+<line x1="40" y1="40" x2="640" y2="40" stroke="var(--b2)" stroke-width="2"/>
+<circle cx="100" cy="40" r="8" fill="var(--ambb)" stroke="var(--ambl)" stroke-width="2"/>
+<text x="100" y="62" text-anchor="middle" font-size="8.5" fill="var(--ambl)">launch{} → queued</text>
+<line x1="110" y1="40" x2="388" y2="40" stroke="var(--ambl)" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arrow-cor-6)"/>
+<circle cx="400" cy="40" r="8" fill="var(--grnb)" stroke="var(--grnl)" stroke-width="2"/>
+<text x="400" y="62" text-anchor="middle" font-size="8.5" fill="var(--grnl)">advanceUntilIdle() → runs now</text>
+<text x="40" y="95" font-size="10" font-weight="700" fill="var(--blul)">UnconfinedTestDispatcher — eager</text>
+<line x1="40" y1="120" x2="640" y2="120" stroke="var(--b2)" stroke-width="2"/>
+<circle cx="100" cy="120" r="8" fill="var(--grnb)" stroke="var(--grnl)" stroke-width="2"/>
+<text x="100" y="142" text-anchor="middle" font-size="8.5" fill="var(--grnl)">launch{} → runs immediately, same spot</text>
+</svg>
+</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--orab);color:var(--oral)">Q11</span><span class="qt">Why doesn't cancel() always stop a coroutine? What's the CancellationException swallow bug?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p>Cancellation in coroutines is <strong>cooperative</strong>, not preemptive. Calling <span class="ic">job.cancel()</span> only flips the Job to a "Cancelling" state — it throws a <span class="ic">CancellationException</span> the next time the coroutine hits a suspension point that checks for it (<span class="ic">delay</span>, <span class="ic">yield</span>, most suspend calls). A tight CPU-bound loop with no suspend call inside never hits that check, so <span class="ic">cancel()</span> silently has no effect until you add one — either check <span class="ic">isActive</span> yourself, or call <span class="ic">ensureActive()</span> to throw immediately.</p>
+<p>The second, subtler bug: <span class="ic">CancellationException</span> is a normal <span class="ic">Exception</span> subtype, so a broad <span class="ic">catch (e: Exception)</span> around a suspending call (like collecting a Flow) will silently swallow it too. That breaks structured concurrency — the exception is what tells the Job machinery "this coroutine is actually done cancelling," so swallowing it lets a coroutine keep running work the rest of the app already assumes is dead (e.g. writing to a UI/state after the screen navigated away). The fix is to always rethrow it, or catch it first and narrower exceptions after.</p>
+<pre><code><span class="kw">val</span> <span class="cn">job</span> = <span class="fn">launch</span>(<span class="ty">Dispatchers</span>.Default) {
+    <span class="kw">var</span> <span class="cn">i</span> = <span class="cn">0</span>
+    <span class="kw">while</span> (i < <span class="cn">1_000_000_000</span>) { i++ }    <span class="cm">// no suspension point — cancel() does NOTHING</span>
+}
+job.<span class="fn">cancel</span>()   <span class="cm">// job silently keeps running to completion</span>
+
+<span class="cm">// the swallow bug — also eats CancellationException:</span>
+<span class="kw">try</span> { flow.<span class="fn">collect</span> {} } <span class="kw">catch</span> (e: <span class="ty">Exception</span>) { <span class="fn">logError</span>(e) }
+
+<span class="cm">// fix — rethrow cancellation, handle everything else:</span>
+<span class="kw">try</span> { flow.<span class="fn">collect</span> {} }
+<span class="kw">catch</span> (e: <span class="ty">CancellationException</span>) { <span class="kw">throw</span> e }
+<span class="kw">catch</span> (e: <span class="ty">Exception</span>) { <span class="fn">logError</span>(e) }</code></pre>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 620 200" style="width:100%;height:auto">
+<defs><marker id="arrow-cor-7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--blul)"/></marker></defs>
+<rect x="20" y="75" width="110" height="44" rx="8" fill="var(--s2)" stroke="var(--b2)" stroke-width="1.5"/>
+<text x="75" y="101" text-anchor="middle" font-size="9.5" fill="var(--txt)">loop { }</text>
+<line x1="130" y1="97" x2="188" y2="97" stroke="var(--blul)" stroke-width="1.5" marker-end="url(#arrow-cor-7)"/>
+<rect x="190" y="75" width="110" height="44" rx="8" fill="var(--blub)" stroke="var(--blul)" stroke-width="1.5"/>
+<text x="245" y="101" text-anchor="middle" font-size="9.5" fill="var(--blul)">isActive?</text>
+<line x1="300" y1="90" x2="378" y2="90" stroke="var(--grnl)" stroke-width="1.5" marker-end="url(#arrow-cor-7)"/>
+<text x="340" y="82" text-anchor="middle" font-size="8.5" fill="var(--grnl)">true</text>
+<rect x="380" y="68" width="110" height="44" rx="8" fill="var(--grnb)" stroke="var(--grnl)" stroke-width="1.5"/>
+<text x="435" y="94" text-anchor="middle" font-size="9.5" fill="var(--grnl)">doWork()</text>
+<path d="M435,68 Q255,20 75,75" fill="none" stroke="var(--blul)" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arrow-cor-7)"/>
+<text x="255" y="24" text-anchor="middle" font-size="8.5" fill="var(--muted)">next iteration</text>
+<line x1="245" y1="119" x2="245" y2="147" stroke="var(--redl)" stroke-width="1.5" marker-end="url(#arrow-cor-7)"/>
+<text x="270" y="137" font-size="8.5" fill="var(--redl)">false</text>
+<rect x="150" y="150" width="190" height="38" rx="8" fill="var(--redb)" stroke="var(--redl)" stroke-width="1.5"/>
+<text x="245" y="174" text-anchor="middle" font-size="9.5" fill="var(--redl)">throw CancellationException</text>
+</svg>
+</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q12</span><span class="qt">What do stateIn/shareIn do? Explain the SharingStarted strategies and why WhileSubscribed(5000) is the default choice</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p><span class="ic">stateIn</span> converts a cold Flow into a hot <span class="ic">StateFlow</span> (needs an <span class="ic">initialValue</span>, always has a current value); <span class="ic">shareIn</span> converts a cold Flow into a hot <span class="ic">SharedFlow</span> (configurable replay, no current-value concept — better for event streams). Both <strong>multicast</strong> a single upstream execution to every collector. Without one, a Room DAO's <span class="ic">Flow&lt;List&lt;User&gt;&gt;</span> collected from two different screens sets up two separate live DB queries; wrapped in <span class="ic">stateIn</span>, both screens share the same one.</p>
+<p><strong>SharingStarted</strong> controls when that shared upstream starts/stops: <span class="ic">Eagerly</span> starts immediately and never stops (wastes resources with zero subscribers), <span class="ic">Lazily</span> starts on first subscriber but also never stops, and <span class="ic">WhileSubscribed(timeoutMs)</span> starts on first subscriber and stops <em>timeoutMs</em> after the last one leaves. A config change (rotation) unsubscribes and immediately resubscribes within milliseconds — <span class="ic">WhileSubscribed(5000)</span>'s 5-second grace window survives that gap without restarting an expensive DB observer or GPS listener, while still releasing it once the user actually navigates away. That's why it's the standard ViewModel default.</p>
+<pre><code><span class="kw">class</span> <span class="ty">UserViewModel</span>(dao: <span class="ty">UserDao</span>) : <span class="ty">ViewModel</span>() {
+    <span class="kw">val</span> <span class="cn">users</span>: <span class="ty">StateFlow</span>&lt;<span class="ty">List</span>&lt;<span class="ty">User</span>&gt;&gt; = dao.<span class="fn">getAllUsersFlow</span>()  <span class="cm">// cold Flow</span>
+        .<span class="fn">stateIn</span>(viewModelScope, <span class="ty">SharingStarted</span>.<span class="fn">WhileSubscribed</span>(<span class="cn">5_000</span>), emptyList())
+}
+<span class="cm">// shareIn: same idea for event-like flows with no "current value"</span>
+<span class="kw">val</span> <span class="cn">events</span>: <span class="ty">SharedFlow</span>&lt;<span class="ty">Event</span>&gt; = source.<span class="fn">shareIn</span>(scope, <span class="ty">SharingStarted</span>.<span class="fn">WhileSubscribed</span>(<span class="cn">5_000</span>), replay = <span class="cn">1</span>)</code></pre>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 640 170" style="width:100%;height:auto">
+<defs><marker id="arrow-cor-8" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>
+<text x="320" y="14" text-anchor="middle" font-size="9.5" fill="var(--muted)">ONE upstream query, shared by every collector</text>
+<rect x="20" y="68" width="150" height="44" rx="8" fill="var(--blub)" stroke="var(--blul)" stroke-width="1.5"/>
+<text x="95" y="94" text-anchor="middle" font-size="9.5" fill="var(--blul)">Room DAO Flow</text>
+<line x1="170" y1="90" x2="248" y2="90" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-cor-8)"/>
+<rect x="250" y="68" width="190" height="44" rx="8" fill="var(--purb)" stroke="var(--pur)" stroke-width="1.5"/>
+<text x="345" y="94" text-anchor="middle" font-size="9.5" fill="var(--purl)">stateIn(WhileSubscribed)</text>
+<line x1="440" y1="80" x2="478" y2="38" stroke="var(--grnl)" stroke-width="1.5" marker-end="url(#arrow-cor-8)"/>
+<line x1="440" y1="90" x2="478" y2="90" stroke="var(--grnl)" stroke-width="1.5" marker-end="url(#arrow-cor-8)"/>
+<line x1="440" y1="100" x2="478" y2="142" stroke="var(--grnl)" stroke-width="1.5" marker-end="url(#arrow-cor-8)"/>
+<rect x="480" y="20" width="140" height="36" rx="8" fill="var(--grnb)" stroke="var(--grnl)" stroke-width="1.5"/>
+<text x="550" y="43" text-anchor="middle" font-size="9.5" fill="var(--grnl)">Screen A</text>
+<rect x="480" y="72" width="140" height="36" rx="8" fill="var(--grnb)" stroke="var(--grnl)" stroke-width="1.5"/>
+<text x="550" y="95" text-anchor="middle" font-size="9.5" fill="var(--grnl)">Screen B</text>
+<rect x="480" y="124" width="140" height="36" rx="8" fill="var(--grnb)" stroke="var(--grnl)" stroke-width="1.5"/>
+<text x="550" y="147" text-anchor="middle" font-size="9.5" fill="var(--grnl)">Screen C</text>
+</svg>
+</div>
 </div>
 </details>
 </main>

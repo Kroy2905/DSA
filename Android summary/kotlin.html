@@ -63,6 +63,59 @@ a{color:var(--grnl)}
 
 <details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q1</span><span class="qt">Explain all scope functions: let, run, with, apply, also — when to use each</span><span class="dif hard">Hard</span></summary>
 <div class="ans">
+<div class="gc" style="overflow-x:auto;padding:14px;margin:10px 0">
+<svg viewBox="0 0 940 460" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-kt-1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+</marker>
+</defs>
+<rect x="380" y="10" width="180" height="40" rx="8" fill="var(--s3)" stroke="var(--b2)"/>
+<text x="470" y="35" text-anchor="middle" font-size="11" fill="var(--txt)">Pick a scope function</text>
+<line x1="470" y1="50" x2="470" y2="66" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-kt-1)"/>
+<polygon points="470,68 585,110 470,152 355,110" fill="var(--s3)" stroke="var(--ambl)" stroke-width="1.5"/>
+<text x="470" y="106" text-anchor="middle" font-size="10" fill="var(--txt)">Return the receiver</text>
+<text x="470" y="119" text-anchor="middle" font-size="10" fill="var(--txt)">(not lambda result)?</text>
+<line x1="358" y1="118" x2="238" y2="180" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-kt-1)"/>
+<text x="278" y="145" font-size="10" fill="var(--muted)">No</text>
+<line x1="582" y1="118" x2="702" y2="180" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-kt-1)"/>
+<text x="655" y="145" font-size="10" fill="var(--muted)">Yes</text>
+<polygon points="230,182 330,220 230,258 130,220" fill="var(--s3)" stroke="var(--ambl)" stroke-width="1.5"/>
+<text x="230" y="216" text-anchor="middle" font-size="10" fill="var(--txt)">Already non-null</text>
+<text x="230" y="229" text-anchor="middle" font-size="10" fill="var(--txt)">(no ?. needed)?</text>
+<polygon points="710,182 810,220 710,258 610,220" fill="var(--s3)" stroke="var(--ambl)" stroke-width="1.5"/>
+<text x="710" y="224" text-anchor="middle" font-size="10" fill="var(--txt)">Use it or this?</text>
+<line x1="325" y1="224" x2="358" y2="280" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-kt-1)"/>
+<text x="350" y="250" font-size="10" fill="var(--muted)">Yes</text>
+<line x1="222" y1="250" x2="162" y2="286" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-kt-1)"/>
+<text x="205" y="275" font-size="10" fill="var(--muted)">No</text>
+<polygon points="150,292 245,330 150,368 55,330" fill="var(--s3)" stroke="var(--ambl)" stroke-width="1.5"/>
+<text x="150" y="334" text-anchor="middle" font-size="10" fill="var(--txt)">Use it or this?</text>
+<line x1="608" y1="222" x2="600" y2="280" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-kt-1)"/>
+<text x="590" y="252" font-size="10" fill="var(--muted)">it</text>
+<line x1="812" y1="222" x2="828" y2="280" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-kt-1)"/>
+<text x="825" y="252" font-size="10" fill="var(--muted)">this</text>
+<line x1="60" y1="332" x2="60" y2="400" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-kt-1)"/>
+<text x="45" y="368" font-size="10" fill="var(--muted)">it</text>
+<line x1="243" y1="332" x2="250" y2="400" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-kt-1)"/>
+<text x="250" y="368" font-size="10" fill="var(--muted)">this</text>
+<rect x="300" y="278" width="120" height="44" rx="8" fill="var(--cyab)" stroke="var(--cyal)" stroke-width="1.5"/>
+<text x="360" y="298" text-anchor="middle" font-size="12" fill="var(--cyal)">with</text>
+<text x="360" y="312" text-anchor="middle" font-size="8.5" fill="var(--txt)">this, returns result</text>
+<rect x="5" y="398" width="110" height="44" rx="8" fill="var(--blub)" stroke="var(--blul)" stroke-width="1.5"/>
+<text x="60" y="418" text-anchor="middle" font-size="12" fill="var(--blul)">let</text>
+<text x="60" y="432" text-anchor="middle" font-size="8.5" fill="var(--txt)">it, returns result</text>
+<rect x="195" y="398" width="110" height="44" rx="8" fill="var(--purb)" stroke="var(--purl)" stroke-width="1.5"/>
+<text x="250" y="418" text-anchor="middle" font-size="12" fill="var(--purl)">run</text>
+<text x="250" y="432" text-anchor="middle" font-size="8.5" fill="var(--txt)">this, returns result</text>
+<rect x="545" y="278" width="110" height="44" rx="8" fill="var(--orab)" stroke="var(--oral)" stroke-width="1.5"/>
+<text x="600" y="298" text-anchor="middle" font-size="12" fill="var(--oral)">also</text>
+<text x="600" y="312" text-anchor="middle" font-size="8.5" fill="var(--txt)">it, returns receiver</text>
+<rect x="775" y="278" width="110" height="44" rx="8" fill="var(--grnb)" stroke="var(--grnl)" stroke-width="1.5"/>
+<text x="830" y="298" text-anchor="middle" font-size="12" fill="var(--grnl)">apply</text>
+<text x="830" y="312" text-anchor="middle" font-size="8.5" fill="var(--txt)">this, returns receiver</text>
+</svg>
+</div>
 <pre><code><span class="cm">// let: non-null receiver, returns lambda result, 'it' as reference</span>
 <span class="kw">val</span> <span class="cn">result</span> = user?.<span class="fn">let</span> {
     <span class="fn">processUser</span>(it) <span class="cm">// returns processed value</span>
@@ -266,6 +319,276 @@ a === b  <span class="cm">// false — referential equality, same object in memo
 
 <span class="cm">// Null-safe: a == null compiles to a?.equals(null) ?: (b === null)</span>
 <span class="cm">// Never throws NPE unlike Java's a.equals(b)</span></code></pre>
+</div>
+</details>
+
+<h2>Advanced &amp; Practical Kotlin</h2>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">Q8</span><span class="qt">Explain ?., ?:, !!, as? and why smart-casting fails on var properties</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p>Kotlin gives you four tools for a nullable value, each trading off safety differently. <span class="ic">?.</span> short-circuits to <span class="ic">null</span> instead of crashing. <span class="ic">?:</span> (elvis) supplies a fallback when the left side is null. <span class="ic">as?</span> is a "safe cast" — it produces <span class="ic">null</span> instead of throwing <span class="ic">ClassCastException</span>. <span class="ic">!!</span> is the odd one out: it asserts "trust me, this isn't null" and throws an NPE immediately if you're wrong — it's the one operator that reintroduces Java's crash behavior, so treat it as a code smell outside of tests/prototypes.</p>
+<pre><code><span class="kw">val</span> <span class="cn">len</span>: <span class="ty">Int</span>? = str?.length          <span class="cm">// null-safe call — null in, null out</span>
+<span class="kw">val</span> <span class="cn">len2</span>: <span class="ty">Int</span> = str?.length ?: <span class="cn">0</span>   <span class="cm">// elvis — default when null</span>
+<span class="kw">val</span> <span class="cn">forced</span>: <span class="ty">Int</span> = str!!.length        <span class="cm">// throws NPE right here if null</span>
+<span class="kw">val</span> <span class="cn">asInt</span>: <span class="ty">Int</span>? = obj <span class="kw">as</span>? <span class="ty">Int</span>       <span class="cm">// safe cast — null instead of a crash</span>
+
+<span class="kw">class</span> <span class="ty">Session</span>(<span class="kw">var</span> token: <span class="ty">String</span>?) {
+    <span class="kw">fun</span> <span class="fn">show</span>() {
+        <span class="kw">if</span> (token != <span class="kw">null</span>) {
+            <span class="cm">// println(token.length)   // ERROR: 'token' is a var — could change before use</span>
+            token?.<span class="fn">let</span> { <span class="fn">println</span>(it.length) } <span class="cm">// re-check safely instead</span>
+        }
+    }
+}</code></pre>
+<p>Java interop adds a third state: a method with no <span class="ic">@Nullable</span>/<span class="ic">@NonNull</span> annotation is exposed as a <strong>platform type</strong> (shown as <span class="ic">String!</span>). The compiler doesn't know its nullability, so it doesn't force a check either way — you can assign it to a nullable or non-null variable, and an incorrect guess still fails as a plain NPE at the point of use, exactly like unchecked Java code.</p>
+<div class="note nred"><strong>Smart-cast rule:</strong> the compiler only smart-casts when it can prove the value can't change between the null-check and the use. That's true for local <span class="ic">val</span>s and simple <span class="ic">val</span> properties. It's <strong>never</strong> true for a <span class="ic">var</span> property — another thread, a custom getter, or code between the check and the use could mutate it — and it's never true for anything mutable captured inside a lambda that might run later. The fix is always the same: copy the value into a local <span class="ic">val</span> first.</div>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 900 135" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-kt-3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+</marker>
+</defs>
+<rect x="20" y="20" width="190" height="60" rx="8" fill="var(--blub)" stroke="var(--blul)" stroke-width="1.5"/>
+<text x="115" y="45" text-anchor="middle" font-size="13" fill="var(--blul)">?.</text>
+<text x="115" y="62" text-anchor="middle" font-size="8.5" fill="var(--txt)">null in → null out</text>
+<line x1="210" y1="50" x2="238" y2="50" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-kt-3)"/>
+<rect x="240" y="20" width="190" height="60" rx="8" fill="var(--grnb)" stroke="var(--grnl)" stroke-width="1.5"/>
+<text x="335" y="45" text-anchor="middle" font-size="13" fill="var(--grnl)">?:</text>
+<text x="335" y="62" text-anchor="middle" font-size="8.5" fill="var(--txt)">null → default value</text>
+<line x1="430" y1="50" x2="458" y2="50" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-kt-3)"/>
+<rect x="460" y="20" width="190" height="60" rx="8" fill="var(--purb)" stroke="var(--purl)" stroke-width="1.5"/>
+<text x="555" y="45" text-anchor="middle" font-size="13" fill="var(--purl)">as?</text>
+<text x="555" y="62" text-anchor="middle" font-size="8.5" fill="var(--txt)">bad cast → null</text>
+<line x1="650" y1="50" x2="678" y2="50" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-kt-3)"/>
+<rect x="680" y="20" width="190" height="60" rx="8" fill="var(--redb)" stroke="var(--redl)" stroke-width="1.5"/>
+<text x="775" y="45" text-anchor="middle" font-size="13" fill="var(--redl)">!!</text>
+<text x="775" y="62" text-anchor="middle" font-size="8.5" fill="var(--txt)">null → throws NPE</text>
+<line x1="20" y1="108" x2="870" y2="108" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-kt-3)"/>
+<text x="20" y="124" font-size="10" fill="var(--muted)">safer</text>
+<text x="870" y="124" text-anchor="end" font-size="10" fill="var(--muted)">riskier</text>
+</svg>
+</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--blub);color:var(--blul)">Q9</span><span class="qt">How are extension functions resolved? Why can't they access private members?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>An extension function is compiled as an ordinary <strong>static function that takes the receiver as a hidden first parameter</strong> — it's not injected into the class at all. Two consequences follow. First, resolution is <strong>static</strong>: the compiler picks which extension to call based on the <em>declared (compile-time) type</em> of the expression, not the object's actual runtime type — unlike member functions, which dispatch dynamically and support real overriding. Second, because the generated function lives outside the class, ordinary JVM visibility rules apply: it can only see <span class="ic">public</span>/<span class="ic">internal</span> members of the receiver, never <span class="ic">private</span> ones.</p>
+<pre><code><span class="kw">open class</span> <span class="ty">Shape</span>
+<span class="kw">class</span> <span class="ty">Circle</span> : <span class="ty">Shape</span>()
+
+<span class="kw">fun</span> <span class="ty">Shape</span>.<span class="fn">describe</span>() = <span class="st">"Shape"</span>      <span class="cm">// extension on Shape</span>
+<span class="kw">fun</span> <span class="ty">Circle</span>.<span class="fn">describe</span>() = <span class="st">"Circle"</span>    <span class="cm">// a DIFFERENT function — not an override</span>
+
+<span class="kw">fun</span> <span class="fn">show</span>(s: <span class="ty">Shape</span>) = <span class="fn">println</span>(s.<span class="fn">describe</span>())
+<span class="fn">show</span>(<span class="ty">Circle</span>())                    <span class="cm">// prints "Shape" — picked by the declared type</span>
+
+<span class="kw">class</span> <span class="ty">Greeter</span> { <span class="kw">fun</span> <span class="fn">greet</span>() = <span class="st">"member"</span> }
+<span class="kw">fun</span> <span class="ty">Greeter</span>.<span class="fn">greet</span>() = <span class="st">"extension"</span>  <span class="cm">// shadowed — unreachable, member always wins</span></code></pre>
+<p>This is also why a member function always wins when signatures collide: the compiler resolves members first, and an extension is really just sugar for calling a free function with dot-syntax — it can never override, and it can never be overridden.</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 900 190" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-kt-4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+</marker>
+</defs>
+<text x="10" y="18" font-size="9.5" fill="var(--muted)">member call (dynamic)</text>
+<rect x="110" y="25" width="190" height="50" rx="8" fill="var(--s3)" stroke="var(--grnl)" stroke-width="1.5"/>
+<text x="205" y="55" text-anchor="middle" font-size="10" fill="var(--txt)">s: Shape = Circle()</text>
+<line x1="300" y1="50" x2="328" y2="50" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-kt-4)"/>
+<rect x="330" y="25" width="190" height="50" rx="8" fill="var(--s3)" stroke="var(--grnl)" stroke-width="1.5"/>
+<text x="425" y="55" text-anchor="middle" font-size="10" fill="var(--txt)">checked at RUNTIME</text>
+<line x1="520" y1="50" x2="548" y2="50" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-kt-4)"/>
+<rect x="550" y="25" width="330" height="50" rx="8" fill="var(--grnb)" stroke="var(--grnl)" stroke-width="1.5"/>
+<text x="715" y="55" text-anchor="middle" font-size="10" fill="var(--grnl)">Circle.describe() wins (override)</text>
+<text x="10" y="103" font-size="9.5" fill="var(--muted)">extension call (static)</text>
+<rect x="110" y="110" width="190" height="50" rx="8" fill="var(--s3)" stroke="var(--oral)" stroke-width="1.5"/>
+<text x="205" y="140" text-anchor="middle" font-size="10" fill="var(--txt)">s: Shape = Circle()</text>
+<line x1="300" y1="135" x2="328" y2="135" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-kt-4)"/>
+<rect x="330" y="110" width="190" height="50" rx="8" fill="var(--s3)" stroke="var(--oral)" stroke-width="1.5"/>
+<text x="425" y="140" text-anchor="middle" font-size="10" fill="var(--txt)">checked at COMPILE time</text>
+<line x1="520" y1="135" x2="548" y2="135" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-kt-4)"/>
+<rect x="550" y="110" width="330" height="50" rx="8" fill="var(--orab)" stroke="var(--oral)" stroke-width="1.5"/>
+<text x="715" y="140" text-anchor="middle" font-size="10" fill="var(--oral)">Shape.describe() wins (declared type)</text>
+</svg>
+</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--cyab);color:var(--cyal)">Q10</span><span class="qt">Function types, trailing lambdas, SAM conversion, and function references</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>A function type like <span class="ic">(Int) -> Boolean</span> describes a value that can be called — Kotlin treats lambdas as first-class values of that type, which is what makes higher-order functions like <span class="ic">filter</span>/<span class="ic">map</span> possible. When the <em>last</em> parameter of a call is a function type, Kotlin lets you move the lambda outside the parentheses (the "trailing lambda" convention) — that's why <span class="ic">list.filter { ... }</span> reads like a language keyword instead of a function call. For interop, a Java single-abstract-method interface accepts a lambda directly (SAM conversion); a Kotlin interface needs the <span class="ic">fun interface</span> modifier to get the same treatment. Finally, <span class="ic">::</span> turns an existing function, method, or constructor into a function value without writing a wrapping lambda.</p>
+<pre><code><span class="kw">val</span> <span class="cn">isEven</span>: (<span class="ty">Int</span>) -> <span class="ty">Boolean</span> = { it % <span class="cn">2</span> == <span class="cn">0</span> }
+listOf(<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">3</span>, <span class="cn">4</span>).<span class="fn">filter</span> { it % <span class="cn">2</span> == <span class="cn">0</span> }   <span class="cm">// trailing lambda syntax</span>
+
+<span class="kw">fun interface</span> <span class="ty">Validator</span> { <span class="kw">fun</span> <span class="fn">validate</span>(s: <span class="ty">String</span>): <span class="ty">Boolean</span> }
+<span class="kw">val</span> <span class="cn">notBlank</span> = <span class="ty">Validator</span> { it.isNotBlank() } <span class="cm">// SAM conversion (needs 'fun interface')</span>
+
+<span class="kw">fun</span> <span class="fn">square</span>(x: <span class="ty">Int</span>) = x * x
+listOf(<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">3</span>).<span class="fn">map</span>(::square)          <span class="cm">// unbound function reference</span>
+<span class="kw">val</span> <span class="cn">bound</span> = someInstance::toString      <span class="cm">// bound reference — carries its receiver</span></code></pre>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 900 110" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-kt-5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+</marker>
+</defs>
+<rect x="20" y="25" width="260" height="55" rx="8" fill="var(--blub)" stroke="var(--blul)" stroke-width="1.5"/>
+<text x="150" y="57" text-anchor="middle" font-size="10" fill="var(--txt)">{ it % 2 == 0 }  (lambda literal)</text>
+<line x1="280" y1="52" x2="308" y2="52" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-kt-5)"/>
+<rect x="310" y="25" width="260" height="55" rx="8" fill="var(--purb)" stroke="var(--purl)" stroke-width="1.5"/>
+<text x="440" y="57" text-anchor="middle" font-size="10" fill="var(--txt)">(Int) -&gt; Boolean  (function type)</text>
+<line x1="570" y1="52" x2="598" y2="52" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-kt-5)"/>
+<rect x="600" y="25" width="270" height="55" rx="8" fill="var(--cyab)" stroke="var(--cyal)" stroke-width="1.5"/>
+<text x="735" y="57" text-anchor="middle" font-size="10" fill="var(--txt)">compiled: FunctionN / SAM object</text>
+</svg>
+</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--orab);color:var(--oral)">Q11</span><span class="qt">What are @JvmInline value classes for, and what are their restrictions?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p>Passing three <span class="ic">String</span> parameters in a row is easy to get wrong — nothing stops you from swapping <span class="ic">accountId</span> and <span class="ic">userId</span>, both are just strings to the compiler. Wrapping each in its own class fixes that, but a normal wrapper class means a real heap allocation for every value. A <span class="ic">value class</span> gets both: type safety at compile time, and (in the common case) the wrapper disappears entirely at runtime — the compiler substitutes the raw underlying value, so calling a function that takes an <span class="ic">AccountId</span> costs no more than passing a <span class="ic">String</span> directly.</p>
+<pre><code><span class="an">@JvmInline</span> <span class="kw">value class</span> <span class="ty">AccountId</span>(<span class="kw">val</span> value: <span class="ty">String</span>)
+<span class="an">@JvmInline</span> <span class="kw">value class</span> <span class="ty">Cents</span>(<span class="kw">val</span> value: <span class="ty">Long</span>)
+
+<span class="kw">fun</span> <span class="fn">transfer</span>(from: <span class="ty">AccountId</span>, to: <span class="ty">AccountId</span>, amount: <span class="ty">Cents</span>) { /* ... */ }
+<span class="cm">// transfer(toId, fromId, amount)   // ERROR now — a raw String can't be passed anymore</span>
+
+<span class="kw">val</span> <span class="cn">boxed</span>: <span class="ty">AccountId</span>? = <span class="kw">null</span>          <span class="cm">// nullable -> boxed at runtime</span>
+<span class="kw">val</span> <span class="cn">list</span>: <span class="ty">List</span>&lt;<span class="ty">AccountId</span>&gt; = listOf()     <span class="cm">// generic type argument -> boxed at runtime</span></code></pre>
+<p>Restrictions keep the "zero-cost" guarantee possible: a value class holds exactly one <span class="ic">val</span> property in its primary constructor, can't extend a class or be extended, but can implement interfaces and declare functions/operators. <span class="ic">equals()</span>/<span class="ic">hashCode()</span> are generated from the underlying value automatically. Boxing still happens whenever the compiler can't guarantee an unwrapped representation — a nullable value class type, a generic type argument, or a reference through a supertype all force a real object to be allocated. This beats a plain <span class="ic">typealias</span>, which is just a compile-time name with zero type-safety — a <span class="ic">typealias</span> for <span class="ic">String</span> still lets you pass any <span class="ic">String</span> anywhere.</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 900 170" style="width:100%;height:auto">
+<rect x="30" y="15" width="390" height="140" rx="8" fill="var(--s2)" stroke="var(--redl)" stroke-width="1.5"/>
+<text x="225" y="35" text-anchor="middle" font-size="10.5" fill="var(--redl)">regular wrapper class</text>
+<rect x="70" y="50" width="310" height="24" rx="5" fill="var(--redb)" stroke="var(--redl)"/>
+<text x="225" y="66" text-anchor="middle" font-size="9" fill="var(--txt)">AccountId("a1") → heap object</text>
+<rect x="70" y="82" width="310" height="24" rx="5" fill="var(--redb)" stroke="var(--redl)"/>
+<text x="225" y="98" text-anchor="middle" font-size="9" fill="var(--txt)">AccountId("a2") → heap object</text>
+<text x="225" y="135" text-anchor="middle" font-size="9" fill="var(--muted)">a new allocation every call</text>
+<rect x="480" y="15" width="390" height="140" rx="8" fill="var(--s2)" stroke="var(--grnl)" stroke-width="1.5"/>
+<text x="675" y="35" text-anchor="middle" font-size="10.5" fill="var(--grnl)">@JvmInline value class</text>
+<rect x="520" y="65" width="310" height="30" rx="5" fill="var(--grnb)" stroke="var(--grnl)"/>
+<text x="675" y="85" text-anchor="middle" font-size="9" fill="var(--txt)">compiles straight to the raw String</text>
+<text x="675" y="135" text-anchor="middle" font-size="9" fill="var(--muted)">boxed only if nullable / generic / supertype</text>
+</svg>
+</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q12</span><span class="qt">Sequence vs List/Collection — lazy vs eager evaluation</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p><span class="ic">List</span> operations are <strong>eager</strong>: each call like <span class="ic">.map</span> or <span class="ic">.filter</span> runs to completion over the whole list and allocates a brand-new list before the next call even starts. <span class="ic">Sequence</span> is <strong>lazy</strong>: nothing runs until a terminal operation (<span class="ic">first()</span>, <span class="ic">toList()</span>, <span class="ic">sum()</span>...) is called, and then each element is pulled through the <em>entire</em> chain of operations one at a time, with no intermediate collections at all.</p>
+<pre><code>listOf(<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">3</span>, <span class="cn">4</span>, <span class="cn">5</span>)
+    .<span class="fn">map</span> { <span class="fn">println</span>(<span class="st">"map </span><span class="cn">$it</span><span class="st">"</span>); it * <span class="cn">2</span> }      <span class="cm">// List: ALL 5 mapped first (new list of 5)</span>
+    .<span class="fn">filter</span> { <span class="fn">println</span>(<span class="st">"filter </span><span class="cn">$it</span><span class="st">"</span>); it > <span class="cn">4</span> } <span class="cm">// then ALL 5 filtered (another new list)</span>
+    .<span class="fn">first</span>()
+
+listOf(<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">3</span>, <span class="cn">4</span>, <span class="cn">5</span>).<span class="fn">asSequence</span>()
+    .<span class="fn">map</span> { <span class="fn">println</span>(<span class="st">"map </span><span class="cn">$it</span><span class="st">"</span>); it * <span class="cn">2</span> }      <span class="cm">// Sequence: map -> filter per element...</span>
+    .<span class="fn">filter</span> { <span class="fn">println</span>(<span class="st">"filter </span><span class="cn">$it</span><span class="st">"</span>); it > <span class="cn">4</span> } <span class="cm">// ...before the next element is read</span>
+    .<span class="fn">first</span>()                                    <span class="cm">// stops the instant a match is found</span></code></pre>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 940 360" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-kt-2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+</marker>
+</defs>
+<text x="15" y="18" font-size="11" fill="var(--txt)">List (eager) — every stage runs for ALL elements first</text>
+<text x="15" y="60" font-size="9" fill="var(--muted)">source</text>
+<rect x="110" y="40" width="40" height="32" rx="5" fill="var(--s3)" stroke="var(--b2)"/><text x="130" y="61" text-anchor="middle" font-size="11" fill="var(--txt)">1</text>
+<rect x="160" y="40" width="40" height="32" rx="5" fill="var(--s3)" stroke="var(--b2)"/><text x="180" y="61" text-anchor="middle" font-size="11" fill="var(--txt)">2</text>
+<rect x="210" y="40" width="40" height="32" rx="5" fill="var(--s3)" stroke="var(--b2)"/><text x="230" y="61" text-anchor="middle" font-size="11" fill="var(--txt)">3</text>
+<rect x="260" y="40" width="40" height="32" rx="5" fill="var(--s3)" stroke="var(--b2)"/><text x="280" y="61" text-anchor="middle" font-size="11" fill="var(--txt)">4</text>
+<rect x="310" y="40" width="40" height="32" rx="5" fill="var(--s3)" stroke="var(--b2)"/><text x="330" y="61" text-anchor="middle" font-size="11" fill="var(--txt)">5</text>
+<line x1="130" y1="72" x2="130" y2="98" stroke="var(--muted)" stroke-width="1.2" marker-end="url(#arrow-kt-2)"/>
+<line x1="180" y1="72" x2="180" y2="98" stroke="var(--muted)" stroke-width="1.2" marker-end="url(#arrow-kt-2)"/>
+<line x1="230" y1="72" x2="230" y2="98" stroke="var(--muted)" stroke-width="1.2" marker-end="url(#arrow-kt-2)"/>
+<line x1="280" y1="72" x2="280" y2="98" stroke="var(--muted)" stroke-width="1.2" marker-end="url(#arrow-kt-2)"/>
+<line x1="330" y1="72" x2="330" y2="98" stroke="var(--muted)" stroke-width="1.2" marker-end="url(#arrow-kt-2)"/>
+<text x="15" y="120" font-size="9" fill="var(--muted)">.map</text>
+<rect x="110" y="100" width="40" height="32" rx="5" fill="var(--blub)" stroke="var(--blul)"/><text x="130" y="121" text-anchor="middle" font-size="11" fill="var(--txt)">2</text>
+<rect x="160" y="100" width="40" height="32" rx="5" fill="var(--blub)" stroke="var(--blul)"/><text x="180" y="121" text-anchor="middle" font-size="11" fill="var(--txt)">4</text>
+<rect x="210" y="100" width="40" height="32" rx="5" fill="var(--blub)" stroke="var(--blul)"/><text x="230" y="121" text-anchor="middle" font-size="11" fill="var(--txt)">6</text>
+<rect x="260" y="100" width="40" height="32" rx="5" fill="var(--blub)" stroke="var(--blul)"/><text x="280" y="121" text-anchor="middle" font-size="11" fill="var(--txt)">8</text>
+<rect x="310" y="100" width="40" height="32" rx="5" fill="var(--blub)" stroke="var(--blul)"/><text x="330" y="121" text-anchor="middle" font-size="11" fill="var(--txt)">10</text>
+<text x="130" y="150" text-anchor="middle" font-size="12" fill="var(--redl)">✗</text>
+<text x="180" y="150" text-anchor="middle" font-size="12" fill="var(--redl)">✗</text>
+<line x1="230" y1="132" x2="230" y2="158" stroke="var(--muted)" stroke-width="1.2" marker-end="url(#arrow-kt-2)"/>
+<line x1="280" y1="132" x2="280" y2="158" stroke="var(--muted)" stroke-width="1.2" marker-end="url(#arrow-kt-2)"/>
+<line x1="330" y1="132" x2="330" y2="158" stroke="var(--muted)" stroke-width="1.2" marker-end="url(#arrow-kt-2)"/>
+<text x="15" y="180" font-size="9" fill="var(--muted)">.filter</text>
+<rect x="210" y="160" width="40" height="32" rx="5" fill="var(--grnb)" stroke="var(--grnl)"/><text x="230" y="181" text-anchor="middle" font-size="11" fill="var(--txt)">6</text>
+<rect x="260" y="160" width="40" height="32" rx="5" fill="var(--grnb)" stroke="var(--grnl)"/><text x="280" y="181" text-anchor="middle" font-size="11" fill="var(--txt)">8</text>
+<rect x="310" y="160" width="40" height="32" rx="5" fill="var(--grnb)" stroke="var(--grnl)"/><text x="330" y="181" text-anchor="middle" font-size="11" fill="var(--txt)">10</text>
+<text x="15" y="207" font-size="9" fill="var(--muted)">5 elements are mapped (new list of 5) before filter even starts.</text>
+<text x="15" y="238" font-size="11" fill="var(--txt)">Sequence (lazy) — each element runs the whole chain before the next starts</text>
+<text x="435" y="258" text-anchor="middle" font-size="9" fill="var(--muted)">.map { x*2 }</text>
+<text x="615" y="258" text-anchor="middle" font-size="9" fill="var(--muted)">.filter { x&gt;4 }</text>
+<circle cx="320" cy="282" r="14" fill="var(--s3)" stroke="var(--muted)"/><text x="320" y="286" text-anchor="middle" font-size="10" fill="var(--txt)">1</text>
+<line x1="336" y1="282" x2="376" y2="282" stroke="var(--muted)" stroke-width="1.2" marker-end="url(#arrow-kt-2)"/>
+<rect x="380" y="265" width="110" height="35" rx="6" fill="var(--s3)" stroke="var(--blul)"/>
+<circle cx="435" cy="282" r="14" fill="var(--blub)" stroke="var(--blul)"/><text x="435" y="286" text-anchor="middle" font-size="10" fill="var(--txt)">2</text>
+<line x1="490" y1="282" x2="556" y2="282" stroke="var(--muted)" stroke-width="1.2" marker-end="url(#arrow-kt-2)"/>
+<rect x="560" y="265" width="110" height="35" rx="6" fill="var(--s3)" stroke="var(--redl)"/>
+<text x="615" y="288" text-anchor="middle" font-size="12" fill="var(--redl)">✗ dropped</text>
+<circle cx="320" cy="316" r="14" fill="var(--s3)" stroke="var(--muted)"/><text x="320" y="320" text-anchor="middle" font-size="10" fill="var(--txt)">3</text>
+<line x1="336" y1="316" x2="376" y2="316" stroke="var(--muted)" stroke-width="1.2" marker-end="url(#arrow-kt-2)"/>
+<circle cx="435" cy="316" r="14" fill="var(--blub)" stroke="var(--blul)"/><text x="435" y="320" text-anchor="middle" font-size="10" fill="var(--txt)">6</text>
+<line x1="490" y1="316" x2="556" y2="316" stroke="var(--muted)" stroke-width="1.2" marker-end="url(#arrow-kt-2)"/>
+<circle cx="615" cy="316" r="14" fill="var(--grnb)" stroke="var(--grnl)"/><text x="615" y="320" text-anchor="middle" font-size="10" fill="var(--grnl)">6</text>
+<text x="700" y="320" font-size="9" fill="var(--muted)">✓ kept → collected</text>
+<text x="15" y="345" font-size="9" fill="var(--muted)">Element 1 fails the filter and never reaches later stages — no wasted work, no intermediate lists.</text>
+</svg>
+</div>
+<div class="g2">
+<div class="gc"><h4>Use List when</h4><ul><li>the collection is small/medium</li><li>you need the result more than once (materialize once)</li><li>you want to inspect/debug an intermediate step easily</li></ul></div>
+<div class="gc"><h4>Use Sequence when</h4><ul><li>you have long chains of map/filter/etc. over large data</li><li>you only need a few results — <span class="ic">first()</span>/<span class="ic">take()</span>/<span class="ic">find()</span> short-circuit</li><li>you want to avoid allocating an intermediate list per step</li></ul></div>
+</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q13</span><span class="qt">Kotlin syntax to know cold: tailrec, labeled break/continue, operator overloading, destructuring</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>Four small pieces of syntax show up constantly in interviews and real code. <span class="ic">tailrec</span> asks the compiler to rewrite a self-recursive function into a plain loop, as long as the recursive call is the very last thing the function does — this keeps stack usage constant no matter how deep the recursion goes (a non-tail call, like doing math <em>after</em> the recursive call, disqualifies it). Labeled <span class="ic">break</span>/<span class="ic">continue</span> let you target an outer loop from inside a nested one, which plain <span class="ic">break</span>/<span class="ic">continue</span> can't do. <span class="ic">operator fun</span> lets a class opt into built-in syntax like <span class="ic">+</span> or indexing. And any class — not just <span class="ic">data class</span> — can support destructuring by declaring <span class="ic">componentN()</span> operator functions itself.</p>
+<pre><code><span class="kw">tailrec fun</span> <span class="fn">factorial</span>(n: <span class="ty">Long</span>, acc: <span class="ty">Long</span> = <span class="cn">1</span>): <span class="ty">Long</span> =
+    <span class="kw">if</span> (n &lt;= <span class="cn">1</span>) acc <span class="kw">else</span> <span class="fn">factorial</span>(n - <span class="cn">1</span>, acc * n) <span class="cm">// compiled to a loop, no stack growth</span>
+
+outer@ <span class="kw">for</span> (i <span class="kw">in</span> <span class="cn">1</span>..<span class="cn">3</span>) {
+    <span class="kw">for</span> (j <span class="kw">in</span> <span class="cn">1</span>..<span class="cn">3</span>) {
+        <span class="kw">if</span> (j == <span class="cn">2</span>) continue@outer   <span class="cm">// jumps to the next iteration of the OUTER loop</span>
+        <span class="kw">if</span> (i == <span class="cn">3</span>) break@outer
+    }
+}
+
+<span class="kw">data class</span> <span class="ty">Vec</span>(<span class="kw">val</span> x: <span class="ty">Int</span>, <span class="kw">val</span> y: <span class="ty">Int</span>) {
+    <span class="kw">operator fun</span> <span class="fn">plus</span>(o: <span class="ty">Vec</span>) = <span class="ty">Vec</span>(x + o.x, y + o.y)  <span class="cm">// enables: vecA + vecB</span>
+}
+
+<span class="kw">class</span> <span class="ty">Range</span>(<span class="kw">val</span> start: <span class="ty">Int</span>, <span class="kw">val</span> end: <span class="ty">Int</span>) {
+    <span class="kw">operator fun</span> <span class="fn">component1</span>() = start        <span class="cm">// enables: val (a, b) = Range(0, 10)</span>
+    <span class="kw">operator fun</span> <span class="fn">component2</span>() = end
+}</code></pre>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 900 210" style="width:100%;height:auto">
+<text x="130" y="20" text-anchor="middle" font-size="10.5" fill="var(--redl)">regular recursion</text>
+<rect x="60" y="150" width="140" height="26" rx="4" fill="var(--redb)" stroke="var(--redl)"/><text x="130" y="167" text-anchor="middle" font-size="9" fill="var(--txt)">factorial(1)</text>
+<rect x="60" y="122" width="140" height="26" rx="4" fill="var(--redb)" stroke="var(--redl)"/><text x="130" y="139" text-anchor="middle" font-size="9" fill="var(--txt)">factorial(2)</text>
+<rect x="60" y="94" width="140" height="26" rx="4" fill="var(--redb)" stroke="var(--redl)"/><text x="130" y="111" text-anchor="middle" font-size="9" fill="var(--txt)">factorial(3)</text>
+<rect x="60" y="66" width="140" height="26" rx="4" fill="var(--redb)" stroke="var(--redl)"/><text x="130" y="83" text-anchor="middle" font-size="9" fill="var(--txt)">factorial(4)</text>
+<rect x="60" y="38" width="140" height="26" rx="4" fill="var(--redb)" stroke="var(--redl)"/><text x="130" y="55" text-anchor="middle" font-size="9" fill="var(--txt)">factorial(5)</text>
+<text x="130" y="196" text-anchor="middle" font-size="9" fill="var(--muted)">new frame per call → stack overflow risk</text>
+<text x="720" y="20" text-anchor="middle" font-size="10.5" fill="var(--grnl)">tailrec factorial</text>
+<rect x="620" y="90" width="200" height="60" rx="8" fill="var(--grnb)" stroke="var(--grnl)" stroke-width="1.5"/>
+<text x="720" y="125" text-anchor="middle" font-size="10" fill="var(--txt)">compiled to a loop</text>
+<text x="720" y="196" text-anchor="middle" font-size="9" fill="var(--muted)">constant stack space, any depth</text>
+</svg>
+</div>
 </div>
 </details>
 </main>

@@ -139,6 +139,54 @@ a{color:var(--grnl)}
 <details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q3</span><span class="qt">Explain Hilt components and scopes — which scope for each use case?</span><span class="dif hard">Hard</span></summary>
 <div class="ans">
 <p>Hilt has a hierarchy of Components, each with its own scope and lifetime:</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 900 490" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-di-1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+</marker>
+</defs>
+<line x1="450" y1="67" x2="270" y2="113" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-di-1)"/>
+<line x1="450" y1="67" x2="700" y2="113" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-di-1)"/>
+<line x1="270" y1="167" x2="140" y2="213" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-di-1)"/>
+<line x1="270" y1="167" x2="400" y2="213" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-di-1)"/>
+<line x1="400" y1="267" x2="400" y2="313" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-di-1)"/>
+<line x1="400" y1="367" x2="290" y2="403" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-di-1)"/>
+<line x1="400" y1="367" x2="520" y2="403" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-di-1)"/>
+
+<rect x="345" y="13" width="210" height="54" rx="8" fill="var(--purb)" stroke="var(--pur)" stroke-width="1.5"/>
+<text x="450" y="36" text-anchor="middle" font-size="12" font-weight="700" fill="var(--purl)">SingletonComponent</text>
+<text x="450" y="52" text-anchor="middle" font-size="9" fill="var(--muted)">app process (Application lifetime)</text>
+
+<rect x="165" y="113" width="210" height="54" rx="8" fill="var(--blub)" stroke="var(--blu)" stroke-width="1.5"/>
+<text x="270" y="136" text-anchor="middle" font-size="12" font-weight="700" fill="var(--blul)">ActivityRetainedComponent</text>
+<text x="270" y="152" text-anchor="middle" font-size="9" fill="var(--muted)">survives configuration changes</text>
+
+<rect x="615" y="113" width="170" height="54" rx="8" fill="var(--cyab)" stroke="var(--cya)" stroke-width="1.5"/>
+<text x="700" y="136" text-anchor="middle" font-size="12" font-weight="700" fill="var(--cyal)">ServiceComponent</text>
+<text x="700" y="152" text-anchor="middle" font-size="9" fill="var(--muted)">one Service instance</text>
+
+<rect x="45" y="213" width="190" height="54" rx="8" fill="var(--blub)" stroke="var(--blu)" stroke-width="1.5"/>
+<text x="140" y="236" text-anchor="middle" font-size="12" font-weight="700" fill="var(--blul)">ViewModelComponent</text>
+<text x="140" y="252" text-anchor="middle" font-size="9" fill="var(--muted)">lifetime of a ViewModel</text>
+
+<rect x="315" y="213" width="170" height="54" rx="8" fill="var(--grnb)" stroke="var(--grn)" stroke-width="1.5"/>
+<text x="400" y="236" text-anchor="middle" font-size="12" font-weight="700" fill="var(--grnl)">ActivityComponent</text>
+<text x="400" y="252" text-anchor="middle" font-size="9" fill="var(--muted)">one Activity instance</text>
+
+<rect x="315" y="313" width="170" height="54" rx="8" fill="var(--grnb)" stroke="var(--grn)" stroke-width="1.5"/>
+<text x="400" y="336" text-anchor="middle" font-size="12" font-weight="700" fill="var(--grnl)">FragmentComponent</text>
+<text x="400" y="352" text-anchor="middle" font-size="9" fill="var(--muted)">one Fragment instance</text>
+
+<rect x="215" y="403" width="150" height="54" rx="8" fill="var(--grnb)" stroke="var(--grn)" stroke-width="1.5"/>
+<text x="290" y="426" text-anchor="middle" font-size="12" font-weight="700" fill="var(--grnl)">ViewComponent</text>
+<text x="290" y="442" text-anchor="middle" font-size="9" fill="var(--muted)">one View instance</text>
+
+<rect x="405" y="403" width="230" height="54" rx="8" fill="var(--grnb)" stroke="var(--grn)" stroke-width="1.5"/>
+<text x="520" y="426" text-anchor="middle" font-size="12" font-weight="700" fill="var(--grnl)">ViewWithFragmentComponent</text>
+<text x="520" y="442" text-anchor="middle" font-size="9" fill="var(--muted)">View instance (fragment-aware)</text>
+</svg>
+</div>
 <div class="g2">
 <div class="gc"><h4>Component Hierarchy</h4>
 <ul>
@@ -281,6 +329,231 @@ a{color:var(--grnl)}
     <span class="kw">private val</span> <span class="cn">viewModel</span> = <span class="ty">UserViewModel</span>(fakeRepo) <span class="cm">// no Hilt needed!</span>
 }</code></pre>
 <div class="note ngrn">✓ Pure constructor injection (no @HiltViewModel needed) is the best approach for unit-testable ViewModels — Hilt just wires the real app, tests inject directly.</div>
+</div>
+</details>
+
+<h2>Advanced Hilt Patterns</h2>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">Q7</span><span class="qt">How do multibinding (@IntoSet / @IntoMap) work, and when would you use them?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p>Multibinding lets several separate <span class="ic">@Binds</span>/<span class="ic">@Provides</span> methods contribute to <strong>one collection</strong> instead of one implementation winning — Dagger merges them into a <span class="ic">Set&lt;T&gt;</span> or <span class="ic">Map&lt;K, T&gt;</span> that you inject as a whole. This is the standard shape for plugin-style architectures: a set of analytics trackers that should all fire on every event, or a map of feature-flag handlers looked up by key at runtime — new implementations register themselves in their own module without ever touching the consumer's code.</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 760 160" style="width:100%;height:auto">
+<defs><marker id="arrow-di-2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>
+<line x1="210" y1="40" x2="290" y2="80" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-di-2)"/>
+<line x1="210" y1="120" x2="290" y2="80" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-di-2)"/>
+<line x1="480" y1="80" x2="550" y2="80" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-di-2)"/>
+<rect x="20" y="15" width="190" height="50" rx="8" fill="var(--grnb)" stroke="var(--grn)" stroke-width="1.5"/>
+<text x="115" y="36" text-anchor="middle" font-size="12" font-weight="700" fill="var(--grnl)">FirebaseTracker</text>
+<text x="115" y="52" text-anchor="middle" font-size="9" fill="var(--muted)">@Binds @IntoSet</text>
+<rect x="20" y="95" width="190" height="50" rx="8" fill="var(--grnb)" stroke="var(--grn)" stroke-width="1.5"/>
+<text x="115" y="116" text-anchor="middle" font-size="12" font-weight="700" fill="var(--grnl)">MixpanelTracker</text>
+<text x="115" y="132" text-anchor="middle" font-size="9" fill="var(--muted)">@Binds @IntoSet</text>
+<rect x="290" y="55" width="190" height="50" rx="8" fill="var(--purb)" stroke="var(--pur)" stroke-width="1.5"/>
+<text x="385" y="76" text-anchor="middle" font-size="12" font-weight="700" fill="var(--purl)">Set&lt;AnalyticsTracker&gt;</text>
+<text x="385" y="92" text-anchor="middle" font-size="9" fill="var(--muted)">merged by Dagger</text>
+<rect x="550" y="55" width="190" height="50" rx="8" fill="var(--blub)" stroke="var(--blu)" stroke-width="1.5"/>
+<text x="645" y="76" text-anchor="middle" font-size="12" font-weight="700" fill="var(--blul)">CompositeAnalytics</text>
+<text x="645" y="92" text-anchor="middle" font-size="9" fill="var(--muted)">injects the whole Set</text>
+</svg>
+</div>
+<pre><code><span class="kw">interface</span> <span class="ty">AnalyticsTracker</span> { <span class="kw">fun</span> <span class="fn">track</span>(event: <span class="ty">String</span>) }
+
+<span class="an">@Module</span> <span class="an">@InstallIn</span>(<span class="ty">SingletonComponent</span>::<span class="kw">class</span>)
+<span class="kw">abstract class</span> <span class="ty">AnalyticsModule</span> {
+    <span class="an">@Binds</span> <span class="an">@IntoSet</span>
+    <span class="kw">abstract fun</span> <span class="fn">bindFirebase</span>(impl: <span class="ty">FirebaseTracker</span>): <span class="ty">AnalyticsTracker</span>
+
+    <span class="an">@Binds</span> <span class="an">@IntoSet</span>
+    <span class="kw">abstract fun</span> <span class="fn">bindMixpanel</span>(impl: <span class="ty">MixpanelTracker</span>): <span class="ty">AnalyticsTracker</span>
+}
+
+<span class="cm">// Hilt now provides Set&lt;AnalyticsTracker&gt; containing BOTH implementations</span>
+<span class="kw">class</span> <span class="ty">CompositeAnalytics</span> <span class="an">@Inject</span> <span class="kw">constructor</span>(
+    <span class="kw">private val</span> <span class="cn">trackers</span>: <span class="ty">Set</span>&lt;<span class="an">@JvmSuppressWildcards</span> <span class="ty">AnalyticsTracker</span>&gt;
+) {
+    <span class="kw">fun</span> <span class="fn">trackEvent</span>(event: <span class="ty">String</span>) = trackers.<span class="fn">forEach</span> { it.<span class="fn">track</span>(event) }
+}
+
+<span class="cm">// @IntoMap works the same way but keyed: @Binds @IntoMap @StringKey("dark_mode") ...</span>
+<span class="cm">// injected as Map&lt;String, FeatureFlagHandler&gt; and looked up by flag name at runtime</span></code></pre>
+<div class="g2">
+<div class="gc"><h4>Built-in map keys</h4><p><span class="ic">@StringKey</span>, <span class="ic">@IntKey</span>, <span class="ic">@LongKey</span>, <span class="ic">@ClassKey</span> ship with Dagger; define a custom <span class="ic">@MapKey</span> for typed/enum keys.</p></div>
+<div class="gc"><h4>Two gotchas</h4><p>Kotlin's <span class="ic">Set&lt;out T&gt;</span> covariance needs <span class="ic">@JvmSuppressWildcards</span> to match Dagger's generated signature. An empty contribution set is also a compile error unless a <span class="ic">@Multibinds</span> declaration says empty is valid.</p></div>
+</div>
+<div class="note ngrn">✓ Use case: a dynamic feature module or SDK contributes its own <span class="ic">@IntoSet</span>/<span class="ic">@IntoMap</span> binding without ever touching the core app's code — fully open for extension, closed for modification.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--blub);color:var(--blul)">Q8</span><span class="qt">What is assisted injection (@AssistedInject / @AssistedFactory) and when do you need it?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p>Assisted injection solves the case where a class needs <strong>both</strong> Dagger-provided dependencies <strong>and</strong> a runtime value that isn't known until after the graph is built — e.g. an item ID only available once the user taps something. Without it, you'd either lose Dagger's dependency resolution by <span class="ic">new</span>-ing the class manually, or smuggle the runtime value in through a mutable field set after construction (reintroducing the same unsafe-ordering problem field injection has).</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 760 160" style="width:100%;height:auto">
+<defs><marker id="arrow-di-3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>
+<line x1="210" y1="40" x2="290" y2="80" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-di-3)"/>
+<line x1="210" y1="120" x2="290" y2="80" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-di-3)"/>
+<line x1="480" y1="80" x2="550" y2="80" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-di-3)"/>
+<rect x="20" y="15" width="190" height="50" rx="8" fill="var(--ambb)" stroke="var(--amb)" stroke-width="1.5"/>
+<text x="115" y="36" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ambl)">itemId</text>
+<text x="115" y="52" text-anchor="middle" font-size="9" fill="var(--muted)">runtime value, not in graph</text>
+<rect x="20" y="95" width="190" height="50" rx="8" fill="var(--blub)" stroke="var(--blu)" stroke-width="1.5"/>
+<text x="115" y="116" text-anchor="middle" font-size="12" font-weight="700" fill="var(--blul)">api, cache</text>
+<text x="115" y="132" text-anchor="middle" font-size="9" fill="var(--muted)">resolved from Dagger graph</text>
+<rect x="290" y="55" width="190" height="50" rx="8" fill="var(--purb)" stroke="var(--pur)" stroke-width="1.5"/>
+<text x="385" y="76" text-anchor="middle" font-size="12" font-weight="700" fill="var(--purl)">factory.create(itemId)</text>
+<text x="385" y="92" text-anchor="middle" font-size="9" fill="var(--muted)">@AssistedFactory</text>
+<rect x="550" y="55" width="190" height="50" rx="8" fill="var(--grnb)" stroke="var(--grn)" stroke-width="1.5"/>
+<text x="645" y="76" text-anchor="middle" font-size="12" font-weight="700" fill="var(--grnl)">ItemDetailsFetcher</text>
+<text x="645" y="92" text-anchor="middle" font-size="9" fill="var(--muted)">fully constructed instance</text>
+</svg>
+</div>
+<pre><code><span class="an">@AssistedFactory</span>
+<span class="kw">interface</span> <span class="ty">ItemDetailsFetcherFactory</span> {
+    <span class="kw">fun</span> <span class="fn">create</span>(itemId: <span class="ty">String</span>): <span class="ty">ItemDetailsFetcher</span>
+}
+
+<span class="kw">class</span> <span class="ty">ItemDetailsFetcher</span> <span class="an">@AssistedInject</span> <span class="kw">constructor</span>(
+    <span class="an">@Assisted</span> <span class="kw">private val</span> <span class="cn">itemId</span>: <span class="ty">String</span>,   <span class="cm">// runtime-only</span>
+    <span class="kw">private val</span> <span class="cn">api</span>: <span class="ty">ItemApi</span>,                 <span class="cm">// from the Dagger graph</span>
+    <span class="kw">private val</span> <span class="cn">cache</span>: <span class="ty">ItemCache</span>
+) {
+    <span class="kw">suspend fun</span> <span class="fn">fetch</span>(): <span class="ty">Item</span> = cache.<span class="fn">get</span>(itemId) ?: api.<span class="fn">fetchItem</span>(itemId)
+}
+
+<span class="cm">// Consumer only ever holds the FACTORY — fully graph-provided, no reflection</span>
+<span class="kw">class</span> <span class="ty">ItemViewModel</span> <span class="an">@Inject</span> <span class="kw">constructor</span>(
+    <span class="kw">private val</span> <span class="cn">fetcherFactory</span>: <span class="ty">ItemDetailsFetcherFactory</span>
+) : <span class="ty">ViewModel</span>() {
+    <span class="kw">fun</span> <span class="fn">fetcherFor</span>(itemId: <span class="ty">String</span>): <span class="ty">ItemDetailsFetcher</span> = fetcherFactory.<span class="fn">create</span>(itemId)
+}</code></pre>
+<div class="note nblu">💡 Dagger generates <span class="ic">ItemDetailsFetcherFactory_Impl</span> whose <span class="ic">create(itemId)</span> body is roughly <span class="ic">new ItemDetailsFetcher(itemId, apiProvider.get(), cacheProvider.get())</span> — the assisted param passes straight through, the rest come from <span class="ic">Provider</span>s captured when the factory was injected.</div>
+<p><strong>Rule of thumb:</strong> constructor needs a call-time value mixed with regular Dagger deps → <span class="ic">@AssistedInject</span>. All deps known up front → a plain <span class="ic">@Inject</span> constructor. No Dagger deps at all → just a regular factory, no annotations needed.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--cyab);color:var(--cyal)">Q9</span><span class="qt">What is @EntryPoint and when do you need EntryPointAccessors instead of normal injection?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>Hilt only knows how to inject into a fixed list of Android classes: <span class="ic">Application</span>, <span class="ic">Activity</span>, <span class="ic">Fragment</span>, <span class="ic">View</span>, <span class="ic">Service</span>, <span class="ic">BroadcastReceiver</span> (via <span class="ic">@AndroidEntryPoint</span>). <strong>ContentProvider is notably absent</strong> — it can be instantiated before <span class="ic">Application.onCreate()</span> runs, so Hilt can't guarantee the component graph is attached yet, and generates no base class for it. The same problem hits any class instantiated outside Hilt's control: a raw (non-<span class="ic">@HiltWorker</span>) <span class="ic">Worker</span> built by a third-party factory, or a class a library constructs via reflection. For these, <span class="ic">@EntryPoint</span> + <span class="ic">EntryPointAccessors</span> reach into the graph manually instead of relying on Hilt to push dependencies in.</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 900 110" style="width:100%;height:auto">
+<defs><marker id="arrow-di-4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>
+<line x1="210" y1="50" x2="240" y2="50" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-di-4)"/>
+<line x1="430" y1="50" x2="460" y2="50" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-di-4)"/>
+<line x1="690" y1="50" x2="720" y2="50" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-di-4)"/>
+<rect x="10" y="20" width="200" height="60" rx="8" fill="var(--purb)" stroke="var(--pur)" stroke-width="1.5"/>
+<text x="110" y="46" text-anchor="middle" font-size="12" font-weight="700" fill="var(--purl)">SingletonComponent</text>
+<text x="110" y="63" text-anchor="middle" font-size="9" fill="var(--muted)">the Hilt graph</text>
+<rect x="240" y="20" width="190" height="60" rx="8" fill="var(--blub)" stroke="var(--blu)" stroke-width="1.5"/>
+<text x="335" y="46" text-anchor="middle" font-size="12" font-weight="700" fill="var(--blul)">@EntryPoint</text>
+<text x="335" y="63" text-anchor="middle" font-size="9" fill="var(--muted)">interface exposing bindings</text>
+<rect x="460" y="20" width="230" height="60" rx="8" fill="var(--ambb)" stroke="var(--amb)" stroke-width="1.5"/>
+<text x="575" y="46" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ambl)">EntryPointAccessors</text>
+<text x="575" y="63" text-anchor="middle" font-size="9" fill="var(--muted)">.fromApplication(...)</text>
+<rect x="720" y="20" width="170" height="60" rx="8" fill="var(--grnb)" stroke="var(--grn)" stroke-width="1.5"/>
+<text x="805" y="46" text-anchor="middle" font-size="12" font-weight="700" fill="var(--grnl)">ContentProvider</text>
+<text x="805" y="63" text-anchor="middle" font-size="9" fill="var(--muted)">non-Hilt class</text>
+</svg>
+</div>
+<pre><code><span class="an">@EntryPoint</span>
+<span class="an">@InstallIn</span>(<span class="ty">SingletonComponent</span>::<span class="kw">class</span>)
+<span class="kw">interface</span> <span class="ty">ProviderEntryPoint</span> {
+    <span class="kw">fun</span> <span class="fn">userRepository</span>(): <span class="ty">UserRepository</span>
+}
+
+<span class="kw">class</span> <span class="ty">MyContentProvider</span> : <span class="ty">ContentProvider</span>() {
+    <span class="kw">override fun</span> <span class="fn">onCreate</span>(): <span class="ty">Boolean</span> {
+        <span class="kw">val</span> <span class="cn">entryPoint</span> = <span class="ty">EntryPointAccessors</span>.<span class="fn">fromApplication</span>(
+            context!!.applicationContext, <span class="ty">ProviderEntryPoint</span>::<span class="kw">class</span>.java
+        )
+        <span class="kw">val</span> <span class="cn">repo</span> = entryPoint.<span class="fn">userRepository</span>()  <span class="cm">// resolved straight from SingletonComponent</span>
+        <span class="kw">return true</span>
+    }
+}</code></pre>
+<div class="note namb">💡 There's a matching accessor per component scope — <span class="ic">fromApplication()</span>, <span class="ic">fromActivity()</span>, <span class="ic">fromFragment()</span>, <span class="ic">fromView()</span>, <span class="ic">fromService()</span> — pick the one matching your <span class="ic">@EntryPoint</span>'s <span class="ic">@InstallIn</span> target or you get a runtime <span class="ic">IllegalStateException</span>. Prefer <span class="ic">@HiltWorker</span>/<span class="ic">HiltWorkerFactory</span> for Workers when you control the setup — <span class="ic">@EntryPoint</span> is the escape hatch for when you don't.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--orab);color:var(--oral)">Q10</span><span class="qt">Field injection vs constructor injection — why prefer constructor injection, and when is field injection unavoidable?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>Constructor injection makes dependencies part of the object's <strong>required</strong> shape — you cannot construct the object without them, the compiler enforces it, and tests can just call the constructor with fakes (no Hilt, no reflection). Field injection is the fallback for classes the Android framework instantiates itself via a required no-arg constructor (reflection) — you can't add constructor parameters to something the OS creates, so Hilt can only assign a <span class="ic">lateinit</span> field <strong>after</strong> the object already exists.</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 760 260" style="width:100%;height:auto">
+<defs><marker id="arrow-di-5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>
+<line x1="320" y1="55" x2="160" y2="95" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-di-5)"/>
+<line x1="440" y1="55" x2="600" y2="95" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-di-5)"/>
+<line x1="160" y1="145" x2="160" y2="185" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-di-5)"/>
+<line x1="600" y1="145" x2="600" y2="185" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-di-5)"/>
+<rect x="250" y="5" width="260" height="50" rx="8" fill="var(--s3)" stroke="var(--b2)" stroke-width="1.5"/>
+<text x="380" y="35" text-anchor="middle" font-size="12" font-weight="700" fill="var(--txt)">Who instantiates the class?</text>
+<rect x="50" y="95" width="220" height="50" rx="8" fill="var(--grnb)" stroke="var(--grn)" stroke-width="1.5"/>
+<text x="160" y="116" text-anchor="middle" font-size="11" font-weight="700" fill="var(--grnl)">Dagger calls the constructor</text>
+<text x="160" y="132" text-anchor="middle" font-size="9" fill="var(--muted)">ViewModel, Repository, UseCase</text>
+<rect x="490" y="95" width="220" height="50" rx="8" fill="var(--ambb)" stroke="var(--amb)" stroke-width="1.5"/>
+<text x="600" y="116" text-anchor="middle" font-size="11" font-weight="700" fill="var(--ambl)">OS calls a no-arg ctor</text>
+<text x="600" y="132" text-anchor="middle" font-size="9" fill="var(--muted)">Activity, Fragment, Service</text>
+<rect x="50" y="185" width="220" height="60" rx="8" fill="var(--grnb)" stroke="var(--grn)" stroke-width="1.5"/>
+<text x="160" y="208" text-anchor="middle" font-size="10" font-weight="700" fill="var(--grnl)">Constructor injection</text>
+<text x="160" y="224" text-anchor="middle" font-size="9" fill="var(--muted)">deps required &amp; non-null,</text>
+<text x="160" y="237" text-anchor="middle" font-size="9" fill="var(--muted)">enforced at compile time</text>
+<rect x="490" y="185" width="220" height="60" rx="8" fill="var(--redb)" stroke="var(--red)" stroke-width="1.5"/>
+<text x="600" y="208" text-anchor="middle" font-size="10" font-weight="700" fill="var(--redl)">Field injection</text>
+<text x="600" y="224" text-anchor="middle" font-size="9" fill="var(--muted)">lateinit var set AFTER creation —</text>
+<text x="600" y="237" text-anchor="middle" font-size="9" fill="var(--muted)">unsafe if read too early</text>
+</svg>
+</div>
+<pre><code><span class="cm">// Constructor injection: impossible to create UserRepository without a UserApi</span>
+<span class="kw">class</span> <span class="ty">UserRepository</span> <span class="an">@Inject</span> <span class="kw">constructor</span>(<span class="kw">private val</span> <span class="cn">api</span>: <span class="ty">UserApi</span>)
+<span class="kw">val</span> <span class="cn">repo</span> = <span class="ty">UserRepository</span>(<span class="ty">FakeUserApi</span>()) <span class="cm">// testable with zero Hilt</span>
+
+<span class="cm">// Field injection: Hilt_MainActivity.onCreate() injects BEFORE your onCreate() body runs</span>
+<span class="an">@AndroidEntryPoint</span>
+<span class="kw">class</span> <span class="ty">MainActivity</span> : <span class="ty">AppCompatActivity</span>() {
+    <span class="an">@Inject</span> <span class="kw">lateinit var</span> <span class="cn">analytics</span>: <span class="ty">Analytics</span> <span class="cm">// unset until Hilt's superclass injects it</span>
+
+    <span class="kw">override fun</span> <span class="fn">onCreate</span>(savedInstanceState: <span class="ty">Bundle</span>?) {
+        <span class="kw">super</span>.<span class="fn">onCreate</span>(savedInstanceState) <span class="cm">// safe to use analytics only after this line</span>
+        analytics.<span class="fn">logScreenView</span>(<span class="st">"main"</span>)
+    }
+}</code></pre>
+<div class="note namb">⚠ Reading a <span class="ic">lateinit @Inject</span> field from a property initializer or <span class="ic">init {}</span> block crashes with <span class="ic">UninitializedPropertyAccessException</span> — those run before <span class="ic">onAttach()</span>/the generated <span class="ic">inject()</span> call. Field injection is unavoidable for OS-instantiated classes, but it trades away the compile-time safety constructor injection gives everything else.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q11</span><span class="qt">What scoping bugs should you watch for, and how do Singleton→Activity leaks happen if Dagger checks scopes at compile time?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p>Dagger/Hilt <strong>does</strong> catch the classic mistake — injecting a narrower-scoped dependency into a wider-scoped one — at compile time, because it can see every binding that flows through a constructor or <span class="ic">@Provides</span>/<span class="ic">@Binds</span> method. What it <strong>cannot</strong> see is a plain mutable field or setter assigned after both objects already exist — that's exactly how a <span class="ic">@Singleton</span> ends up holding a strong reference to an Activity long after that Activity should have been garbage-collected.</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 760 210" style="width:100%;height:auto">
+<defs><marker id="arrow-di-6" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>
+<line x1="300" y1="65" x2="200" y2="130" stroke="var(--red)" stroke-width="1.5" marker-end="url(#arrow-di-6)"/>
+<line x1="460" y1="65" x2="560" y2="130" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrow-di-6)"/>
+<rect x="40" y="15" width="680" height="50" rx="8" fill="var(--purb)" stroke="var(--pur)" stroke-width="1.5"/>
+<text x="380" y="36" text-anchor="middle" font-size="12" font-weight="700" fill="var(--purl)">SessionManager (@Singleton)</text>
+<text x="380" y="52" text-anchor="middle" font-size="9" fill="var(--muted)">lives for the entire app process</text>
+<rect x="60" y="130" width="280" height="55" rx="8" fill="var(--redb)" stroke="var(--red)" stroke-width="1.5"/>
+<text x="200" y="152" text-anchor="middle" font-size="11" font-weight="700" fill="var(--redl)">MainActivity#1 — callback never cleared</text>
+<text x="200" y="169" text-anchor="middle" font-size="9" fill="var(--muted)">LEAKED: still referenced after finish()</text>
+<rect x="420" y="130" width="280" height="55" rx="8" fill="var(--grnb)" stroke="var(--grn)" stroke-width="1.5"/>
+<text x="560" y="152" text-anchor="middle" font-size="11" font-weight="700" fill="var(--grnl)">MainActivity#2 — cleared in onStop()</text>
+<text x="560" y="169" text-anchor="middle" font-size="9" fill="var(--muted)">properly garbage-collected</text>
+</svg>
+</div>
+<pre><code><span class="cm">// Compile-time error: Dagger sees this — narrower scope injected into wider scope</span>
+<span class="an">@Singleton</span>
+<span class="kw">class</span> <span class="ty">GlobalCache</span> <span class="an">@Inject</span> <span class="kw">constructor</span>(
+    <span class="kw">private val</span> <span class="cn">screenAnalytics</span>: <span class="ty">ScreenAnalytics</span> <span class="cm">// @ActivityScoped — narrower than GlobalCache!</span>
+) <span class="cm">// error: ScreenAnalytics cannot be provided in SingletonComponent</span>
+
+<span class="cm">// Compiles FINE but leaks: the reference never goes through the constructor graph</span>
+<span class="an">@Singleton</span>
+<span class="kw">class</span> <span class="ty">SessionManager</span> <span class="an">@Inject</span> <span class="kw">constructor</span>() {
+    <span class="kw">var</span> <span class="cn">callback</span>: <span class="ty">SessionCallback</span>? = <span class="kw">null</span> <span class="cm">// plain var — invisible to scope checking</span>
+}
+
+<span class="kw">override fun</span> <span class="fn">onStart</span>() { sessionManager.callback = <span class="kw">this</span> }  <span class="cm">// LEAK if never cleared</span>
+<span class="kw">override fun</span> <span class="fn">onStop</span>()  { sessionManager.callback = <span class="kw">null</span> } <span class="cm">// MUST null it out here</span></code></pre>
+<div class="note nred">⚠ Dagger's scope check only protects bindings that flow through the graph (constructor params, <span class="ic">@Provides</span>/<span class="ic">@Binds</span> returns) — not a field assigned after the fact. Fixes: pair every manual back-reference with the lifecycle callback that clears it, wrap it in a <span class="ic">WeakReference</span>, or better — have the Singleton expose a <span class="ic">SharedFlow</span>/<span class="ic">Channel</span> the Activity collects from instead of registering a stored callback. LeakCanary catches this pattern in debug builds if it slips through review.</div>
 </div>
 </details>
 </main>

@@ -265,6 +265,20 @@ a{color:var(--grnl)}
 
 <details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q5</span><span class="qt">What is the testing pyramid and how do you apply it in Android?</span><span class="dif med">Medium</span></summary>
 <div class="ans">
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 400 250" style="width:100%;height:auto">
+<polygon points="200,20 135,90 265,90" fill="var(--redl)" fill-opacity="0.15" stroke="var(--redl)" stroke-width="1.5"/>
+<polygon points="135,90 265,90 330,160 70,160" fill="var(--ambl)" fill-opacity="0.15" stroke="var(--ambl)" stroke-width="1.5"/>
+<polygon points="70,160 330,160 395,230 5,230" fill="var(--grnl)" fill-opacity="0.15" stroke="var(--grnl)" stroke-width="1.5"/>
+<text x="200" y="60" text-anchor="middle" font-size="10" font-weight="700" fill="var(--txt)">E2E / UI</text>
+<text x="200" y="75" text-anchor="middle" font-size="8" fill="var(--muted)">few &#183; slow &#183; $$$</text>
+<text x="200" y="122" text-anchor="middle" font-size="11" font-weight="700" fill="var(--txt)">Integration</text>
+<text x="200" y="140" text-anchor="middle" font-size="9" fill="var(--muted)">fewer &#183; slower</text>
+<text x="200" y="188" text-anchor="middle" font-size="13" font-weight="700" fill="var(--txt)">Unit Tests</text>
+<text x="200" y="206" text-anchor="middle" font-size="10" fill="var(--muted)">many &#183; fast &#183; cheap</text>
+<text x="200" y="245" text-anchor="middle" font-size="9" fill="var(--muted)">roughly 70% unit / 20% integration / 10% E2E</text>
+</svg>
+</div>
 <div class="g3">
 <div class="gc" style="border-color:var(--grn)"><h4 style="color:var(--grnl)">Unit Tests (70%)</h4><p>ViewModels, UseCases, Repositories, Mappers, Utils. Run on JVM, fast (milliseconds). Use MockK for mocking, Turbine for flows.</p></div>
 <div class="gc" style="border-color:var(--amb)"><h4 style="color:var(--ambl)">Integration Tests (20%)</h4><p>Room DAO tests (in-memory DB), Repository with real data sources, API contract tests. Slower, run on emulator/device.</p></div>
@@ -324,6 +338,246 @@ a{color:var(--grnl)}
     <span class="kw">private val</span> <span class="cn">analytics</span>: <span class="ty">Analytics</span>,           <span class="cm">// interface</span>
     <span class="kw">private val</span> <span class="cn">dispatcher</span>: <span class="ty">CoroutineDispatcher</span> = <span class="ty">Dispatchers</span>.IO <span class="cm">// injectable</span>
 ) : <span class="ty">ViewModel</span>()</code></pre>
+</div>
+</details>
+
+<h2>Test Doubles</h2>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">Q7</span><span class="qt">Fakes vs Mocks vs Stubs vs Spies — what's the precise difference, and why prefer Fakes for repositories?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<div class="g2">
+<div class="gc" style="border-color:var(--blu)"><h4 style="color:var(--blul)">Dummy</h4><p>Passed around only to satisfy a parameter or constructor signature — never actually used during the test. Rare in idiomatic Kotlin (default params/nullability avoid most of these) but common in Java-interop tests.</p></div>
+<div class="gc" style="border-color:var(--amb)"><h4 style="color:var(--ambl)">Stub</h4><p>Returns canned, hardcoded answers to calls made during the test. Has no real logic and doesn't verify anything itself — it just feeds the system under test fixed data. <span class="ic">coEvery { repo.getUser(any()) } returns fakeUser</span> is a stub.</p></div>
+<div class="gc" style="border-color:var(--red)"><h4 style="color:var(--redl)">Mock</h4><p>A stub that additionally <strong>records how it was called</strong> so the test can verify interactions — call count, arguments, order. <span class="ic">coVerify(exactly = 1) { repo.deleteUser("1") }</span>. This is what MockK/Mockito generate for you.</p></div>
+<div class="gc" style="border-color:var(--pur)"><h4 style="color:var(--purl)">Spy</h4><p>Wraps a <strong>real</strong> object and delegates to it by default, while letting you observe calls or override one or two methods. Useful when you want genuine behavior for most of a class but need to stub/verify a single method.</p></div>
+</div>
+<div class="gc" style="border-color:var(--grn);margin-top:10px"><h4 style="color:var(--grnl)">Fake</h4><p>A lightweight but <strong>fully working</strong> implementation of the interface — e.g. an in-memory <span class="ic">FakeUserRepository</span> backed by a <span class="ic">MutableMap</span> instead of a real database or network call. It behaves like the production implementation, just without I/O or latency.</p></div>
+
+<p><strong>Why many Android teams reach for hand-written Fakes over MockK-generated mocks at the repository layer:</strong></p>
+<ul>
+<li><strong>Fakes catch more real bugs.</strong> A mock only returns whatever you told it to return for the exact arguments you stubbed — if your code accidentally passes the wrong id, a lazily-stubbed mock (or a relaxed mock) will happily hand back the "right" value anyway and the test stays green. A fake actually looks the id up in its in-memory store, so a wrong id naturally returns null/throws, exposing the bug.</li>
+<li><strong>Refactor-resistant.</strong> Mocks bake every call shape into the test itself (<span class="ic">coEvery { repo.getUser("1") }</span>), so renaming a parameter, splitting a method, or reordering calls breaks dozens of unrelated tests. A fake's public contract barely changes across refactors, so tests built on it keep passing.</li>
+<li><strong>Don't over-specify interactions.</strong> <span class="ic">coVerify(exactly = 1)</span> asserts on <em>how</em> the code called its dependency, not on the outcome. Add a harmless second call and mock-based tests break even though behavior is unchanged. Fakes push you toward asserting on state/output, which is what you actually care about.</li>
+<li><strong>Reusable across the whole suite.</strong> One <span class="ic">FakeUserRepository</span> can back ViewModel tests, UseCase tests, and integration-style tests, while every mock has to be re-stubbed per test method.</li>
+<li><strong>Tradeoff:</strong> fakes cost more upfront to write and maintain, and a buggy fake can mask a bug a real backend would surface — so a fake's behavior should mirror the real implementation's contract closely (some teams verify this once with a shared "contract test" run against both the fake and the real impl).</li>
+</ul>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 460 115" style="width:100%;height:auto">
+<defs><marker id="arrowQ7" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--muted)"/></marker></defs>
+<line x1="100" y1="45" x2="118" y2="45" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrowQ7)"/>
+<line x1="220" y1="45" x2="238" y2="45" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrowQ7)"/>
+<line x1="340" y1="45" x2="358" y2="45" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrowQ7)"/>
+<rect x="0" y="20" width="100" height="50" rx="6" fill="var(--ambl)" fill-opacity="0.12" stroke="var(--ambl)"/>
+<text x="50" y="42" text-anchor="middle" font-size="11" font-weight="700" fill="var(--txt)">Stub</text>
+<text x="50" y="58" text-anchor="middle" font-size="8" fill="var(--muted)">canned return</text>
+<rect x="120" y="20" width="100" height="50" rx="6" fill="var(--redl)" fill-opacity="0.12" stroke="var(--redl)"/>
+<text x="170" y="42" text-anchor="middle" font-size="11" font-weight="700" fill="var(--txt)">Mock</text>
+<text x="170" y="58" text-anchor="middle" font-size="8" fill="var(--muted)">+ verifies calls</text>
+<rect x="240" y="20" width="100" height="50" rx="6" fill="var(--purl)" fill-opacity="0.12" stroke="var(--purl)"/>
+<text x="290" y="42" text-anchor="middle" font-size="11" font-weight="700" fill="var(--txt)">Spy</text>
+<text x="290" y="58" text-anchor="middle" font-size="8" fill="var(--muted)">wraps real obj</text>
+<rect x="360" y="20" width="100" height="50" rx="6" fill="var(--grnl)" fill-opacity="0.12" stroke="var(--grnl)"/>
+<text x="410" y="42" text-anchor="middle" font-size="11" font-weight="700" fill="var(--txt)">Fake</text>
+<text x="410" y="58" text-anchor="middle" font-size="8" fill="var(--muted)">real, working impl</text>
+<text x="230" y="98" text-anchor="middle" font-size="9" fill="var(--muted)">increasingly resembles the production implementation &#8594;</text>
+</svg>
+</div>
+<pre><code><span class="kw">class</span> <span class="ty">FakeUserRepository</span> : <span class="ty">UserRepository</span> {
+    <span class="kw">private val</span> <span class="cn">users</span> = <span class="fn">mutableMapOf</span>&lt;<span class="ty">String</span>, <span class="ty">User</span>&gt;()
+    <span class="kw">fun</span> <span class="fn">addUser</span>(user: <span class="ty">User</span>) { users[user.id] = user }
+    <span class="kw">override suspend fun</span> <span class="fn">getUser</span>(id: <span class="ty">String</span>): <span class="ty">User</span>? = users[id]
+}
+
+<span class="an">@Test</span>
+<span class="kw">fun</span> <span class="fn">`returns null for an id that was never added`</span>() = <span class="fn">runTest</span> {
+    <span class="kw">val</span> <span class="cn">repo</span> = <span class="ty">FakeUserRepository</span>()
+    <span class="cm">// No stubbing needed — a mock would happily return a canned user</span>
+    <span class="cm">// for ANY id unless you remembered to stub this exact case</span>
+    <span class="fn">assertNull</span>(repo.<span class="fn">getUser</span>(<span class="st">"missing-id"</span>))
+}</code></pre>
+</div>
+</details>
+
+<h2>Testing Coroutines &amp; Flow</h2>
+
+<details><summary><span class="qn" style="background:var(--cyab);color:var(--cyal)">Q8</span><span class="qt">How do you test Kotlin Flow with Turbine? What are common pitfalls?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p><strong>Turbine</strong> (<span class="ic">app.cash.turbine:turbine</span>) wraps a <span class="ic">Flow</span> in a test-friendly collector DSL: <span class="ic">flow.test { ... }</span> launches a coroutine that collects the flow and gives you suspend functions — <span class="ic">awaitItem()</span>, <span class="ic">awaitComplete()</span>, <span class="ic">awaitError()</span> — to assert on emissions one at a time, in order, without manually managing a <span class="ic">Job</span> or collector. Cold flows (<span class="ic">flowOf</span>, a plain <span class="ic">flow { }</span>) run to completion and should end with <span class="ic">awaitComplete()</span>; hot flows (<span class="ic">StateFlow</span>, <span class="ic">SharedFlow</span>) never finish on their own and must be released with <span class="ic">cancelAndIgnoreRemainingEvents()</span> instead.</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 345 90" style="width:100%;height:auto">
+<defs><marker id="arrowQ8" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--cyal)"/></marker></defs>
+<line x1="80" y1="35" x2="93" y2="35" stroke="var(--cyal)" stroke-width="1.5" marker-end="url(#arrowQ8)"/>
+<line x1="165" y1="35" x2="178" y2="35" stroke="var(--cyal)" stroke-width="1.5" marker-end="url(#arrowQ8)"/>
+<line x1="250" y1="35" x2="263" y2="35" stroke="var(--cyal)" stroke-width="1.5" marker-end="url(#arrowQ8)"/>
+<rect x="10" y="15" width="70" height="40" rx="6" fill="var(--cyal)" fill-opacity="0.12" stroke="var(--cyal)"/>
+<text x="45" y="35" text-anchor="middle" font-size="11" font-weight="700" fill="var(--txt)">emit 1</text>
+<text x="45" y="49" text-anchor="middle" font-size="7" fill="var(--muted)">awaitItem()</text>
+<rect x="95" y="15" width="70" height="40" rx="6" fill="var(--cyal)" fill-opacity="0.12" stroke="var(--cyal)"/>
+<text x="130" y="35" text-anchor="middle" font-size="11" font-weight="700" fill="var(--txt)">emit 2</text>
+<text x="130" y="49" text-anchor="middle" font-size="7" fill="var(--muted)">awaitItem()</text>
+<rect x="180" y="15" width="70" height="40" rx="6" fill="var(--cyal)" fill-opacity="0.12" stroke="var(--cyal)"/>
+<text x="215" y="35" text-anchor="middle" font-size="11" font-weight="700" fill="var(--txt)">emit 3</text>
+<text x="215" y="49" text-anchor="middle" font-size="7" fill="var(--muted)">awaitItem()</text>
+<rect x="265" y="15" width="70" height="40" rx="6" fill="var(--grnl)" fill-opacity="0.12" stroke="var(--grnl)"/>
+<text x="300" y="35" text-anchor="middle" font-size="10" font-weight="700" fill="var(--txt)">complete</text>
+<text x="300" y="49" text-anchor="middle" font-size="7" fill="var(--muted)">awaitComplete()</text>
+<text x="172" y="75" text-anchor="middle" font-size="8" fill="var(--muted)">a StateFlow/SharedFlow has no "complete" box — end with cancelAndIgnoreRemainingEvents()</text>
+</svg>
+</div>
+<pre><code><span class="an">@Test</span>
+<span class="kw">fun</span> <span class="fn">`flow emits then completes`</span>() = <span class="fn">runTest</span> {
+    <span class="fn">flowOf</span>(<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">3</span>).<span class="fn">test</span> {
+        <span class="fn">assertEquals</span>(<span class="cn">1</span>, <span class="fn">awaitItem</span>())
+        <span class="fn">assertEquals</span>(<span class="cn">2</span>, <span class="fn">awaitItem</span>())
+        <span class="fn">assertEquals</span>(<span class="cn">3</span>, <span class="fn">awaitItem</span>())
+        <span class="fn">awaitComplete</span>()
+    }
+}
+
+<span class="an">@Test</span>
+<span class="kw">fun</span> <span class="fn">`StateFlow never completes on its own`</span>() = <span class="fn">runTest</span> {
+    <span class="kw">val</span> <span class="cn">state</span> = <span class="ty">MutableStateFlow</span>(<span class="cn">0</span>)
+    state.<span class="fn">test</span> {
+        <span class="fn">assertEquals</span>(<span class="cn">0</span>, <span class="fn">awaitItem</span>()) <span class="cm">// initial value replayed immediately</span>
+        state.value = <span class="cn">1</span>
+        <span class="fn">assertEquals</span>(<span class="cn">1</span>, <span class="fn">awaitItem</span>())
+        <span class="fn">cancelAndIgnoreRemainingEvents</span>() <span class="cm">// a hot flow never calls awaitComplete()</span>
+    }
+}</code></pre>
+<p><strong>Common pitfalls:</strong></p>
+<ul>
+<li><strong>Forgetting a flow never completes:</strong> <span class="ic">StateFlow</span> and <span class="ic">SharedFlow</span> are hot and infinite — calling <span class="ic">awaitComplete()</span> on one hangs the test until Turbine's default timeout, then fails. End the block with <span class="ic">cancelAndIgnoreRemainingEvents()</span> (or let <span class="ic">test { }</span>'s implicit cancellation at the end of the lambda handle it) instead.</li>
+<li><strong>Skipping <span class="ic">expectNoEvents()</span>:</strong> without it, an unexpected extra emission your code shouldn't have produced simply sits unconsumed and the test still passes — <span class="ic">expectNoEvents()</span> is the assertion that nothing is pending.</li>
+<li><strong>Not draining every emitted item:</strong> Turbine fails the test if the flow finishes (or the block ends) with unconsumed items still in the buffer, unless you explicitly acknowledge them with <span class="ic">cancelAndIgnoreRemainingEvents()</span> or <span class="ic">skipItems(n)</span> — a common "test hangs/fails for no reason" complaint that's actually Turbine correctly telling you the assertions don't match the real emission count.</li>
+<li><strong>Real delays inside the flow:</strong> a <span class="ic">delay()</span> inside the collected flow combined with <span class="fn">runTest</span>'s virtual-time scheduler can behave unexpectedly if dispatchers aren't wired consistently — prefer injecting a <span class="ic">TestDispatcher</span> everywhere so Turbine and <span class="fn">runTest</span> share the same virtual clock instead of racing against real time.</li>
+</ul>
+</div>
+</details>
+
+<h2>Screenshot / Snapshot Testing</h2>
+
+<details><summary><span class="qn" style="background:var(--orab);color:var(--oral)">Q9</span><span class="qt">What is screenshot/snapshot testing (Paparazzi, Shot)? What does it catch that unit tests can't, and what are the tradeoffs?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p><strong>Screenshot testing</strong> renders a Composable or View to a bitmap and diffs it, pixel-by-pixel (with some tolerance), against a previously-approved "golden" image. <strong>Paparazzi</strong> does this entirely on the JVM using Android's <span class="ic">layoutlib</span> renderer — no emulator or physical device needed, so it runs as part of the regular unit-test task in a second or two. <strong>Shot</strong> (and Compose's own screenshot testing via <span class="ic">screenshotTest</span> source sets) instead captures real screenshots from an emulator/device and compares them, which is slower but exercises the actual rendering pipeline end-to-end.</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 460 90" style="width:100%;height:auto">
+<defs><marker id="arrowQ9" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--oral)"/></marker></defs>
+<line x1="110" y1="42" x2="123" y2="42" stroke="var(--oral)" stroke-width="1.5" marker-end="url(#arrowQ9)"/>
+<line x1="225" y1="42" x2="238" y2="42" stroke="var(--oral)" stroke-width="1.5" marker-end="url(#arrowQ9)"/>
+<line x1="340" y1="42" x2="353" y2="42" stroke="var(--oral)" stroke-width="1.5" marker-end="url(#arrowQ9)"/>
+<rect x="5" y="17" width="105" height="50" rx="6" fill="var(--oral)" fill-opacity="0.12" stroke="var(--oral)"/>
+<text x="57" y="47" text-anchor="middle" font-size="10" font-weight="700" fill="var(--txt)">Composable</text>
+<rect x="125" y="17" width="100" height="50" rx="6" fill="var(--oral)" fill-opacity="0.12" stroke="var(--oral)"/>
+<text x="175" y="40" text-anchor="middle" font-size="10" font-weight="700" fill="var(--txt)">Render to</text>
+<text x="175" y="53" text-anchor="middle" font-size="10" font-weight="700" fill="var(--txt)">bitmap</text>
+<rect x="240" y="17" width="100" height="50" rx="6" fill="var(--oral)" fill-opacity="0.12" stroke="var(--oral)"/>
+<text x="290" y="40" text-anchor="middle" font-size="10" font-weight="700" fill="var(--txt)">Diff vs</text>
+<text x="290" y="53" text-anchor="middle" font-size="10" font-weight="700" fill="var(--txt)">golden</text>
+<rect x="355" y="17" width="100" height="50" rx="6" fill="var(--s3)" stroke="var(--muted)"/>
+<text x="380" y="47" text-anchor="middle" font-size="11" font-weight="700" fill="var(--grnl)">Pass</text>
+<text x="430" y="47" text-anchor="middle" font-size="11" font-weight="700" fill="var(--redl)">Fail</text>
+</svg>
+</div>
+<pre><code><span class="an">@get:Rule</span>
+<span class="kw">val</span> <span class="cn">paparazzi</span> = <span class="ty">Paparazzi</span>(deviceConfig = <span class="ty">DeviceConfig</span>.PIXEL_5)
+
+<span class="an">@Test</span>
+<span class="kw">fun</span> <span class="fn">loginScreen_defaultState</span>() {
+    paparazzi.<span class="fn">snapshot</span> { <span class="fn">LoginScreen</span>(onLogin = {}, onForgotPassword = {}) }
+}
+
+<span class="cm">// ./gradlew recordPaparazziDebug  -> approve new/changed goldens</span>
+<span class="cm">// ./gradlew verifyPaparazziDebug  -> fails the build if render != golden</span></code></pre>
+<p><strong>What it catches that assertion-based unit tests can't:</strong> unit tests verify state and logic ("is <span class="ic">isLoading</span> true"), not pixels — they'd happily pass while a margin is wrong, text is clipped, a color token regressed, dark theme contrast is broken, or an RTL layout mirrors incorrectly. Screenshot tests catch exactly these purely-visual regressions, and they catch them for every screen state (loading/error/empty/RTL/large font) cheaply, without a human eyeballing each build.</p>
+<div class="g2">
+<div class="gc" style="border-color:var(--grn)"><h4 style="color:var(--grnl)">Benefits</h4><ul><li>Fast, deterministic, runs on every CI build (Paparazzi)</li><li>Catches visual regressions no assertion would</li><li>Golden images double as living, reviewable UI documentation in PR diffs</li></ul></div>
+<div class="gc" style="border-color:var(--red)"><h4 style="color:var(--redl)">Tradeoffs</h4><ul><li><strong>Golden maintenance:</strong> every intentional UI change requires regenerating and re-reviewing goldens — easy to rubber-stamp without truly checking</li><li><strong>Cross-machine flakiness:</strong> font rendering, anti-aliasing, and pixel density can differ subtly across CI runners/OS versions, causing false failures unless fonts/rendering are pinned to one environment</li><li>Storage/repo bloat from binary golden images over time</li></ul></div>
+</div>
+</div>
+</details>
+
+<h2>Flaky Tests</h2>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q10</span><span class="qt">What are the most common causes of flaky Espresso/Compose UI tests, and how do you fix them properly?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<ul>
+<li><strong>Animations left enabled:</strong> window/transition/animator duration scales default to 1x on emulators; Espresso can intermittently time out mid-animation or read a view's position/state before a transition finishes. Fix at the environment level, not per-test.</li>
+<li><strong>Async work Espresso doesn't know about:</strong> Espresso's idling is based on the main thread's message queue and registered <span class="ic">AppCompat</span>/<span class="ic">RecyclerView</span> idling — it has no idea a network call, a coroutine launched on <span class="ic">Dispatchers.IO</span>, or a <span class="ic">Handler.postDelayed</span> is still in flight. The test proceeds to assert before the async work finishes, and pass/fail depends on how fast the network/CI happened to be that run — the definition of flaky.</li>
+<li><strong><span class="ic">Thread.sleep()</span> band-aids:</strong> "fixing" the above by sleeping a fixed duration is worse than the disease — too short and it's still flaky, too long and every run wastes real wall-clock time across the whole suite for no better guarantee.</li>
+<li><strong>Compose's built-in idling not covering off-recomposition work:</strong> <span class="ic">ComposeTestRule</span> automatically waits for recomposition/animation frames, but a coroutine launched in <span class="ic">viewModelScope</span> that updates state after a real network round trip is invisible to it — the same class of bug as Espresso, just inside Compose.</li>
+<li><strong>Test order / shared mutable state:</strong> tests that depend on a previous test's side effects (a static singleton, a real shared database file) pass or fail depending on run order — a different flavor of flakiness, not timing-related but often confused for it.</li>
+</ul>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 420 170" style="width:100%;height:auto">
+<defs><marker id="arrowQ10" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--muted)"/></marker></defs>
+<rect x="130" y="15" width="160" height="32" rx="6" fill="var(--s3)" stroke="var(--muted)"/>
+<text x="210" y="35" text-anchor="middle" font-size="10" font-weight="700" fill="var(--txt)">Async work in flight</text>
+<path d="M150,47 L60,72" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrowQ10)" fill="none"/>
+<path d="M270,47 L360,72" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrowQ10)" fill="none"/>
+<rect x="10" y="75" width="140" height="34" rx="6" fill="var(--redl)" fill-opacity="0.1" stroke="var(--redl)"/>
+<text x="80" y="96" text-anchor="middle" font-size="9" font-weight="700" fill="var(--txt)">Thread.sleep(2000)</text>
+<rect x="270" y="75" width="140" height="34" rx="6" fill="var(--grnl)" fill-opacity="0.1" stroke="var(--grnl)"/>
+<text x="340" y="90" text-anchor="middle" font-size="9" font-weight="700" fill="var(--txt)">IdlingResource /</text>
+<text x="340" y="102" text-anchor="middle" font-size="9" font-weight="700" fill="var(--txt)">waitForIdle()</text>
+<line x1="80" y1="109" x2="80" y2="128" stroke="var(--redl)" stroke-width="1.5" marker-end="url(#arrowQ10)"/>
+<line x1="340" y1="109" x2="340" y2="128" stroke="var(--grnl)" stroke-width="1.5" marker-end="url(#arrowQ10)"/>
+<rect x="10" y="130" width="140" height="30" rx="6" fill="var(--redl)" fill-opacity="0.18" stroke="var(--redl)"/>
+<text x="80" y="150" text-anchor="middle" font-size="11" font-weight="700" fill="var(--redl)">Flaky &#10007;</text>
+<rect x="270" y="130" width="140" height="30" rx="6" fill="var(--grnl)" fill-opacity="0.18" stroke="var(--grnl)"/>
+<text x="340" y="150" text-anchor="middle" font-size="11" font-weight="700" fill="var(--grnl)">Reliable &#10003;</text>
+</svg>
+</div>
+<pre><code><span class="cm">// BAD — guesses how long async work takes</span>
+onView(withId(R.id.<span class="cn">loadButton</span>)).<span class="fn">perform</span>(click())
+<span class="ty">Thread</span>.<span class="fn">sleep</span>(<span class="cn">2000</span>) <span class="cm">// too short = flaky, too long = slow suite</span>
+onView(withId(R.id.<span class="cn">userName</span>)).<span class="fn">check</span>(matches(isDisplayed()))
+
+<span class="cm">// GOOD — Compose: poll a deterministic clock instead of guessing</span>
+composeTestRule.<span class="fn">mainClock</span>.autoAdvance = <span class="kw">false</span>
+composeTestRule.<span class="fn">onNodeWithTag</span>(<span class="st">"load_button"</span>).<span class="fn">performClick</span>()
+composeTestRule.<span class="fn">waitForIdle</span>() <span class="cm">// waits until actually idle, not a fixed duration</span></code></pre>
+<div class="note nred"><strong>Rule of thumb:</strong> if a test needs a sleep to pass reliably, it's not actually synchronized with the thing it's testing — replace the sleep with a mechanism the test framework can poll (IdlingResource, Compose's idling, or a fake/test dispatcher that runs synchronously) rather than a duration you hope is long enough.</div>
+</div>
+</details>
+
+<h2>CI/CD Testing Strategy</h2>
+
+<details><summary><span class="qn" style="background:var(--blub);color:var(--blul)">Q11</span><span class="qt">How would you structure the testing strategy in CI for a real Android app?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<div class="g2">
+<div class="gc" style="border-color:var(--grn)"><h4 style="color:var(--grnl)">Unit tests — every commit</h4><ul><li>Pure JVM, no emulator — runs in a plain Gradle/CI container</li><li>Seconds to a couple of minutes even for a large module</li><li>Deterministic — near-zero infra-caused flakiness</li><li><strong>Required check</strong> — blocks merge on failure</li></ul></div>
+<div class="gc" style="border-color:var(--amb)"><h4 style="color:var(--ambl)">Instrumented tests — subset / nightly</h4><ul><li>Needs a real device/emulator or a device farm (Firebase Test Lab, AWS Device Farm)</li><li>Minutes per run, plus device-boot and queue time</li><li>Subject to emulator timing, API-level/OEM differences</li><li>Often <strong>non-blocking</strong> — reported as a signal, triaged separately</li></ul></div>
+</div>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 380 120" style="width:100%;height:auto">
+<defs><marker id="arrowQ11" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--muted)"/></marker></defs>
+<line x1="120" y1="32" x2="133" y2="32" stroke="var(--grnl)" stroke-width="1.5" marker-end="url(#arrowQ11)"/>
+<line x1="245" y1="32" x2="258" y2="32" stroke="var(--grnl)" stroke-width="1.5" marker-end="url(#arrowQ11)"/>
+<rect x="10" y="15" width="110" height="34" rx="6" fill="var(--grnl)" fill-opacity="0.1" stroke="var(--grnl)"/>
+<text x="65" y="36" text-anchor="middle" font-size="9" font-weight="700" fill="var(--txt)">Every commit</text>
+<rect x="135" y="15" width="110" height="34" rx="6" fill="var(--grnl)" fill-opacity="0.1" stroke="var(--grnl)"/>
+<text x="190" y="36" text-anchor="middle" font-size="9" font-weight="700" fill="var(--txt)">Unit tests (JVM)</text>
+<rect x="260" y="15" width="110" height="34" rx="6" fill="var(--grnl)" fill-opacity="0.2" stroke="var(--grnl)"/>
+<text x="315" y="36" text-anchor="middle" font-size="9" font-weight="700" fill="var(--grnl)">Merge gate</text>
+<line x1="120" y1="87" x2="133" y2="87" stroke="var(--ambl)" stroke-width="1.5" marker-end="url(#arrowQ11)"/>
+<line x1="245" y1="87" x2="258" y2="87" stroke="var(--ambl)" stroke-width="1.5" marker-end="url(#arrowQ11)"/>
+<rect x="10" y="70" width="110" height="34" rx="6" fill="var(--ambl)" fill-opacity="0.1" stroke="var(--ambl)"/>
+<text x="65" y="91" text-anchor="middle" font-size="9" font-weight="700" fill="var(--txt)">Nightly</text>
+<rect x="135" y="70" width="110" height="34" rx="6" fill="var(--ambl)" fill-opacity="0.1" stroke="var(--ambl)"/>
+<text x="190" y="83" text-anchor="middle" font-size="8" font-weight="700" fill="var(--txt)">Instrumented</text>
+<text x="190" y="95" text-anchor="middle" font-size="8" font-weight="700" fill="var(--txt)">(device farm)</text>
+<rect x="260" y="70" width="110" height="34" rx="6" fill="var(--ambl)" fill-opacity="0.1" stroke="var(--ambl)" stroke-dasharray="3,2"/>
+<text x="315" y="83" text-anchor="middle" font-size="8" font-weight="700" fill="var(--ambl)">Dashboard /</text>
+<text x="315" y="95" text-anchor="middle" font-size="8" font-weight="700" fill="var(--ambl)">triage (signal)</text>
+</svg>
+</div>
+<pre><code><span class="cm">// every push/PR — required, blocks merge</span>
+./gradlew testDebugUnitTests
+
+<span class="cm">// nightly — informational, not a merge gate</span>
+firebase test:android run --type instrumentation \
+  --device model=Pixel6,version=34 --app app-debug.apk</code></pre>
+<div class="note nblu"><strong>Why gate merges only on the fast unit-test suite:</strong> instrumented failures are frequently caused by environment flakiness — device-farm queueing, emulator timing, an animation race — rather than by the PR's actual change. Making them a hard merge gate trains engineers to reflexively hit "re-run" instead of trusting CI, and adds minutes-to-tens-of-minutes to every merge. Treating instrumented results as a monitored signal (dashboard + alert + human triage) keeps the PR feedback loop fast while still surfacing real regressions. Teams that do want instrumented tests in the merge path usually gate only on a small, curated smoke suite (login, checkout — the handful of flows that would be a P0 if broken) run against a single stable device profile, and push the full instrumented matrix to nightly.</div>
 </div>
 </details>
 </main>

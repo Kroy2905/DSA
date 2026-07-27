@@ -175,6 +175,51 @@ a{color:var(--grnl)}
 <li><strong>RecycledViewPool (mRecyclerPool):</strong> ViewHolders keyed by viewType. Shared across multiple RecyclerViews. Requires rebind when reused (onBindViewHolder called). Default size = 5 per type.</li>
 <li><strong>ViewCacheExtension:</strong> Custom cache layer. Rarely used.</li>
 </ul>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 950 200" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-adv-2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker>
+<marker id="arrow-adv-2g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--grnl)"/></marker>
+</defs>
+<text x="4" y="14" font-size="12" font-weight="700" fill="var(--txt)">ViewHolder path as a view scrolls off-screen</text>
+
+<text x="10" y="120" font-size="10" fill="var(--muted)">View scrolls</text>
+<text x="10" y="133" font-size="10" fill="var(--muted)">off-screen</text>
+<line x1="95" y1="125" x2="136" y2="125" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-adv-2)"/>
+
+<rect x="140" y="80" width="150" height="90" rx="8" fill="var(--blub)" stroke="var(--blu)" stroke-width="1.5"/>
+<text x="215" y="105" font-size="11" font-weight="700" fill="var(--blul)" text-anchor="middle">Attached Scrap</text>
+<text x="215" y="120" font-size="9" fill="var(--muted)" text-anchor="middle">mAttachedScrap /</text>
+<text x="215" y="132" font-size="9" fill="var(--muted)" text-anchor="middle">mChangedScrap</text>
+<text x="215" y="150" font-size="9" fill="var(--blul)" text-anchor="middle">still attached</text>
+<text x="215" y="161" font-size="9" fill="var(--blul)" text-anchor="middle">reused instantly, no rebind</text>
+<line x1="290" y1="125" x2="328" y2="125" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-adv-2)"/>
+
+<rect x="330" y="80" width="150" height="90" rx="8" fill="var(--grnb)" stroke="var(--grn)" stroke-width="1.5"/>
+<text x="405" y="105" font-size="11" font-weight="700" fill="var(--grnl)" text-anchor="middle">Cache</text>
+<text x="405" y="120" font-size="9" fill="var(--muted)" text-anchor="middle">mCachedViews</text>
+<text x="405" y="132" font-size="9" fill="var(--muted)" text-anchor="middle">size 2 default</text>
+<text x="405" y="150" font-size="9" fill="var(--grnl)" text-anchor="middle">position-aware</text>
+<text x="405" y="161" font-size="9" fill="var(--grnl)" text-anchor="middle">no rebind if position matches</text>
+<line x1="480" y1="125" x2="518" y2="125" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-adv-2)"/>
+
+<rect x="520" y="80" width="170" height="90" rx="8" fill="var(--ambb)" stroke="var(--amb)" stroke-width="1.5"/>
+<text x="605" y="105" font-size="11" font-weight="700" fill="var(--ambl)" text-anchor="middle">RecycledViewPool</text>
+<text x="605" y="120" font-size="9" fill="var(--muted)" text-anchor="middle">keyed by viewType</text>
+<text x="605" y="132" font-size="9" fill="var(--muted)" text-anchor="middle">shared across RVs</text>
+<text x="605" y="150" font-size="9" fill="var(--ambl)" text-anchor="middle">view-type aware</text>
+<text x="605" y="161" font-size="9" fill="var(--ambl)" text-anchor="middle">always calls onBindViewHolder()</text>
+<line x1="690" y1="125" x2="728" y2="125" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-adv-2)"/>
+
+<rect x="730" y="80" width="190" height="90" rx="8" fill="var(--s3)" stroke="var(--b2)" stroke-width="1.5"/>
+<text x="825" y="112" font-size="11" font-weight="700" fill="var(--txt)" text-anchor="middle">Reused for new</text>
+<text x="825" y="127" font-size="11" font-weight="700" fill="var(--txt)" text-anchor="middle">position on screen</text>
+<text x="825" y="145" font-size="9" fill="var(--muted)" text-anchor="middle">rebind per tier above</text>
+
+<path d="M405,80 Q615,15 825,80" fill="none" stroke="var(--grnl)" stroke-width="1.3" stroke-dasharray="4,3" marker-end="url(#arrow-adv-2g)"/>
+<text x="615" y="35" font-size="9" fill="var(--grnl)" text-anchor="middle">shortcut: cache hit skips pool and rebind</text>
+</svg>
+</div>
 <pre><code><span class="cm">// Optimization: share pool across multiple RecyclerViews (e.g. ViewPager tabs)</span>
 <span class="kw">val</span> <span class="cn">pool</span> = <span class="ty">RecyclerView</span>.<span class="ty">RecycledViewPool</span>()
 pool.<span class="fn">setMaxRecycledViews</span>(<span class="ty">VIEW_TYPE_POST</span>, <span class="cn">20</span>) <span class="cm">// increase pool size</span>
@@ -224,6 +269,47 @@ postsAdapter.<span class="fn">submitList</span>(newPosts)  <span class="cm">// h
 <details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q6</span><span class="qt">How do you diagnose and fix jank (dropped frames) in Android?</span><span class="dif hard">Hard</span></summary>
 <div class="ans">
 <p>Jank = frames that take longer than 16ms (60fps) or 8.3ms (120fps) to render.</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 950 250" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-adv-1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--redl)"/></marker>
+</defs>
+<text x="4" y="16" font-size="12" font-weight="700" fill="var(--txt)">Frame budget: 16.6ms @ 60fps</text>
+
+<text x="4" y="48" font-size="10" fill="var(--muted)">Normal frame</text>
+<rect x="20" y="34" width="34" height="28" fill="var(--blul)"/>
+<rect x="54" y="34" width="68" height="28" fill="var(--grnl)"/>
+<rect x="122" y="34" width="136" height="28" fill="var(--ambl)"/>
+<rect x="258" y="34" width="170" height="28" fill="var(--purl)"/>
+<rect x="428" y="34" width="68" height="28" fill="var(--cyal)"/>
+<rect x="496" y="34" width="204" height="28" fill="var(--oral)"/>
+<rect x="20" y="34" width="680" height="28" fill="none" stroke="var(--b2)"/>
+
+<text x="4" y="128" font-size="10" fill="var(--muted)">Janky frame</text>
+<rect x="20" y="114" width="34" height="28" fill="var(--blul)"/>
+<rect x="54" y="114" width="68" height="28" fill="var(--grnl)"/>
+<rect x="122" y="114" width="160" height="28" fill="var(--ambl)"/>
+<rect x="282" y="114" width="260" height="28" fill="var(--purl)"/>
+<rect x="542" y="114" width="68" height="28" fill="var(--cyal)"/>
+<rect x="610" y="114" width="220" height="28" fill="var(--oral)"/>
+<rect x="700" y="110" width="130" height="36" fill="var(--redl)" opacity="0.28" stroke="var(--redl)" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+<line x1="700" y1="28" x2="700" y2="196" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4,3"/>
+<text x="706" y="24" font-size="9" fill="var(--muted)">16.6ms deadline</text>
+
+<line x1="700" y1="180" x2="825" y2="180" stroke="var(--redl)" stroke-width="1.2" marker-end="url(#arrow-adv-1)"/>
+<text x="700" y="196" font-size="9" fill="var(--redl)">~3ms over budget → dropped frame</text>
+
+<g font-size="9" fill="var(--muted)">
+<rect x="20" y="215" width="10" height="10" fill="var(--blul)"/><text x="34" y="224">Input</text>
+<rect x="90" y="215" width="10" height="10" fill="var(--grnl)"/><text x="104" y="224">Animation</text>
+<rect x="180" y="215" width="10" height="10" fill="var(--ambl)"/><text x="194" y="224">Measure/Layout</text>
+<rect x="300" y="215" width="10" height="10" fill="var(--purl)"/><text x="314" y="224">Draw</text>
+<rect x="360" y="215" width="10" height="10" fill="var(--cyal)"/><text x="374" y="224">Sync</text>
+<rect x="420" y="215" width="10" height="10" fill="var(--oral)"/><text x="434" y="224">GPU Render</text>
+</g>
+</svg>
+</div>
 <p><strong>Diagnosis tools:</strong></p>
 <ul>
 <li><strong>Android Profiler → CPU:</strong> Record trace, look for long frames on main thread</li>
@@ -349,6 +435,240 @@ motionLayout.<span class="fn">transitionToEnd</span>() <span class="cm">// or bi
 <span class="cm">// 6. Compose Animation (modern approach)</span>
 <span class="kw">val</span> <span class="cn">alpha</span> <span class="kw">by</span> <span class="fn">animateFloatAsState</span>(targetValue = <span class="kw">if</span> (visible) <span class="cn">1f</span> <span class="kw">else</span> <span class="cn">0f</span>)</code></pre>
 <div class="note ngrn">✓ For Google interviews: understand that all View Property Animators operate on the View's rendering properties (alpha, translationX, scaleX, rotation) — they don't trigger layout. This is why they're faster than animating margin/width.</div>
+</div>
+</details>
+
+<h2>App Startup & Initialization</h2>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">Q10</span><span class="qt">What are the different app startup types (cold/warm/hot) and how do you optimize them?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p>The three startup types differ in how much state the system has to rebuild — that's the whole story, and it's what determines the cost:</p>
+<ul>
+<li><strong>Cold start:</strong> The app's process doesn't exist yet. The system creates the process, instantiates the <span class="ic">Application</span> object (attachBaseContext → onCreate, plus ContentProviders and App Startup initializers), starts the main thread <span class="ic">Looper</span>, then creates and inflates the launching Activity before the first frame is drawn. Everything is built from scratch — the most expensive path.</li>
+<li><strong>Warm start:</strong> The process is still alive (the system only evicted the Activity, or the user backgrounded and returned), so Application creation is skipped — but Activity onCreate() still runs and re-inflates views. Cheaper than cold, still noticeable.</li>
+<li><strong>Hot start:</strong> Both process and Activity are alive — the system just brings it to the foreground (onRestart → onStart → onResume). No object creation, no inflation at all. This is what most "reopen the app" launches actually are.</li>
+</ul>
+<p><strong>Optimization techniques:</strong> <strong>Baseline Profiles</strong> ship a list of hot classes/methods in the APK so ART ahead-of-time compiles them at install time instead of interpreting them on the first few runs — generated via the Macrobenchmark library recording a real user journey. The <strong>App Startup library</strong> (<span class="ic">androidx.startup</span>) fixes a subtler cost: every library that needs init-time setup traditionally registers its own <span class="ic">ContentProvider</span>, and each one adds process-creation overhead even if never queried — App Startup lets each library define an <span class="ic">Initializer&lt;T&gt;</span> with explicit dependencies, all running behind a <strong>single</strong> consolidated ContentProvider. Finally, <strong>lazy initialization</strong> defers anything not needed for the first frame — <span class="ic">by lazy</span> singletons, SDK init pushed past <span class="ic">reportFullyDrawn()</span>, or handed off to WorkManager entirely.</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 700 150" style="width:100%;height:auto">
+<rect x="20" y="15" width="200" height="80" rx="8" fill="var(--redb)" stroke="var(--red)"/>
+<text x="120" y="32" text-anchor="middle" font-size="11" font-weight="700" fill="var(--redl)">Cold Start</text>
+<text x="120" y="49" text-anchor="middle" font-size="9" fill="var(--muted)">new process</text>
+<text x="120" y="63" text-anchor="middle" font-size="9" fill="var(--muted)">Application.onCreate()</text>
+<text x="120" y="77" text-anchor="middle" font-size="9" fill="var(--muted)">Activity onCreate → 1st frame</text>
+
+<rect x="250" y="15" width="200" height="80" rx="8" fill="var(--ambb)" stroke="var(--amb)"/>
+<text x="350" y="32" text-anchor="middle" font-size="11" font-weight="700" fill="var(--ambl)">Warm Start</text>
+<text x="350" y="49" text-anchor="middle" font-size="9" fill="var(--muted)">process alive</text>
+<text x="350" y="63" text-anchor="middle" font-size="9" fill="var(--muted)">Application skipped</text>
+<text x="350" y="77" text-anchor="middle" font-size="9" fill="var(--muted)">Activity onCreate() again</text>
+
+<rect x="480" y="15" width="200" height="80" rx="8" fill="var(--grnb)" stroke="var(--grn)"/>
+<text x="580" y="32" text-anchor="middle" font-size="11" font-weight="700" fill="var(--grnl)">Hot Start</text>
+<text x="580" y="49" text-anchor="middle" font-size="9" fill="var(--muted)">process alive</text>
+<text x="580" y="63" text-anchor="middle" font-size="9" fill="var(--muted)">Activity alive</text>
+<text x="580" y="77" text-anchor="middle" font-size="9" fill="var(--muted)">just onResume()</text>
+
+<rect x="20" y="112" width="200" height="14" fill="var(--redl)"/>
+<rect x="250" y="112" width="90" height="14" fill="var(--ambl)"/>
+<rect x="480" y="112" width="35" height="14" fill="var(--grnl)"/>
+<text x="20" y="140" font-size="9" fill="var(--muted)">relative launch cost →</text>
+</svg>
+</div>
+<pre><code><span class="kw">class</span> <span class="ty">LoggerInitializer</span> : <span class="ty">Initializer</span>&lt;<span class="ty">Logger</span>&gt; {
+    <span class="kw">override fun</span> <span class="fn">create</span>(context: <span class="ty">Context</span>) = <span class="ty">Logger</span>.<span class="fn">init</span>(context)
+    <span class="cm">// one ContentProvider for ALL initializers, not one per library</span>
+    <span class="kw">override fun</span> <span class="fn">dependencies</span>() = <span class="fn">listOf</span>(<span class="ty">WorkManagerInitializer</span>::<span class="kw">class</span>.java)
+}
+
+<span class="cm">// Signal "fully drawn" for cold-start measurement + to gate lazy init after</span>
+view.viewTreeObserver.<span class="fn">addOnDrawListener</span> { activity.<span class="fn">reportFullyDrawn</span>() }</code></pre>
+<div class="note namb">💡 Measure with <span class="ic">adb shell am start -W com.app/.MainActivity</span> — it reports TotalTime directly. For CI regression tracking, use Macrobenchmark's <span class="ic">StartupTimingMetric</span>.</div>
+</div>
+</details>
+
+<h2>Bitmap & Image Memory</h2>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q11</span><span class="qt">How do you manage Bitmap memory efficiently — inSampleSize, inBitmap pooling, and hardware bitmaps?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p>A decoded Bitmap costs <span class="ic">width × height × bytesPerPixel</span> — a 4000×3000 photo at ARGB_8888 is ~46MB, an easy OOM if decoded naively just to show a 100dp thumbnail. Three techniques attack this at different points in the pipeline:</p>
+<ul>
+<li><strong>inSampleSize downsampling:</strong> Decode at reduced resolution <em>before</em> the pixel buffer is allocated. First decode with <span class="ic">inJustDecodeBounds = true</span> to read width/height from headers only (no pixel allocation), compute a power-of-two sample size that fits the target size, then decode for real.</li>
+<li><strong>Bitmap pooling / inBitmap reuse:</strong> Reuse the pixel buffer of an already-decoded, no-longer-needed Bitmap via <span class="ic">BitmapFactory.Options.inBitmap</span> instead of allocating fresh each time — avoids GC churn from constantly alloc'ing/freeing large byte arrays. Glide and Coil both do this automatically via an internal <span class="ic">BitmapPool</span>.</li>
+<li><strong>Hardware bitmaps:</strong> On API 26+, <span class="ic">Bitmap.Config.HARDWARE</span> decodes straight into GPU-accessible graphics memory — the pixel data never touches the Java/native heap at all. Ideal for images that are only ever drawn (immutable, never read pixel-by-pixel or drawn on a software Canvas).</li>
+</ul>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 700 190" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-adv-3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker>
+</defs>
+<rect x="250" y="10" width="200" height="40" rx="8" fill="var(--s3)" stroke="var(--b2)"/>
+<text x="350" y="35" text-anchor="middle" font-size="11" font-weight="700" fill="var(--txt)">Decoding a Bitmap</text>
+
+<line x1="350" y1="50" x2="115" y2="108" stroke="var(--muted)" stroke-width="1.3" marker-end="url(#arrow-adv-3)"/>
+<line x1="350" y1="50" x2="350" y2="108" stroke="var(--muted)" stroke-width="1.3" marker-end="url(#arrow-adv-3)"/>
+<line x1="350" y1="50" x2="585" y2="108" stroke="var(--muted)" stroke-width="1.3" marker-end="url(#arrow-adv-3)"/>
+
+<rect x="10" y="110" width="210" height="60" rx="8" fill="var(--blub)" stroke="var(--blu)"/>
+<text x="115" y="130" text-anchor="middle" font-size="9" fill="var(--muted)">need a smaller output size?</text>
+<text x="115" y="150" text-anchor="middle" font-size="10" font-weight="700" fill="var(--blul)">→ inSampleSize</text>
+
+<rect x="245" y="110" width="210" height="60" rx="8" fill="var(--grnb)" stroke="var(--grn)"/>
+<text x="350" y="130" text-anchor="middle" font-size="9" fill="var(--muted)">decoding many similar images?</text>
+<text x="350" y="150" text-anchor="middle" font-size="10" font-weight="700" fill="var(--grnl)">→ inBitmap pool</text>
+
+<rect x="480" y="110" width="210" height="60" rx="8" fill="var(--ambb)" stroke="var(--amb)"/>
+<text x="585" y="130" text-anchor="middle" font-size="9" fill="var(--muted)">only ever drawn, never read?</text>
+<text x="585" y="150" text-anchor="middle" font-size="10" font-weight="700" fill="var(--ambl)">→ Hardware bitmap</text>
+</svg>
+</div>
+<pre><code><span class="cm">// 1. Read bounds only (no pixel alloc), then pick a power-of-two sample size</span>
+<span class="kw">val</span> <span class="cn">opts</span> = <span class="ty">BitmapFactory</span>.<span class="ty">Options</span>().<span class="fn">apply</span> { inJustDecodeBounds = <span class="kw">true</span> }
+<span class="ty">BitmapFactory</span>.<span class="fn">decodeResource</span>(res, id, opts)
+opts.inSampleSize = <span class="fn">calculateSampleSize</span>(opts.outWidth, opts.outHeight, reqW, reqH)
+opts.inJustDecodeBounds = <span class="kw">false</span>
+<span class="kw">val</span> <span class="cn">thumb</span> = <span class="ty">BitmapFactory</span>.<span class="fn">decodeResource</span>(res, id, opts) <span class="cm">// small alloc, not full-size</span>
+
+<span class="cm">// 2. Reuse an existing buffer instead of a fresh allocation</span>
+opts.inBitmap = pool.<span class="fn">getReusableBitmap</span>(opts)
+
+<span class="cm">// 3. Decode straight into GPU memory — never touches the Java heap</span>
+opts.inPreferredConfig = <span class="ty">Bitmap</span>.<span class="ty">Config</span>.HARDWARE</code></pre>
+<div class="note nred">⚠ Hardware bitmaps can't be read with getPixels() or drawn on a software Canvas — they're a "decode once, draw many times" optimization, not a general-purpose Bitmap replacement.</div>
+</div>
+</details>
+
+<h2>Lists, Diffing & Paging Views</h2>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q12</span><span class="qt">How does DiffUtil compute its diff, why do stable IDs matter, and how does ListAdapter differ from calling DiffUtil directly?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p><strong>How the diff is computed:</strong> <span class="ic">DiffUtil.calculateDiff()</span> is conceptually based on Eugene Myers' O(N+D²) diff algorithm (the same family behind Unix <span class="ic">diff</span>/Git) — it finds the shortest edit script that turns the old list into the new one, i.e. the minimal set of insertions/deletions (a move is really a deletion + insertion at a different index), instead of comparing every old item against every new item pairwise. This is what lets RecyclerView run a targeted, minimal set of item animations.</p>
+<p><strong>Why stable IDs matter:</strong> <span class="ic">areItemsTheSame()</span> tells the algorithm "this is the same logical entity, just possibly changed or moved" versus "this is new." Compare by a stable unique ID (a DB primary key), not object equality or list position — otherwise DiffUtil can't distinguish a moved item from a remove+add pair, producing wrong animations and unnecessary rebinds. <span class="ic">areContentsTheSame()</span> only runs once items are matched, and decides if a rebind is needed at all.</p>
+<p><strong>ListAdapter vs manual calculateDiff:</strong> calling <span class="ic">DiffUtil.calculateDiff()</span> directly is synchronous on whatever thread you call it from — for large lists that O(N+D²) work must be pushed off the main thread yourself, then dispatched back via <span class="ic">dispatchUpdatesTo(adapter)</span>. <span class="ic">ListAdapter&lt;T,VH&gt;</span> wraps <span class="ic">AsyncListDiffer</span>, which runs the diff on a background executor automatically and posts the result to the main thread for you — you just call <span class="ic">submitList()</span>.</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 640 175" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-adv-4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker>
+</defs>
+<text x="10" y="20" font-size="10" fill="var(--muted)">Old list</text>
+<rect x="40" y="30" width="90" height="36" rx="6" fill="var(--blub)" stroke="var(--blu)"/>
+<text x="85" y="53" text-anchor="middle" font-size="10" fill="var(--blul)">A (id 1)</text>
+<rect x="160" y="30" width="90" height="36" rx="6" fill="var(--grnb)" stroke="var(--grn)"/>
+<text x="205" y="53" text-anchor="middle" font-size="10" fill="var(--grnl)">B (id 2)</text>
+<rect x="280" y="30" width="90" height="36" rx="6" fill="var(--ambb)" stroke="var(--amb)"/>
+<text x="325" y="53" text-anchor="middle" font-size="10" fill="var(--ambl)">C (id 3)</text>
+
+<text x="10" y="128" font-size="10" fill="var(--muted)">New list</text>
+<rect x="40" y="108" width="90" height="36" rx="6" fill="var(--grnb)" stroke="var(--grn)"/>
+<text x="85" y="131" text-anchor="middle" font-size="10" fill="var(--grnl)">B (id 2)</text>
+<rect x="160" y="108" width="90" height="36" rx="6" fill="var(--ambb)" stroke="var(--amb)"/>
+<text x="205" y="131" text-anchor="middle" font-size="10" fill="var(--ambl)">C (id 3)</text>
+<rect x="280" y="108" width="90" height="36" rx="6" fill="var(--blub)" stroke="var(--blu)"/>
+<text x="325" y="131" text-anchor="middle" font-size="10" fill="var(--blul)">A (id 1)</text>
+
+<path d="M85,66 Q205,95 325,108" fill="none" stroke="var(--blul)" stroke-width="1.2" marker-end="url(#arrow-adv-4)"/>
+<path d="M205,66 Q145,95 85,108" fill="none" stroke="var(--grnl)" stroke-width="1.2" marker-end="url(#arrow-adv-4)"/>
+<path d="M325,66 Q265,95 205,108" fill="none" stroke="var(--ambl)" stroke-width="1.2" marker-end="url(#arrow-adv-4)"/>
+
+<text x="320" y="160" text-anchor="middle" font-size="9" fill="var(--muted)">same id, new position → DiffUtil emits a move, not remove+insert</text>
+</svg>
+</div>
+<pre><code><span class="kw">class</span> <span class="ty">PostDiffCallback</span> : <span class="ty">DiffUtil</span>.<span class="ty">ItemCallback</span>&lt;<span class="ty">Post</span>&gt;() {
+    <span class="cm">// stable id — NOT position, NOT object equality</span>
+    <span class="kw">override fun</span> <span class="fn">areItemsTheSame</span>(old: <span class="ty">Post</span>, new: <span class="ty">Post</span>) = old.id == new.id
+    <span class="kw">override fun</span> <span class="fn">areContentsTheSame</span>(old: <span class="ty">Post</span>, new: <span class="ty">Post</span>) = old == new
+}
+
+<span class="kw">class</span> <span class="ty">PostAdapter</span> : <span class="ty">ListAdapter</span>&lt;<span class="ty">Post</span>, <span class="ty">PostAdapter</span>.<span class="ty">VH</span>&gt;(<span class="ty">PostDiffCallback</span>()) {
+    <span class="kw">override fun</span> <span class="fn">onBindViewHolder</span>(holder: <span class="ty">VH</span>, position: <span class="ty">Int</span>) = holder.<span class="fn">bind</span>(<span class="fn">getItem</span>(position))
+}
+
+<span class="cm">// diffs on a background executor automatically, dispatches result to main thread</span>
+adapter.<span class="fn">submitList</span>(newPosts.<span class="fn">toList</span>()) <span class="cm">// new instance — never mutate in place</span></code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--blub);color:var(--blul)">Q13</span><span class="qt">ViewPager2 vs the old ViewPager vs a plain RecyclerView — what's actually different under the hood?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p><strong>The key fact: ViewPager2 is built on top of RecyclerView internally</strong> — it hosts a <span class="ic">RecyclerView</span> with a <span class="ic">LinearLayoutManager</span> and a snap-helper-style paging behavior wired underneath its public API. That single detail is why it gets a whole set of capabilities for free that the old ViewPager never had: <strong>RTL support</strong> (from the LayoutManager's reverseLayout handling), <strong>vertical orientation</strong> (just <span class="ic">orientation = ORIENTATION_VERTICAL</span>), <strong>DiffUtil-based updates</strong> (because the adapter is a normal RecyclerView.Adapter, you can use ListAdapter instead of blunt notifyDataSetChanged()), and standard <strong>ViewHolder recycling</strong> through the same scrap/cache/pool tiers instead of ViewPager's own ad-hoc instantiateItem/destroyItem lifecycle.</p>
+<p>The <strong>old ViewPager</strong> was a bespoke ViewGroup driven by <span class="ic">PagerAdapter</span> (or FragmentPagerAdapter/FragmentStatePagerAdapter) — no RTL, no vertical paging, no DiffUtil; refreshing content required the POSITION_NONE trick to force a full recreate.</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 720 180" style="width:100%;height:auto">
+<text x="115" y="20" text-anchor="middle" font-size="10" fill="var(--muted)">ViewPager (legacy)</text>
+<rect x="10" y="40" width="210" height="90" rx="8" fill="var(--s3)" stroke="var(--b2)"/>
+<text x="115" y="80" text-anchor="middle" font-size="10" font-weight="700" fill="var(--txt)">Custom ViewGroup</text>
+<text x="115" y="96" text-anchor="middle" font-size="9" fill="var(--muted)">+ PagerAdapter</text>
+
+<text x="360" y="20" text-anchor="middle" font-size="10" fill="var(--blul)">ViewPager2</text>
+<rect x="255" y="30" width="210" height="110" rx="8" fill="var(--blub)" stroke="var(--blu)"/>
+<text x="360" y="50" text-anchor="middle" font-size="10" font-weight="700" fill="var(--blul)">ViewPager2 API</text>
+<rect x="270" y="65" width="180" height="60" rx="6" fill="var(--grnb)" stroke="var(--grn)"/>
+<text x="360" y="88" text-anchor="middle" font-size="9" font-weight="700" fill="var(--grnl)">RecyclerView +</text>
+<text x="360" y="102" text-anchor="middle" font-size="9" font-weight="700" fill="var(--grnl)">LinearLayoutManager</text>
+
+<text x="605" y="20" text-anchor="middle" font-size="10" fill="var(--muted)">Plain RecyclerView</text>
+<rect x="500" y="40" width="210" height="90" rx="8" fill="var(--grnb)" stroke="var(--grn)"/>
+<text x="605" y="80" text-anchor="middle" font-size="10" font-weight="700" fill="var(--grnl)">RecyclerView</text>
+<text x="605" y="96" text-anchor="middle" font-size="9" fill="var(--muted)">+ PagerSnapHelper (peeking OK)</text>
+</svg>
+</div>
+<pre><code><span class="kw">class</span> <span class="ty">OnboardingAdapter</span>(fa: <span class="ty">FragmentActivity</span>) : <span class="ty">FragmentStateAdapter</span>(fa) {
+    <span class="kw">override fun</span> <span class="fn">getItemCount</span>() = pages.size
+    <span class="kw">override fun</span> <span class="fn">createFragment</span>(position: <span class="ty">Int</span>) = pages[position]
+}
+viewPager2.adapter = <span class="ty">OnboardingAdapter</span>(<span class="kw">this</span>)
+viewPager2.orientation = <span class="ty">ViewPager2</span>.ORIENTATION_VERTICAL <span class="cm">// free, thanks to LinearLayoutManager underneath</span></code></pre>
+<div class="note namb">💡 Reach for a plain RecyclerView + PagerSnapHelper instead of ViewPager2 when you need to <strong>peek</strong> adjacent pages, custom snap positions (start/center, not just full-page), variable page widths, or mixed view types in one list — ViewPager2 assumes each page fills the whole viewport on snap.</div>
+</div>
+</details>
+
+<h2>Performance Diagnostics Toolchain</h2>
+
+<details><summary><span class="qn" style="background:var(--cyab);color:var(--cyal)">Q14</span><span class="qt">Perfetto, Layout Inspector, and StrictMode — what does each one actually catch, and when do you reach for which?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>These three tools sit at different points in the development cycle and answer different questions:</p>
+<div class="g3">
+<div class="gc" style="border-color:var(--blu)"><h4 style="color:var(--blul)">Perfetto / Systrace</h4><p>System-wide trace: CPU scheduling per thread, SurfaceFlinger's frame timeline, RenderThread activity. Answers <strong>"why was this specific frame slow"</strong> — pinpoints which phase (input, animation, traversal, draw, sync, GPU) ate the budget. Use once you already know jank exists and need the root cause.</p></div>
+<div class="gc" style="border-color:var(--grn)"><h4 style="color:var(--grnl)">Layout Inspector</h4><p>Live view hierarchy attached to a running app, no rebuild needed (API 29+): resolved dimensions, constraints, a 3D exploded view of the stack. Answers <strong>"why does this screen have too many/overlapping views"</strong> — the tool for hunting deep hierarchies and overdraw sources.</p></div>
+<div class="gc" style="border-color:var(--amb)"><h4 style="color:var(--ambl)">StrictMode</h4><p>In-process policy checks (thread + VM policy) that fire the instant a violation happens in a debug build. Answers <strong>"catch this before it's a perf bug at all"</strong> — disk/network on main thread, leaked Closeables, leaked Activity/Fragment references.</p></div>
+</div>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 680 190" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-adv-5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker>
+</defs>
+<rect x="240" y="10" width="200" height="40" rx="8" fill="var(--s3)" stroke="var(--b2)"/>
+<text x="340" y="35" text-anchor="middle" font-size="11" font-weight="700" fill="var(--txt)">Something feels slow</text>
+
+<line x1="340" y1="50" x2="110" y2="108" stroke="var(--muted)" stroke-width="1.3" marker-end="url(#arrow-adv-5)"/>
+<line x1="340" y1="50" x2="340" y2="108" stroke="var(--muted)" stroke-width="1.3" marker-end="url(#arrow-adv-5)"/>
+<line x1="340" y1="50" x2="570" y2="108" stroke="var(--muted)" stroke-width="1.3" marker-end="url(#arrow-adv-5)"/>
+
+<rect x="10" y="110" width="200" height="60" rx="8" fill="var(--ambb)" stroke="var(--amb)"/>
+<text x="110" y="130" text-anchor="middle" font-size="9" fill="var(--muted)">always on in debug builds</text>
+<text x="110" y="150" text-anchor="middle" font-size="10" font-weight="700" fill="var(--ambl)">→ StrictMode</text>
+
+<rect x="240" y="110" width="200" height="60" rx="8" fill="var(--grnb)" stroke="var(--grn)"/>
+<text x="340" y="130" text-anchor="middle" font-size="9" fill="var(--muted)">screen feels heavy / overdraw</text>
+<text x="340" y="150" text-anchor="middle" font-size="10" font-weight="700" fill="var(--grnl)">→ Layout Inspector</text>
+
+<rect x="470" y="110" width="200" height="60" rx="8" fill="var(--blub)" stroke="var(--blu)"/>
+<text x="570" y="130" text-anchor="middle" font-size="9" fill="var(--muted)">reproducible jank, need root cause</text>
+<text x="570" y="150" text-anchor="middle" font-size="10" font-weight="700" fill="var(--blul)">→ Perfetto</text>
+</svg>
+</div>
+<pre><code><span class="cm">// Custom Perfetto trace section — shows up as a named block in the timeline</span>
+<span class="ty">Trace</span>.<span class="fn">beginSection</span>(<span class="st">"loadFeed"</span>)
+<span class="kw">try</span> { <span class="cm">/* expensive work */</span> } <span class="kw">finally</span> { <span class="ty">Trace</span>.<span class="fn">endSection</span>() }
+
+<span class="cm">// StrictMode — fires the instant a violation happens, debug builds only</span>
+<span class="kw">if</span> (<span class="ty">BuildConfig</span>.DEBUG) {
+    <span class="ty">StrictMode</span>.<span class="fn">setThreadPolicy</span>(<span class="ty">StrictMode</span>.<span class="ty">ThreadPolicy</span>.<span class="ty">Builder</span>()
+        .<span class="fn">detectNetwork</span>().<span class="fn">detectDiskReads</span>().<span class="fn">penaltyLog</span>().<span class="fn">build</span>())
+    <span class="ty">StrictMode</span>.<span class="fn">setVmPolicy</span>(<span class="ty">StrictMode</span>.<span class="ty">VmPolicy</span>.<span class="ty">Builder</span>()
+        .<span class="fn">detectLeakedClosableObjects</span>().<span class="fn">penaltyLog</span>().<span class="fn">build</span>())
+}</code></pre>
+<div class="note ngrn">✓ Default flow: StrictMode always on in debug (catches issues as you code) → Layout Inspector when a screen feels heavy → Perfetto when jank is reproducible and you need the exact culprit phase. For CI regression tracking, Macrobenchmark's <span class="ic">FrameTimingMetric</span> asserts frame timing automatically, backed by the same Perfetto data.</div>
 </div>
 </details>
 </main>

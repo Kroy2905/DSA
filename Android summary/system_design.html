@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Mobile System Design — Interview</title>
+<style>:root{--bg:#06090e;--s1:#0a0f18;--s2:#0e1520;--s3:#131d2a;--b1:#182030;--b2:#1e2c3e;--txt:#cce0ee;--muted:#4e6878;--grn:#10a060;--grnb:#031508;--grnl:#44d890;--blu:#1e60d8;--blub:#040e28;--blul:#6aaeff;--pur:#6848b8;--purb:#0f0828;--purl:#b090ff;--amb:#c09010;--ambb:#201500;--ambl:#f0c040;--red:#b03030;--redb:#1e0808;--redl:#f07070;--cya:#0e8898;--cyab:#041418;--cyal:#40d8e8;--ora:#c06020;--orab:#201008;--oral:#f0a060}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,sans-serif;font-size:13px;line-height:1.6;min-height:100vh}
+nav{background:var(--s1);border-bottom:1px solid var(--b1);position:sticky;top:0;z-index:100;overflow-x:auto}
+.nav-inner{display:flex;align-items:center;padding:0 12px;gap:0;min-width:max-content}
+nav a{color:var(--muted);text-decoration:none;font-size:11px;font-weight:500;padding:12px 9px;border-bottom:2px solid transparent;white-space:nowrap;display:block}
+nav a:hover{color:var(--txt)}
+nav a.active{color:var(--grnl);border-bottom-color:var(--grn)}
+main{max-width:980px;padding:28px 20px 80px;margin:0 auto}
+h1{font-size:20px;font-weight:700;margin-bottom:6px;letter-spacing:-.02em}
+.sub{font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.6}
+h2{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:24px 0 10px;display:flex;align-items:center;gap:8px}
+h2::after{content:'';flex:1;height:1px;background:var(--b2)}
+details{border-radius:9px;border:1px solid var(--b2);background:var(--s1);margin-bottom:7px;overflow:hidden}
+details[open]{border-color:#2e4458}
+summary{padding:12px 15px;cursor:pointer;display:flex;align-items:center;gap:9px;list-style:none;font-weight:500;font-size:13px;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:'\203A';font-size:16px;color:var(--muted);transition:.2s;flex-shrink:0;width:14px;display:inline-block}
+details[open] summary::before{transform:rotate(90deg);color:var(--grnl)}
+.qn{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;flex-shrink:0;font-family:monospace}
+.qt{flex:1}
+.dif{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;border:1px solid;flex-shrink:0;letter-spacing:.06em;text-transform:uppercase}
+.easy{background:var(--grnb);color:var(--grnl);border-color:var(--grn)}
+.med{background:var(--ambb);color:var(--ambl);border-color:var(--amb)}
+.hard{background:var(--redb);color:var(--redl);border-color:var(--red)}
+.goog{background:var(--purb);color:var(--purl);border-color:var(--pur)}
+.ans{padding:0 15px 14px;border-top:1px solid var(--b2)}
+.ans p{font-size:12px;color:var(--muted);line-height:1.7;margin:10px 0 0}
+.ans p strong{color:var(--txt)}
+.ans ul,.ans ol{padding-left:18px;font-size:12px;color:var(--muted);line-height:1.85;margin:8px 0}
+.ans li strong{color:var(--txt)}
+pre{background:#070d14;border:1px solid var(--b2);border-radius:7px;padding:12px 14px;overflow-x:auto;margin:10px 0;font-size:11px;line-height:1.7;color:#a8c8e8}
+code{font-family:'JetBrains Mono','Fira Mono',monospace;font-size:11px}
+.kw{color:#79b8ff}.cn{color:#44d890}.st{color:#f0a060}.cm{color:#4e6878}.fn{color:#40d8e8}.an{color:#f0c040}.ty{color:#b090ff}
+.note{border-radius:7px;border:1px solid;padding:9px 12px;font-size:11px;line-height:1.6;margin:10px 0}
+.ngrn{background:var(--grnb);border-color:var(--grn);color:var(--grnl)}
+.namb{background:var(--ambb);border-color:var(--amb);color:var(--ambl)}
+.nred{background:var(--redb);border-color:var(--red);color:var(--redl)}
+.nblu{background:var(--blub);border-color:var(--blu);color:var(--blul)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0}
+@media(max-width:680px){.g2,.g3{grid-template-columns:1fr}}
+.gc{background:var(--s2);border:1px solid var(--b2);border-radius:7px;padding:12px}
+.gc h4{font-size:11px;font-weight:700;margin-bottom:6px}
+.gc p,.gc li{font-size:11px;color:var(--muted);line-height:1.6}
+.ic{background:var(--s3);border:1px solid var(--b2);border-radius:4px;padding:1px 6px;font-family:monospace;font-size:11px;color:var(--blul)}
+a{color:var(--grnl)}
+</style>
+</head>
+<body>
+<nav><div class="nav-inner"><a href="roadmap.html">🗺 Roadmap</a><a href="android_core.html">📱 Android Core</a><a href="android_advanced.html">🔥 Advanced</a><a href="architecture.html">🏛 Architecture</a><a href="kotlin.html">🎯 Kotlin</a><a href="coroutines_flow.html">⚡ Coroutines</a><a href="compose.html">🎨 Compose</a><a href="dependency_injection.html">💉 DI</a><a href="networking_storage.html">🌐 Net & Storage</a><a href="testing.html">🧪 Testing</a><a href="system_design.html" class="active">🏗 System Design</a><a href="dsa_google.html">🧩 DSA</a></div></nav>
+<main>
+<h1>🏗 Mobile System Design — Interview</h1>
+<p class="sub">Google expects you to design complete mobile systems. Use this framework for every question. Practice these 6 designs until you can do each in 45 minutes.</p>
+
+<h2>The Framework</h2>
+<details open><summary><span class="qn" style="background:var(--purb);color:var(--purl)">★</span><span class="qt">Framework for ANY mobile system design question</span><span class="dif goog">Must Know</span></summary>
+<div class="ans">
+<ol>
+<li><strong>Clarify requirements (5 min):</strong> Functional (what features?), Non-functional (scale, offline, latency), Platform (Android only? iOS too?)</li>
+<li><strong>High-level architecture (5 min):</strong> Layers — Presentation, Domain, Data. Draw the box diagram.</li>
+<li><strong>Data models (5 min):</strong> What entities? What does the local DB store? What does the API return?</li>
+<li><strong>API design (5 min):</strong> What endpoints does the app call? Request/response shapes.</li>
+<li><strong>Key screens + navigation (5 min):</strong> Main screens, navigation graph, what's cached.</li>
+<li><strong>Networking strategy (10 min):</strong> Pagination, caching strategy, offline behavior, sync.</li>
+<li><strong>Performance + optimization (5 min):</strong> Image loading, lazy loading, prefetching, memory.</li>
+<li><strong>Edge cases (5 min):</strong> No network, partial data, large lists, expired cache.</li>
+</ol>
+<p><strong>The box diagram (step 2):</strong> a clean layered box diagram is what separates a senior answer from a junior one — draw dependencies flowing one way (top → bottom) and data flowing back up through observable streams (Flow/StateFlow).</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 660 360" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-sd-1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker>
+<marker id="arrow-sd-2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--grnl)"/></marker>
+</defs>
+<rect x="150" y="16" width="300" height="56" rx="8" fill="var(--purb)" stroke="var(--pur)"/>
+<text x="300" y="38" text-anchor="middle" fill="var(--purl)" font-size="13" font-weight="700">Presentation</text>
+<text x="300" y="56" text-anchor="middle" fill="var(--purl)" font-size="10">UI (Compose/View) + ViewModel</text>
+<rect x="150" y="104" width="300" height="56" rx="8" fill="var(--blub)" stroke="var(--blu)"/>
+<text x="300" y="126" text-anchor="middle" fill="var(--blul)" font-size="13" font-weight="700">Domain</text>
+<text x="300" y="144" text-anchor="middle" fill="var(--blul)" font-size="10">UseCases / business rules</text>
+<rect x="150" y="192" width="300" height="56" rx="8" fill="var(--grnb)" stroke="var(--grn)"/>
+<text x="300" y="214" text-anchor="middle" fill="var(--grnl)" font-size="13" font-weight="700">Data</text>
+<text x="300" y="232" text-anchor="middle" fill="var(--grnl)" font-size="10">Repository (single source of truth)</text>
+<rect x="40" y="286" width="190" height="58" rx="8" fill="var(--ambb)" stroke="var(--amb)"/>
+<text x="135" y="310" text-anchor="middle" fill="var(--ambl)" font-size="12" font-weight="700">Local DB</text>
+<text x="135" y="326" text-anchor="middle" fill="var(--ambl)" font-size="10">Room (cache)</text>
+<rect x="360" y="286" width="190" height="58" rx="8" fill="var(--redb)" stroke="var(--red)"/>
+<text x="455" y="310" text-anchor="middle" fill="var(--redl)" font-size="12" font-weight="700">Remote API</text>
+<text x="455" y="326" text-anchor="middle" fill="var(--redl)" font-size="10">Retrofit / OkHttp</text>
+<line x1="300" y1="72" x2="300" y2="102" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-sd-1)"/>
+<line x1="300" y1="160" x2="300" y2="190" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-sd-1)"/>
+<line x1="230" y1="248" x2="140" y2="284" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-sd-1)"/>
+<line x1="370" y1="248" x2="460" y2="284" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-sd-1)"/>
+<text x="308" y="90" font-size="9" fill="var(--muted)">calls</text>
+<text x="308" y="178" font-size="9" fill="var(--muted)">calls</text>
+<text x="150" y="272" font-size="9" fill="var(--muted)">reads/writes</text>
+<text x="385" y="272" font-size="9" fill="var(--muted)">HTTP</text>
+<line x1="600" y1="344" x2="600" y2="46" stroke="var(--grnl)" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arrow-sd-2)"/>
+<text x="615" y="200" fill="var(--grnl)" font-size="10" transform="rotate(-90 615 200)" text-anchor="middle">data flows up via Flow / StateFlow</text>
+</svg>
+</div>
+</div>
+</details>
+
+<h2>Design: Instagram Feed</h2>
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">D1</span><span class="qt">Design Instagram-style infinite scroll feed for Android</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p><strong>Requirements:</strong> Infinite scroll, images, likes/comments, offline support, smooth 60fps scroll</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 660 130" style="width:100%;height:auto">
+<defs><marker id="arrow-sd-3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>
+<rect x="15" y="40" width="110" height="60" rx="8" fill="var(--redb)" stroke="var(--red)"/>
+<text x="70" y="64" text-anchor="middle" fill="var(--redl)" font-size="11" font-weight="700">Network</text>
+<text x="70" y="80" text-anchor="middle" fill="var(--redl)" font-size="9">GET /feed</text>
+<rect x="145" y="40" width="110" height="60" rx="8" fill="var(--ambb)" stroke="var(--amb)"/>
+<text x="200" y="60" text-anchor="middle" fill="var(--ambl)" font-size="10" font-weight="700">RemoteMediator</text>
+<text x="200" y="78" text-anchor="middle" fill="var(--ambl)" font-size="9">syncs net → Room</text>
+<rect x="275" y="40" width="110" height="60" rx="8" fill="var(--grnb)" stroke="var(--grn)"/>
+<text x="330" y="64" text-anchor="middle" fill="var(--grnl)" font-size="11" font-weight="700">Room DB</text>
+<text x="330" y="80" text-anchor="middle" fill="var(--grnl)" font-size="9">cached posts</text>
+<rect x="405" y="40" width="110" height="60" rx="8" fill="var(--blub)" stroke="var(--blu)"/>
+<text x="460" y="60" text-anchor="middle" fill="var(--blul)" font-size="10" font-weight="700">Paging Flow</text>
+<text x="460" y="78" text-anchor="middle" fill="var(--blul)" font-size="9">PagingData&lt;Post&gt;</text>
+<rect x="535" y="40" width="110" height="60" rx="8" fill="var(--purb)" stroke="var(--pur)"/>
+<text x="590" y="60" text-anchor="middle" fill="var(--purl)" font-size="10" font-weight="700">RecyclerView</text>
+<text x="590" y="78" text-anchor="middle" fill="var(--purl)" font-size="9">PagingDataAdapter</text>
+<line x1="125" y1="70" x2="143" y2="70" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-sd-3)"/>
+<line x1="255" y1="70" x2="273" y2="70" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-sd-3)"/>
+<line x1="385" y1="70" x2="403" y2="70" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-sd-3)"/>
+<line x1="515" y1="70" x2="533" y2="70" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-sd-3)"/>
+</svg>
+</div>
+<p><strong>Architecture:</strong></p>
+<pre><code><span class="cm">// Data model</span>
+<span class="an">@Entity</span>
+<span class="kw">data class</span> <span class="ty">Post</span>(
+    <span class="an">@PrimaryKey</span> <span class="kw">val</span> id: <span class="ty">String</span>,
+    <span class="kw">val</span> userId: <span class="ty">String</span>,
+    <span class="kw">val</span> imageUrl: <span class="ty">String</span>,
+    <span class="kw">val</span> caption: <span class="ty">String</span>,
+    <span class="kw">val</span> likesCount: <span class="ty">Int</span>,
+    <span class="kw">val</span> createdAt: <span class="ty">Long</span>,
+    <span class="kw">val</span> page: <span class="ty">Int</span>  <span class="cm">// for invalidation</span>
+)
+
+<span class="cm">// Paging 3 — handles pagination, loading states, errors</span>
+<span class="kw">class</span> <span class="ty">FeedPagingSource</span>(
+    <span class="kw">private val</span> <span class="cn">api</span>: <span class="ty">FeedApi</span>
+) : <span class="ty">PagingSource</span>&lt;<span class="ty">String</span>, <span class="ty">Post</span>&gt;() { <span class="cm">// key=cursor, value=Post</span>
+    <span class="kw">override suspend fun</span> <span class="fn">load</span>(params: <span class="ty">LoadParams</span>&lt;<span class="ty">String</span>&gt;): <span class="ty">LoadResult</span>&lt;<span class="ty">String</span>, <span class="ty">Post</span>&gt; {
+        <span class="kw">return try</span> {
+            <span class="kw">val</span> <span class="cn">response</span> = api.<span class="fn">getFeed</span>(cursor = params.key, limit = params.loadSize)
+            <span class="ty">LoadResult</span>.<span class="ty">Page</span>(
+                data = response.posts,
+                prevKey = <span class="kw">null</span>,           <span class="cm">// no back-paging in feed</span>
+                nextKey = response.nextCursor
+            )
+        } <span class="kw">catch</span> (e: <span class="ty">Exception</span>) { <span class="ty">LoadResult</span>.<span class="ty">Error</span>(e) }
+    }
+}
+
+<span class="cm">// RemoteMediator for offline-first (network + Room)</span>
+<span class="an">@OptIn</span>(<span class="ty">ExperimentalPagingApi</span>::<span class="kw">class</span>)
+<span class="kw">class</span> <span class="ty">FeedRemoteMediator</span>(
+    <span class="kw">private val</span> <span class="cn">api</span>: <span class="ty">FeedApi</span>,
+    <span class="kw">private val</span> <span class="cn">db</span>: <span class="ty">AppDatabase</span>
+) : <span class="ty">RemoteMediator</span>&lt;<span class="ty">Int</span>, <span class="ty">Post</span>&gt;() {
+    <span class="kw">override suspend fun</span> <span class="fn">load</span>(loadType: <span class="ty">LoadType</span>, state: <span class="ty">PagingState</span>&lt;<span class="ty">Int</span>, <span class="ty">Post</span>&gt;): <span class="ty">MediatorResult</span> {
+        <span class="kw">val</span> <span class="cn">posts</span> = api.<span class="fn">getFeed</span>(<span class="cm">/* ... */</span>)
+        db.<span class="fn">withTransaction</span> {
+            <span class="kw">if</span> (loadType == <span class="ty">LoadType</span>.REFRESH) db.postDao().<span class="fn">clearAll</span>()
+            db.postDao().<span class="fn">insertAll</span>(posts)
+        }
+        <span class="kw">return</span> <span class="ty">MediatorResult</span>.<span class="ty">Success</span>(endOfPaginationReached = posts.isEmpty())
+    }
+}</code></pre>
+<p><strong>Image loading strategy:</strong></p>
+<ul>
+<li>Use <strong>Coil</strong>: memory cache (LRU, ~25% heap) + disk cache + placeholder + crossfade</li>
+<li>Pre-fetch next 3 images while user scrolls using <span class="ic">CoilPrefetcher</span></li>
+<li>Different quality for scroll vs stopped (low-res thumbnail → full res)</li>
+<li>Cancel image loads for off-screen items via <span class="ic">ImageRequest</span> lifecycle</li>
+</ul>
+<p><strong>Performance optimizations:</strong></p>
+<ul>
+<li>DiffUtil with stable IDs — only rebind changed items</li>
+<li>RecycledViewPool shared across multiple RecyclerViews</li>
+<li>ViewHolder caching: setRecycledViewPool, setItemViewCacheSize</li>
+<li>Avoid nested RecyclerViews — use ConcatAdapter instead</li>
+</ul>
+</div>
+</details>
+
+<h2>Design: Chat Application</h2>
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">D2</span><span class="qt">Design a WhatsApp-style chat app</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p><strong>Key challenges:</strong> Real-time messages, delivery receipts, offline queue, message ordering</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 660 130" style="width:100%;height:auto">
+<defs><marker id="arrow-sd-4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>
+<rect x="20" y="40" width="140" height="60" rx="8" fill="var(--purb)" stroke="var(--pur)"/>
+<text x="90" y="62" text-anchor="middle" fill="var(--purl)" font-size="10" font-weight="700">sendMessage()</text>
+<text x="90" y="80" text-anchor="middle" fill="var(--purl)" font-size="9">optimistic UI</text>
+<rect x="180" y="40" width="140" height="60" rx="8" fill="var(--ambb)" stroke="var(--amb)"/>
+<text x="250" y="62" text-anchor="middle" fill="var(--ambl)" font-size="10" font-weight="700">Room: PENDING</text>
+<text x="250" y="80" text-anchor="middle" fill="var(--ambl)" font-size="9">shown instantly</text>
+<rect x="340" y="40" width="140" height="60" rx="8" fill="var(--redb)" stroke="var(--red)"/>
+<text x="410" y="62" text-anchor="middle" fill="var(--redl)" font-size="10" font-weight="700">Network</text>
+<text x="410" y="80" text-anchor="middle" fill="var(--redl)" font-size="9">WebSocket / FCM</text>
+<rect x="500" y="40" width="140" height="60" rx="8" fill="var(--grnb)" stroke="var(--grn)"/>
+<text x="570" y="62" text-anchor="middle" fill="var(--grnl)" font-size="10" font-weight="700">Room: SENT</text>
+<text x="570" y="80" text-anchor="middle" fill="var(--grnl)" font-size="9">UI observes Flow</text>
+<line x1="160" y1="70" x2="178" y2="70" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-sd-4)"/>
+<line x1="320" y1="70" x2="338" y2="70" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-sd-4)"/>
+<line x1="480" y1="70" x2="498" y2="70" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-sd-4)"/>
+</svg>
+</div>
+<pre><code><span class="cm">// Message data model</span>
+<span class="an">@Entity</span>
+<span class="kw">data class</span> <span class="ty">Message</span>(
+    <span class="an">@PrimaryKey</span> <span class="kw">val</span> id: <span class="ty">String</span>,
+    <span class="kw">val</span> chatId: <span class="ty">String</span>,
+    <span class="kw">val</span> senderId: <span class="ty">String</span>,
+    <span class="kw">val</span> content: <span class="ty">String</span>,
+    <span class="kw">val</span> type: <span class="ty">MessageType</span>, <span class="cm">// TEXT, IMAGE, AUDIO</span>
+    <span class="kw">val</span> status: <span class="ty">MessageStatus</span>, <span class="cm">// PENDING, SENT, DELIVERED, READ</span>
+    <span class="kw">val</span> timestamp: <span class="ty">Long</span>,
+    <span class="kw">val</span> localId: <span class="ty">String</span> <span class="cm">// client-generated before server confirms</span>
+)
+
+<span class="cm">// Optimistic UI: show message as PENDING immediately, update on server ACK</span>
+<span class="kw">fun</span> <span class="fn">sendMessage</span>(text: <span class="ty">String</span>) {
+    <span class="kw">val</span> <span class="cn">localMessage</span> = <span class="ty">Message</span>(localId = <span class="fn">UUID</span>.<span class="fn">randomUUID</span>(), status = PENDING)
+    db.messageDao().<span class="fn">insert</span>(localMessage) <span class="cm">// show immediately in UI</span>
+    viewModelScope.<span class="fn">launch</span>(Dispatchers.IO) {
+        <span class="kw">try</span> {
+            <span class="kw">val</span> <span class="cn">serverMsg</span> = api.<span class="fn">sendMessage</span>(text)
+            db.messageDao().<span class="fn">update</span>(serverMsg.<span class="fn">copy</span>(status = SENT))
+        } <span class="kw">catch</span> (e: <span class="ty">Exception</span>) {
+            db.messageDao().<span class="fn">update</span>(localMessage.<span class="fn">copy</span>(status = FAILED))
+            outbox.<span class="fn">add</span>(localMessage) <span class="cm">// retry queue</span>
+        }
+    }
+}</code></pre>
+<p><strong>Real-time transport options:</strong></p>
+<ul>
+<li><strong>WebSocket:</strong> Persistent connection, truly real-time. Battery cost.</li>
+<li><strong>FCM:</strong> Google's push — app doesn't need to be open. Use for offline messages.</li>
+<li><strong>Long polling:</strong> Simpler but inefficient. Avoid.</li>
+<li><strong>SSE:</strong> Server-sent events — server to client only. Good for notifications.</li>
+</ul>
+<p><strong>Recommended:</strong> FCM for wakeup + WebSocket when app is foreground. Foreground Service keeps WebSocket alive while app is in background during active chat.</p>
+<p><strong>Message sync:</strong> On reconnect, fetch all messages with timestamp > last_received_at. Use Room as single source of truth. UI observes Room, not network directly.</p>
+</div>
+</details>
+
+<h2>Design: Image Loading Library</h2>
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">D3</span><span class="qt">Design an image loading library (like Coil/Glide) from scratch</span><span class="dif hard">Hard — Google Favorite</span></summary>
+<div class="ans">
+<p>This is a classic Google interview question. They want to see you think in layers.</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 660 150" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-sd-5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker>
+<marker id="arrow-sd-6" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--grnl)"/></marker>
+</defs>
+<rect x="20" y="60" width="140" height="60" rx="8" fill="var(--purb)" stroke="var(--pur)"/>
+<text x="90" y="82" text-anchor="middle" fill="var(--purl)" font-size="10" font-weight="700">load(url)</text>
+<text x="90" y="100" text-anchor="middle" fill="var(--purl)" font-size="9">request</text>
+<rect x="180" y="60" width="140" height="60" rx="8" fill="var(--ambb)" stroke="var(--amb)"/>
+<text x="250" y="82" text-anchor="middle" fill="var(--ambl)" font-size="10" font-weight="700">Memory Cache</text>
+<text x="250" y="100" text-anchor="middle" fill="var(--ambl)" font-size="9">LRU, in-process</text>
+<rect x="340" y="60" width="140" height="60" rx="8" fill="var(--blub)" stroke="var(--blu)"/>
+<text x="410" y="82" text-anchor="middle" fill="var(--blul)" font-size="10" font-weight="700">Disk Cache</text>
+<text x="410" y="100" text-anchor="middle" fill="var(--blul)" font-size="9">DiskLruCache</text>
+<rect x="500" y="60" width="140" height="60" rx="8" fill="var(--redb)" stroke="var(--red)"/>
+<text x="570" y="82" text-anchor="middle" fill="var(--redl)" font-size="10" font-weight="700">Network</text>
+<text x="570" y="100" text-anchor="middle" fill="var(--redl)" font-size="9">OkHttp fetch</text>
+<line x1="160" y1="90" x2="178" y2="90" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-sd-5)"/>
+<line x1="320" y1="90" x2="338" y2="90" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-sd-5)"/>
+<line x1="480" y1="90" x2="498" y2="90" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-sd-5)"/>
+<text x="172" y="86" font-size="8" fill="var(--muted)">miss</text>
+<text x="332" y="86" font-size="8" fill="var(--muted)">miss</text>
+<text x="492" y="86" font-size="8" fill="var(--muted)">miss</text>
+<path d="M560,58 C560,20 90,20 90,58" fill="none" stroke="var(--grnl)" stroke-dasharray="4,3" marker-end="url(#arrow-sd-6)"/>
+<text x="325" y="18" text-anchor="middle" font-size="9" fill="var(--grnl)">any cache hit short-circuits and returns immediately</text>
+</svg>
+</div>
+<pre><code><span class="cm">// Architecture: 3-level cache + request deduplication</span>
+<span class="kw">class</span> <span class="ty">ImageLoader</span>(context: <span class="ty">Context</span>) {
+
+    <span class="cm">// L1: Memory cache (LRU, ~25% of available heap)</span>
+    <span class="kw">private val</span> <span class="cn">memoryCache</span> = <span class="ty">LruCache</span>&lt;<span class="ty">String</span>, <span class="ty">Bitmap</span>&gt;(
+        (<span class="ty">Runtime</span>.<span class="fn">getRuntime</span>().<span class="fn">maxMemory</span>() / <span class="cn">1024</span> / <span class="cn">4</span>).<span class="fn">toInt</span>()
+    )
+
+    <span class="cm">// L2: Disk cache (DiskLruCache, ~250MB)</span>
+    <span class="kw">private val</span> <span class="cn">diskCache</span>: <span class="ty">DiskLruCache</span> = <span class="ty">DiskLruCache</span>.<span class="fn">open</span>(cacheDir, <span class="cn">1</span>, <span class="cn">1</span>, <span class="cn">250L</span>*<span class="cn">1024</span>*<span class="cn">1024</span>)
+
+    <span class="cm">// L3: Network (OkHttp with HTTP cache headers)</span>
+    <span class="kw">private val</span> <span class="cn">httpClient</span>: <span class="ty">OkHttpClient</span> = <span class="ty">OkHttpClient</span>.<span class="ty">Builder</span>()
+        .<span class="fn">cache</span>(<span class="ty">Cache</span>(cacheDir, <span class="cn">50L</span> * <span class="cn">1024</span> * <span class="cn">1024</span>))
+        .<span class="fn">build</span>()
+
+    <span class="cm">// Deduplication: if same URL loading, return same Deferred</span>
+    <span class="kw">private val</span> <span class="cn">inFlight</span> = <span class="ty">ConcurrentHashMap</span>&lt;<span class="ty">String</span>, <span class="ty">Deferred</span>&lt;<span class="ty">Bitmap</span>&gt;&gt;()
+
+    <span class="kw">suspend fun</span> <span class="fn">load</span>(url: <span class="ty">String</span>): <span class="ty">Bitmap</span> {
+        <span class="cm">// 1. Check memory cache (main thread ok, fast)</span>
+        memoryCache.<span class="fn">get</span>(url)?.<span class="fn">let</span> { <span class="kw">return</span> it }
+
+        <span class="cm">// 2. Deduplicate in-flight requests</span>
+        <span class="kw">return</span> inFlight.<span class="fn">getOrPut</span>(url) {
+            <span class="fn">async</span>(<span class="ty">Dispatchers</span>.IO) {
+                <span class="cm">// 3. Check disk cache</span>
+                diskCache.<span class="fn">get</span>(url)?.<span class="fn">let</span> {
+                    <span class="kw">val</span> <span class="cn">bmp</span> = <span class="ty">BitmapFactory</span>.<span class="fn">decodeStream</span>(it)
+                    memoryCache.<span class="fn">put</span>(url, bmp); bmp
+                } ?:
+                <span class="cm">// 4. Fetch from network</span>
+                <span class="fn">fetchFromNetwork</span>(url).<span class="fn">also</span> {
+                    diskCache.<span class="fn">put</span>(url, it); memoryCache.<span class="fn">put</span>(url, it)
+                }
+            }
+        }.<span class="fn">await</span>().<span class="fn">also</span> { inFlight.<span class="fn">remove</span>(url) }
+    }
+}</code></pre>
+<p><strong>Additional considerations Google will ask about:</strong></p>
+<ul>
+<li><strong>Bitmap pool:</strong> Reuse existing Bitmap memory with inBitmap option</li>
+<li><strong>Downsampling:</strong> Never decode full-res if target view is 100x100 — use inSampleSize</li>
+<li><strong>Transformation pipeline:</strong> Crop, circle, blur as post-processing steps</li>
+<li><strong>Placeholder/error:</strong> Show while loading, show on error</li>
+<li><strong>Cancellation:</strong> Cancel request when view is recycled or detached</li>
+<li><strong>GIF/animated images:</strong> Separate decode pipeline</li>
+</ul>
+</div>
+</details>
+
+<h2>Design: Offline-First App</h2>
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">D4</span><span class="qt">Design an offline-first architecture for a news reading app</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p><strong>Core idea:</strong> the UI never talks to the network directly. It only ever observes Room through a <span class="ic">Flow</span>. A separate <span class="ic">refresh()</span> call fetches from the network and writes into Room — the existing Flow emits automatically. This means the UI always has something to show (last-known-good data), refresh failures degrade gracefully instead of blanking the screen, and there's only one code path to test.</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 660 150" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-sd-7" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker>
+<marker id="arrow-sd-8" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--redl)"/></marker>
+</defs>
+<rect x="20" y="60" width="140" height="60" rx="8" fill="var(--redb)" stroke="var(--red)"/>
+<text x="90" y="82" text-anchor="middle" fill="var(--redl)" font-size="10" font-weight="700">Remote API</text>
+<text x="90" y="100" text-anchor="middle" fill="var(--redl)" font-size="9">getLatestArticles()</text>
+<rect x="180" y="60" width="140" height="60" rx="8" fill="var(--ambb)" stroke="var(--amb)"/>
+<text x="250" y="82" text-anchor="middle" fill="var(--ambl)" font-size="10" font-weight="700">Repository</text>
+<text x="250" y="100" text-anchor="middle" fill="var(--ambl)" font-size="9">refresh() writes</text>
+<rect x="340" y="60" width="140" height="60" rx="8" fill="var(--grnb)" stroke="var(--grn)"/>
+<text x="410" y="82" text-anchor="middle" fill="var(--grnl)" font-size="10" font-weight="700">Room DB</text>
+<text x="410" y="100" text-anchor="middle" fill="var(--grnl)" font-size="9">source of truth</text>
+<rect x="500" y="60" width="140" height="60" rx="8" fill="var(--purb)" stroke="var(--pur)"/>
+<text x="570" y="82" text-anchor="middle" fill="var(--purl)" font-size="10" font-weight="700">UI</text>
+<text x="570" y="100" text-anchor="middle" fill="var(--purl)" font-size="9">observes Flow</text>
+<line x1="160" y1="90" x2="178" y2="90" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-sd-7)"/>
+<line x1="320" y1="90" x2="338" y2="90" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-sd-7)"/>
+<line x1="480" y1="90" x2="498" y2="90" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-sd-7)"/>
+<path d="M90,58 C90,15 570,15 570,58" fill="none" stroke="var(--redl)" stroke-dasharray="3,3" marker-end="url(#arrow-sd-8)"/>
+<line x1="322" y1="10" x2="332" y2="20" stroke="var(--redl)" stroke-width="2"/>
+<line x1="332" y1="10" x2="322" y2="20" stroke="var(--redl)" stroke-width="2"/>
+<text x="330" y="35" text-anchor="middle" font-size="9" fill="var(--redl)">never — UI reads Room only</text>
+</svg>
+</div>
+<pre><code><span class="cm">// Single source of truth: Room is the only source UI observes</span>
+<span class="cm">// Network → Room → UI. Never Network → UI directly.</span>
+
+<span class="kw">class</span> <span class="ty">NewsRepository</span>(
+    <span class="kw">private val</span> <span class="cn">api</span>: <span class="ty">NewsApi</span>,
+    <span class="kw">private val</span> <span class="cn">dao</span>: <span class="ty">NewsDao</span>,
+    <span class="kw">private val</span> <span class="cn">networkMonitor</span>: <span class="ty">NetworkMonitor</span>
+) {
+    <span class="cm">// UI observes this Flow — always gets Room data</span>
+    <span class="kw">fun</span> <span class="fn">getArticles</span>(): <span class="ty">Flow</span>&lt;<span class="ty">List</span>&lt;<span class="ty">Article</span>&gt;&gt; = dao.<span class="fn">getArticlesFlow</span>()
+
+    <span class="cm">// Refresh called separately — fetches from network and stores in Room</span>
+    <span class="kw">suspend fun</span> <span class="fn">refresh</span>() {
+        <span class="kw">if</span> (!networkMonitor.isOnline) <span class="kw">return</span> <span class="cm">// fail silently, show cached</span>
+        <span class="kw">val</span> <span class="cn">articles</span> = api.<span class="fn">getLatestArticles</span>()
+        dao.<span class="fn">insertAll</span>(articles)
+        dao.<span class="fn">deleteOlderThan</span>(<span class="ty">System</span>.<span class="fn">currentTimeMillis</span>() - <span class="cn">7</span> * <span class="cn">24</span> * <span class="cn">60</span> * <span class="cn">60</span> * <span class="cn">1000L</span>)
+    }
+}
+
+<span class="cm">// Network status monitoring</span>
+<span class="kw">class</span> <span class="ty">NetworkMonitor</span>(context: <span class="ty">Context</span>) {
+    <span class="kw">val</span> <span class="cn">isOnline</span>: <span class="ty">StateFlow</span>&lt;<span class="ty">Boolean</span>&gt; = <span class="fn">callbackFlow</span> {
+        <span class="kw">val</span> <span class="cn">cm</span> = context.<span class="fn">getSystemService</span>(<span class="ty">ConnectivityManager</span>::<span class="kw">class</span>.java)
+        <span class="kw">val</span> <span class="cn">callback</span> = <span class="kw">object</span> : <span class="ty">NetworkCallback</span>() {
+            <span class="kw">override fun</span> <span class="fn">onAvailable</span>(network: <span class="ty">Network</span>) = <span class="fn">trySend</span>(<span class="kw">true</span>)
+            <span class="kw">override fun</span> <span class="fn">onLost</span>(network: <span class="ty">Network</span>) = <span class="fn">trySend</span>(<span class="kw">false</span>)
+        }
+        cm.<span class="fn">registerDefaultNetworkCallback</span>(callback)
+        <span class="fn">awaitClose</span> { cm.<span class="fn">unregisterNetworkCallback</span>(callback) }
+    }.<span class="fn">stateIn</span>(scope, <span class="ty">SharingStarted</span>.Eagerly, <span class="kw">true</span>)
+}</code></pre>
+<p><strong>Cache invalidation strategies:</strong></p>
+<ul>
+<li><strong>Time-based:</strong> Delete articles older than N days</li>
+<li><strong>Size-based:</strong> Keep only latest N articles</li>
+<li><strong>Pull-to-refresh:</strong> User-initiated refresh</li>
+<li><strong>WorkManager:</strong> Periodic background refresh when on WiFi + charging</li>
+</ul>
+</div>
+</details>
+
+<h2>Design: Notification System</h2>
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">D5</span><span class="qt">Design a notification system: push + local scheduling + dedupe</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p><strong>Requirements:</strong> server-driven push (FCM), device-scheduled reminders that must fire even without network, Android O+ channels with grouping/bundling, tapping a notification must deep-link into the right screen with a correct back stack, and no duplicate notification when both a push and a local trigger exist for the same event.</p>
+<p><strong>Core idea:</strong> the same logical event can reach the notification tray from two independent triggers — a push from the server, or a device-local alarm/worker that doesn't need connectivity. Both paths must be funneled through one <span class="ic">eventId</span>-keyed dedupe check before anything is posted, otherwise a flaky network can cause the same reminder to show twice (once locally, once when the delayed push finally arrives).</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 660 330" style="width:100%;height:auto">
+<defs><marker id="arrow-sd-9" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>
+<rect x="270" y="10" width="120" height="50" rx="8" fill="var(--purb)" stroke="var(--pur)"/>
+<text x="330" y="32" text-anchor="middle" fill="var(--purl)" font-size="11" font-weight="700">Event occurs</text>
+<text x="330" y="48" text-anchor="middle" fill="var(--purl)" font-size="9">e.g. new message</text>
+<rect x="40" y="100" width="210" height="55" rx="8" fill="var(--redb)" stroke="var(--red)"/>
+<text x="145" y="123" text-anchor="middle" fill="var(--redl)" font-size="11" font-weight="700">FCM Push</text>
+<text x="145" y="140" text-anchor="middle" fill="var(--redl)" font-size="9">server-triggered</text>
+<rect x="410" y="100" width="210" height="55" rx="8" fill="var(--ambb)" stroke="var(--amb)"/>
+<text x="515" y="123" text-anchor="middle" fill="var(--ambl)" font-size="11" font-weight="700">Local Alarm / WorkManager</text>
+<text x="515" y="140" text-anchor="middle" fill="var(--ambl)" font-size="9">device-triggered</text>
+<rect x="210" y="195" width="240" height="55" rx="8" fill="var(--grnb)" stroke="var(--grn)"/>
+<text x="330" y="218" text-anchor="middle" fill="var(--grnl)" font-size="11" font-weight="700">Dedupe check (eventId)</text>
+<text x="330" y="235" text-anchor="middle" fill="var(--grnl)" font-size="9">skip if already shown</text>
+<rect x="210" y="275" width="240" height="45" rx="8" fill="var(--blub)" stroke="var(--blu)"/>
+<text x="330" y="295" text-anchor="middle" fill="var(--blul)" font-size="11" font-weight="700">Tray → tap → deep link</text>
+<text x="330" y="311" text-anchor="middle" fill="var(--blul)" font-size="9">channel + group summary</text>
+<line x1="290" y1="60" x2="180" y2="98" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-sd-9)"/>
+<line x1="370" y1="60" x2="480" y2="98" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-sd-9)"/>
+<line x1="180" y1="155" x2="280" y2="193" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-sd-9)"/>
+<line x1="480" y1="155" x2="380" y2="193" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-sd-9)"/>
+<line x1="330" y1="250" x2="330" y2="273" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-sd-9)"/>
+</svg>
+</div>
+<pre><code><span class="cm">// Push arrives — dedupe against a locally-fired reminder for the same event</span>
+<span class="kw">override fun</span> <span class="fn">onMessageReceived</span>(msg: <span class="ty">RemoteMessage</span>) {
+    <span class="kw">val</span> <span class="cn">eventId</span> = msg.data[<span class="st">"eventId"</span>] ?: <span class="kw">return</span>
+    <span class="kw">if</span> (dedupeStore.<span class="fn">wasShown</span>(eventId)) <span class="kw">return</span> <span class="cm">// local alarm already fired it</span>
+    dedupeStore.<span class="fn">markShown</span>(eventId, ttl = <span class="cn">24</span>.hours)
+    <span class="fn">showNotification</span>(eventId, msg.data)
+}
+
+<span class="cm">// Deep link rebuilds the back stack; grouping puts it under one summary</span>
+<span class="kw">fun</span> <span class="fn">showNotification</span>(eventId: <span class="ty">String</span>, data: <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">String</span>&gt;) {
+    <span class="kw">val</span> <span class="cn">pendingIntent</span> = <span class="ty">TaskStackBuilder</span>.<span class="fn">create</span>(context)
+        .<span class="fn">addNextIntentWithParentStack</span>(<span class="fn">deepLinkIntent</span>(data[<span class="st">"chatId"</span>]))
+        .<span class="fn">getPendingIntent</span>(eventId.hashCode(), <span class="ty">PendingIntent</span>.FLAG_UPDATE_CURRENT or <span class="ty">PendingIntent</span>.FLAG_IMMUTABLE)
+
+    <span class="ty">NotificationCompat</span>.<span class="ty">Builder</span>(context, <span class="st">"messages"</span>)
+        .<span class="fn">setContentTitle</span>(data[<span class="st">"title"</span>]).<span class="fn">setContentIntent</span>(pendingIntent)
+        .<span class="fn">setGroup</span>(data[<span class="st">"chatId"</span>]).<span class="fn">setAutoCancel</span>(<span class="kw">true</span>).<span class="fn">build</span>()
+        .<span class="fn">let</span> { <span class="ty">NotificationManagerCompat</span>.<span class="fn">from</span>(context).<span class="fn">notify</span>(eventId.hashCode(), it) }
+}</code></pre>
+<p><strong>Grouping / bundling:</strong> give every notification in the same thread the same <span class="ic">groupKey</span> so the tray bundles them, and post one extra <span class="ic">setGroupSummary(true)</span> notification per group — otherwise 10 messages from the same chat spam the tray as 10 separate entries.</p>
+<p><strong>De-duplication:</strong> key every notification-worthy event with a stable <span class="ic">eventId</span> that both server and client agree on. Keep a small "shown" store (Room row or pref set) with a TTL, and check-and-mark it atomically before posting — whichever trigger (push or local) arrives first wins, the other becomes a no-op.</p>
+<p><strong>Tradeoffs:</strong> <span class="ic">AlarmManager.setExactAndAllowWhileIdle</span> gives an exact wall-clock fire time but you own retry/persistence yourself; <span class="ic">WorkManager</span> survives reboot and handles constraints (network, charging) but isn't exact-time guaranteed under Doze — use Alarm for "remind me at 9am", WorkManager for "sync roughly daily". Android 13+ also requires the runtime <span class="ic">POST_NOTIFICATIONS</span> permission, requested contextually rather than on first launch.</p>
+</div>
+</details>
+
+<h2>Design: Real-Time Location Sharing</h2>
+<details><summary><span class="qn" style="background:var(--blub);color:var(--blul)">D6</span><span class="qt">Design a live location-sharing feature (Uber / Find My Friends style)</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p><strong>Requirements:</strong> one user's live location visible to one or more viewers, a tunable battery-vs-accuracy tradeoff, updates that keep flowing while the app is backgrounded, and low end-to-end latency getting an update from the sharer to the viewer.</p>
+<p><strong>Core idea:</strong> accuracy and update frequency should scale with how much anyone actually cares right now — tight interval and high accuracy while the sharing screen is on-screen, a coarser and slower request once backgrounded. Delivery to viewers should ride a WebSocket while someone is actively watching (near-instant fan-out), falling back to plain REST writes when it isn't worth holding a socket open.</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 660 300" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-sd-10" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--blul)"/></marker>
+<marker id="arrow-sd-11" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--ambl)"/></marker>
+</defs>
+<rect x="25" y="10" width="170" height="38" rx="6" fill="var(--purb)" stroke="var(--pur)"/>
+<text x="110" y="34" text-anchor="middle" fill="var(--purl)" font-size="11" font-weight="700">Client A (sharer)</text>
+<rect x="245" y="10" width="170" height="38" rx="6" fill="var(--ambb)" stroke="var(--amb)"/>
+<text x="330" y="34" text-anchor="middle" fill="var(--ambl)" font-size="11" font-weight="700">Server (REST+WS)</text>
+<rect x="465" y="10" width="170" height="38" rx="6" fill="var(--blub)" stroke="var(--blu)"/>
+<text x="550" y="34" text-anchor="middle" fill="var(--blul)" font-size="11" font-weight="700">Client B (viewer)</text>
+<line x1="110" y1="48" x2="110" y2="290" stroke="var(--b2)" stroke-width="1" stroke-dasharray="3,3"/>
+<line x1="330" y1="48" x2="330" y2="290" stroke="var(--b2)" stroke-width="1" stroke-dasharray="3,3"/>
+<line x1="550" y1="48" x2="550" y2="290" stroke="var(--b2)" stroke-width="1" stroke-dasharray="3,3"/>
+<rect x="70" y="108" width="520" height="150" rx="4" fill="none" stroke="var(--muted)" stroke-dasharray="4,3"/>
+<text x="80" y="122" font-size="9" fill="var(--muted)" font-weight="700">loop [every 5-10s while sharing active]</text>
+<line x1="550" y1="76" x2="332" y2="76" stroke="var(--blul)" stroke-width="1.5" marker-end="url(#arrow-sd-10)"/>
+<text x="440" y="70" text-anchor="middle" font-size="9" fill="var(--blul)">subscribe(tripId) — WS</text>
+<line x1="110" y1="155" x2="328" y2="155" stroke="var(--blul)" stroke-width="1.5" marker-end="url(#arrow-sd-10)"/>
+<text x="220" y="149" text-anchor="middle" font-size="9" fill="var(--blul)">POST /location {lat,lng,ts}</text>
+<line x1="330" y1="200" x2="548" y2="200" stroke="var(--ambl)" stroke-width="1.5" marker-end="url(#arrow-sd-11)"/>
+<text x="440" y="194" text-anchor="middle" font-size="9" fill="var(--ambl)">WS push: locationUpdate(A)</text>
+<line x1="110" y1="278" x2="328" y2="278" stroke="var(--blul)" stroke-width="1.5" stroke-dasharray="2,2" marker-end="url(#arrow-sd-10)"/>
+<text x="220" y="272" text-anchor="middle" font-size="9" fill="var(--blul)">stop sharing</text>
+</svg>
+</div>
+<pre><code><span class="cm">// Interval/accuracy tuned by whether the sharing screen is visible</span>
+<span class="kw">fun</span> <span class="fn">locationRequest</span>(isForeground: <span class="ty">Boolean</span>): <span class="ty">LocationRequest</span> =
+    <span class="ty">LocationRequest</span>.<span class="ty">Builder</span>(
+        <span class="kw">if</span> (isForeground) <span class="ty">Priority</span>.PRIORITY_HIGH_ACCURACY <span class="kw">else</span> <span class="ty">Priority</span>.PRIORITY_BALANCED_POWER_ACCURACY,
+        <span class="kw">if</span> (isForeground) <span class="cn">3_000L</span> <span class="kw">else</span> <span class="cn">15_000L</span>
+    ).<span class="fn">setMinUpdateDistanceMeters</span>(<span class="cn">5f</span>).<span class="fn">build</span>()
+
+<span class="cm">// Foreground service keeps updates flowing once backgrounded (Android 10+)</span>
+<span class="kw">override fun</span> <span class="fn">onStartCommand</span>(intent: <span class="ty">Intent</span>?, flags: <span class="ty">Int</span>, id: <span class="ty">Int</span>): <span class="ty">Int</span> {
+    <span class="fn">startForeground</span>(<span class="cn">NOTIF_ID</span>, <span class="fn">sharingNotification</span>()) <span class="cm">// type="location" in manifest</span>
+    fusedClient.<span class="fn">requestLocationUpdates</span>(<span class="fn">locationRequest</span>(isForeground = <span class="fn">appIsVisible</span>()), callback, <span class="ty">Looper</span>.getMainLooper())
+    <span class="kw">return</span> <span class="ty">Service</span>.START_STICKY
+}
+
+<span class="cm">// WebSocket while live; REST is the fallback if the socket isn't connected</span>
+<span class="kw">fun</span> <span class="fn">send</span>(update: <span class="ty">LocationUpdate</span>) {
+    <span class="kw">val</span> <span class="cn">sent</span> = webSocket?.<span class="fn">send</span>(json.<span class="fn">encodeToString</span>(update)) ?: <span class="kw">false</span>
+    <span class="kw">if</span> (!sent) scope.<span class="fn">launch</span>(<span class="ty">Dispatchers</span>.IO) { api.<span class="fn">postLocation</span>(update) }
+}</code></pre>
+<p><strong>Battery vs accuracy:</strong> high accuracy + short interval only while the sharing screen is on-screen; balanced-power priority with a longer interval once backgrounded; <span class="ic">setMinUpdateDistanceMeters</span> skips redundant updates when stationary. Always stop updates when the share session ends or hits its TTL (e.g. "share for 1 hour").</p>
+<p><strong>Transport choice:</strong> WebSocket gives sub-second fan-out but costs a persistent connection — worth it while a viewer screen is actually open. REST polling is simpler and firewall-friendly but adds polling-interval latency; use it as the fallback path, not the primary one.</p>
+<p><strong>Background location (Android 10+):</strong> requesting location while backgrounded needs a foreground service with <span class="ic">android:foregroundServiceType="location"</span> and an immediate <span class="ic">startForeground()</span> call. <span class="ic">ACCESS_BACKGROUND_LOCATION</span> is a separate runtime permission that must be requested after foreground location — and only when the user does something that clearly needs it, per Play Store policy. Android 12+ also lets users grant only "approximate" location, so the feature must degrade gracefully rather than fail outright.</p>
+</div>
+</details>
+
+<h2>Design: Short-Form Video Feed</h2>
+<details><summary><span class="qn" style="background:var(--cyab);color:var(--cyal)">D7</span><span class="qt">Design a short-form video feed for Android (TikTok/Reels style)</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p><strong>Requirements:</strong> a vertically-swipeable feed of short videos with instant playback on swipe (no spinner), memory bounded regardless of feed length, playback that adapts to network conditions, and a prefetch strategy tied to scroll position.</p>
+<p><strong>Core idea:</strong> never create one <span class="ic">ExoPlayer</span> per feed item — hold a small fixed pool (2-4 instances) and reassign players as the user scrolls, releasing anything more than one page away. Combine that with eager <span class="ic">prepare()</span> of the next item or two so its manifest and first segments are already buffering by the time the user swipes to it.</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 660 150" style="width:100%;height:auto">
+<rect x="145" y="20" width="370" height="14" fill="none" stroke="var(--muted)"/>
+<text x="330" y="16" text-anchor="middle" font-size="9" fill="var(--muted)">pool: 3 active ExoPlayer instances</text>
+<rect x="15" y="50" width="110" height="60" rx="8" fill="var(--redb)" stroke="var(--red)"/>
+<text x="70" y="74" text-anchor="middle" fill="var(--redl)" font-size="10" font-weight="700">pos-2</text>
+<text x="70" y="90" text-anchor="middle" fill="var(--redl)" font-size="9">released</text>
+<rect x="145" y="50" width="110" height="60" rx="8" fill="var(--ambb)" stroke="var(--amb)"/>
+<text x="200" y="74" text-anchor="middle" fill="var(--ambl)" font-size="10" font-weight="700">pos-1</text>
+<text x="200" y="90" text-anchor="middle" fill="var(--ambl)" font-size="9">prefetching</text>
+<rect x="275" y="45" width="110" height="70" rx="8" fill="var(--grnb)" stroke="var(--grn)" stroke-width="2"/>
+<text x="330" y="72" text-anchor="middle" fill="var(--grnl)" font-size="10" font-weight="700">pos (current)</text>
+<text x="330" y="88" text-anchor="middle" fill="var(--grnl)" font-size="9">PLAYING</text>
+<rect x="405" y="50" width="110" height="60" rx="8" fill="var(--ambb)" stroke="var(--amb)"/>
+<text x="460" y="74" text-anchor="middle" fill="var(--ambl)" font-size="10" font-weight="700">pos+1</text>
+<text x="460" y="90" text-anchor="middle" fill="var(--ambl)" font-size="9">prefetching</text>
+<rect x="535" y="50" width="110" height="60" rx="8" fill="var(--redb)" stroke="var(--red)"/>
+<text x="590" y="74" text-anchor="middle" fill="var(--redl)" font-size="10" font-weight="700">pos+2</text>
+<text x="590" y="90" text-anchor="middle" fill="var(--redl)" font-size="9">released</text>
+<text x="330" y="135" text-anchor="middle" font-size="9" fill="var(--muted)">ViewPager2 scroll →  pool reassigns as position changes</text>
+</svg>
+</div>
+<pre><code><span class="cm">// Small fixed pool — reassigned by position, not one player per item</span>
+<span class="kw">class</span> <span class="ty">PlayerPool</span>(context: <span class="ty">Context</span>, <span class="kw">private val</span> <span class="cn">size</span>: <span class="ty">Int</span> = <span class="cn">3</span>) {
+    <span class="kw">private val</span> <span class="cn">pool</span> = <span class="ty">List</span>(size) { <span class="ty">ExoPlayer</span>.<span class="ty">Builder</span>(context).<span class="fn">build</span>() }
+    <span class="kw">private val</span> <span class="cn">assigned</span> = <span class="ty">HashMap</span>&lt;<span class="ty">Int</span>, <span class="ty">ExoPlayer</span>&gt;() <span class="cm">// position -> player</span>
+
+    <span class="kw">fun</span> <span class="fn">acquire</span>(position: <span class="ty">Int</span>, item: <span class="ty">MediaItem</span>): <span class="ty">ExoPlayer</span> =
+        assigned.<span class="fn">getOrPut</span>(position) {
+            pool.<span class="fn">first</span> { it !<span class="kw">in</span> assigned.values }.<span class="fn">apply</span> { <span class="fn">setMediaItem</span>(item); <span class="fn">prepare</span>() }
+        }
+
+    <span class="cm">// bound memory: drop players more than one page away from the visible one</span>
+    <span class="kw">fun</span> <span class="fn">trimTo</span>(visible: <span class="ty">Int</span>) = assigned.<span class="fn">entries</span>.<span class="fn">removeAll</span> { (pos, player) ->
+        (pos - visible).<span class="fn">let</span> { <span class="fn">kotlin.math.abs</span>(it) > <span class="cn">1</span> }.<span class="fn">also</span> { farAway -> <span class="kw">if</span> (farAway) player.<span class="fn">stop</span>() }
+    }
+}
+
+<span class="cm">// ViewPager2 wiring: play current, pre-buffer next, trim the rest</span>
+<span class="kw">override fun</span> <span class="fn">onPageSelected</span>(position: <span class="ty">Int</span>) {
+    pool.<span class="fn">acquire</span>(position, items[position].hlsMediaItem).playWhenReady = <span class="kw">true</span>
+    items.<span class="fn">getOrNull</span>(position + <span class="cn">1</span>)?.<span class="fn">let</span> { pool.<span class="fn">acquire</span>(position + <span class="cn">1</span>, it.hlsMediaItem) } <span class="cm">// prefetch, paused</span>
+    pool.<span class="fn">trimTo</span>(position)
+}</code></pre>
+<p><strong>Bounding memory:</strong> a fixed pool means memory is bounded no matter how long the feed gets — the tradeoff is pool size vs how far ahead you can pre-buffer, and real devices only have 4-8 concurrent hardware decoders anyway.</p>
+<p><strong>Prefetch strategy:</strong> prepare the next 1-2 items on <span class="ic">onPageSelected</span> so their manifest and first segments are buffered before the swipe lands; going further ahead wastes cellular data on clips the user may skip. Pair it with an instantly-shown poster frame so there's never a blank frame while the player attaches.</p>
+<p><strong>Adaptive bitrate:</strong> serve an HLS/DASH master manifest with multiple renditions; Media3's track selector + bandwidth estimator switches renditions mid-playback as network conditions change, and starting every clip on a lower rendition keeps first-frame time low.</p>
+<p><strong>Tradeoffs:</strong> a bigger pool smooths fast scrolling but holds more decoders and buffers at once; releasing a player mid-playback drops its buffer, so cache the last position per item so scrolling back doesn't restart from zero.</p>
+</div>
+</details>
+</main>
+</body>
+</html>

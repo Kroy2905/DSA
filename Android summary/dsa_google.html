@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>DSA for Google — Interview Patterns</title>
+<style>:root{--bg:#06090e;--s1:#0a0f18;--s2:#0e1520;--s3:#131d2a;--b1:#182030;--b2:#1e2c3e;--txt:#cce0ee;--muted:#4e6878;--grn:#10a060;--grnb:#031508;--grnl:#44d890;--blu:#1e60d8;--blub:#040e28;--blul:#6aaeff;--pur:#6848b8;--purb:#0f0828;--purl:#b090ff;--amb:#c09010;--ambb:#201500;--ambl:#f0c040;--red:#b03030;--redb:#1e0808;--redl:#f07070;--cya:#0e8898;--cyab:#041418;--cyal:#40d8e8;--ora:#c06020;--orab:#201008;--oral:#f0a060}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,sans-serif;font-size:13px;line-height:1.6;min-height:100vh}
+nav{background:var(--s1);border-bottom:1px solid var(--b1);position:sticky;top:0;z-index:100;overflow-x:auto}
+.nav-inner{display:flex;align-items:center;padding:0 12px;gap:0;min-width:max-content}
+nav a{color:var(--muted);text-decoration:none;font-size:11px;font-weight:500;padding:12px 9px;border-bottom:2px solid transparent;white-space:nowrap;display:block}
+nav a:hover{color:var(--txt)}
+nav a.active{color:var(--grnl);border-bottom-color:var(--grn)}
+main{max-width:980px;padding:28px 20px 80px;margin:0 auto}
+h1{font-size:20px;font-weight:700;margin-bottom:6px;letter-spacing:-.02em}
+.sub{font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.6}
+h2{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:24px 0 10px;display:flex;align-items:center;gap:8px}
+h2::after{content:'';flex:1;height:1px;background:var(--b2)}
+details{border-radius:9px;border:1px solid var(--b2);background:var(--s1);margin-bottom:7px;overflow:hidden}
+details[open]{border-color:#2e4458}
+summary{padding:12px 15px;cursor:pointer;display:flex;align-items:center;gap:9px;list-style:none;font-weight:500;font-size:13px;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:'\203A';font-size:16px;color:var(--muted);transition:.2s;flex-shrink:0;width:14px;display:inline-block}
+details[open] summary::before{transform:rotate(90deg);color:var(--grnl)}
+.qn{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;flex-shrink:0;font-family:monospace}
+.qt{flex:1}
+.dif{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;border:1px solid;flex-shrink:0;letter-spacing:.06em;text-transform:uppercase}
+.easy{background:var(--grnb);color:var(--grnl);border-color:var(--grn)}
+.med{background:var(--ambb);color:var(--ambl);border-color:var(--amb)}
+.hard{background:var(--redb);color:var(--redl);border-color:var(--red)}
+.goog{background:var(--purb);color:var(--purl);border-color:var(--pur)}
+.ans{padding:0 15px 14px;border-top:1px solid var(--b2)}
+.ans p{font-size:12px;color:var(--muted);line-height:1.7;margin:10px 0 0}
+.ans p strong{color:var(--txt)}
+.ans ul,.ans ol{padding-left:18px;font-size:12px;color:var(--muted);line-height:1.85;margin:8px 0}
+.ans li strong{color:var(--txt)}
+pre{background:#070d14;border:1px solid var(--b2);border-radius:7px;padding:12px 14px;overflow-x:auto;margin:10px 0;font-size:11px;line-height:1.7;color:#a8c8e8}
+code{font-family:'JetBrains Mono','Fira Mono',monospace;font-size:11px}
+.kw{color:#79b8ff}.cn{color:#44d890}.st{color:#f0a060}.cm{color:#4e6878}.fn{color:#40d8e8}.an{color:#f0c040}.ty{color:#b090ff}
+.note{border-radius:7px;border:1px solid;padding:9px 12px;font-size:11px;line-height:1.6;margin:10px 0}
+.ngrn{background:var(--grnb);border-color:var(--grn);color:var(--grnl)}
+.namb{background:var(--ambb);border-color:var(--amb);color:var(--ambl)}
+.nred{background:var(--redb);border-color:var(--red);color:var(--redl)}
+.nblu{background:var(--blub);border-color:var(--blu);color:var(--blul)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0}
+@media(max-width:680px){.g2,.g3{grid-template-columns:1fr}}
+.gc{background:var(--s2);border:1px solid var(--b2);border-radius:7px;padding:12px}
+.gc h4{font-size:11px;font-weight:700;margin-bottom:6px}
+.gc p,.gc li{font-size:11px;color:var(--muted);line-height:1.6}
+.ic{background:var(--s3);border:1px solid var(--b2);border-radius:4px;padding:1px 6px;font-family:monospace;font-size:11px;color:var(--blul)}
+a{color:var(--grnl)}
+</style>
+</head>
+<body>
+<nav><div class="nav-inner"><a href="roadmap.html">🗺 Roadmap</a><a href="android_core.html">📱 Android Core</a><a href="android_advanced.html">🔥 Advanced</a><a href="architecture.html">🏛 Architecture</a><a href="kotlin.html">🎯 Kotlin</a><a href="coroutines_flow.html">⚡ Coroutines</a><a href="compose.html">🎨 Compose</a><a href="dependency_injection.html">💉 DI</a><a href="networking_storage.html">🌐 Net & Storage</a><a href="testing.html">🧪 Testing</a><a href="system_design.html">🏗 System Design</a><a href="dsa_google.html" class="active">🧩 DSA</a></div></nav>
+<main>
+<h1>🧩 DSA for Google Android Interviews</h1>
+<p class="sub">Google requires LeetCode Medium-Hard in coding rounds. Master these 11 patterns and you can solve ~80% of interview questions. All solutions in Kotlin.</p>
+
+<h2>Pattern 1: Two Pointers</h2>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">P1-1</span><span class="qt">Two Sum — Find pair that sums to target</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// O(n) time, O(n) space — HashMap solution</span>
+<span class="kw">fun</span> <span class="fn">twoSum</span>(nums: <span class="ty">IntArray</span>, target: <span class="ty">Int</span>): <span class="ty">IntArray</span> {
+    <span class="kw">val</span> <span class="cn">seen</span> = <span class="ty">HashMap</span>&lt;<span class="ty">Int</span>, <span class="ty">Int</span>&gt;() <span class="cm">// value → index</span>
+    <span class="kw">for</span> (i <span class="kw">in</span> nums.<span class="fn">indices</span>) {
+        <span class="kw">val</span> <span class="cn">complement</span> = target - nums[i]
+        <span class="kw">if</span> (seen.<span class="fn">containsKey</span>(complement)) {
+            <span class="kw">return</span> <span class="fn">intArrayOf</span>(seen[complement]!!, i)
+        }
+        seen[nums[i]] = i
+    }
+    <span class="kw">return</span> <span class="fn">intArrayOf</span>()
+}
+<span class="cm">// Key insight: complement = target - current. Check if complement seen before.</span></code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">P1-2</span><span class="qt">Container With Most Water (Two Pointers)</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// Greedy two-pointer: move the shorter side inward</span>
+<span class="kw">fun</span> <span class="fn">maxArea</span>(height: <span class="ty">IntArray</span>): <span class="ty">Int</span> {
+    <span class="kw">var</span> <span class="cn">left</span> = <span class="cn">0</span>; <span class="kw">var</span> <span class="cn">right</span> = height.size - <span class="cn">1</span>; <span class="kw">var</span> <span class="cn">maxWater</span> = <span class="cn">0</span>
+    <span class="kw">while</span> (left &lt; right) {
+        <span class="kw">val</span> <span class="cn">water</span> = <span class="fn">minOf</span>(height[left], height[right]) * (right - left)
+        maxWater = <span class="fn">maxOf</span>(maxWater, water)
+        <span class="kw">if</span> (height[left] &lt; height[right]) left++ <span class="kw">else</span> right--
+        <span class="cm">// Move the shorter side — the taller side can't improve by moving</span>
+    }
+    <span class="kw">return</span> maxWater
+}
+<span class="cm">// O(n) time, O(1) space</span></code></pre>
+</div>
+</details>
+
+<h2>Pattern 2: Sliding Window</h2>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">P2-1</span><span class="qt">Longest Substring Without Repeating Characters</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="kw">fun</span> <span class="fn">lengthOfLongestSubstring</span>(s: <span class="ty">String</span>): <span class="ty">Int</span> {
+    <span class="kw">val</span> <span class="cn">lastSeen</span> = <span class="ty">HashMap</span>&lt;<span class="ty">Char</span>, <span class="ty">Int</span>&gt;() <span class="cm">// char → last index seen</span>
+    <span class="kw">var</span> <span class="cn">left</span> = <span class="cn">0</span>; <span class="kw">var</span> <span class="cn">maxLen</span> = <span class="cn">0</span>
+    <span class="kw">for</span> (right <span class="kw">in</span> s.<span class="fn">indices</span>) {
+        <span class="kw">if</span> (lastSeen.<span class="fn">containsKey</span>(s[right])) {
+            <span class="cm">// Shrink window past the duplicate</span>
+            left = <span class="fn">maxOf</span>(left, lastSeen[s[right]]!! + <span class="cn">1</span>)
+        }
+        lastSeen[s[right]] = right
+        maxLen = <span class="fn">maxOf</span>(maxLen, right - left + <span class="cn">1</span>)
+    }
+    <span class="kw">return</span> maxLen
+}
+<span class="cm">// O(n) time, O(min(n,m)) space where m = charset size</span></code></pre>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 400 340" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-dsa-2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+</marker>
+</defs>
+<text x="20" y="18" font-size="11" fill="var(--muted)">right=2 → window "abc" (no repeats, len 3)</text>
+<text x="38" y="34" text-anchor="middle" font-size="11" fill="var(--blul)">L</text>
+<line x1="38" y1="38" x2="38" y2="66" stroke="var(--blul)" stroke-width="1.5" marker-end="url(#arrow-dsa-2)"/>
+<text x="126" y="34" text-anchor="middle" font-size="11" fill="var(--ambl)">R</text>
+<line x1="126" y1="38" x2="126" y2="66" stroke="var(--ambl)" stroke-width="1.5" marker-end="url(#arrow-dsa-2)"/>
+<rect x="20" y="70" width="36" height="36" rx="4" fill="var(--purb)" stroke="var(--pur)"/><text x="38" y="93" text-anchor="middle" font-size="13" fill="var(--purl)">a</text>
+<rect x="64" y="70" width="36" height="36" rx="4" fill="var(--purb)" stroke="var(--pur)"/><text x="82" y="93" text-anchor="middle" font-size="13" fill="var(--purl)">b</text>
+<rect x="108" y="70" width="36" height="36" rx="4" fill="var(--purb)" stroke="var(--pur)"/><text x="126" y="93" text-anchor="middle" font-size="13" fill="var(--purl)">c</text>
+<rect x="152" y="70" width="36" height="36" rx="4" fill="var(--s3)" stroke="var(--b2)"/><text x="170" y="93" text-anchor="middle" font-size="13" fill="var(--txt)">a</text>
+<rect x="196" y="70" width="36" height="36" rx="4" fill="var(--s3)" stroke="var(--b2)"/><text x="214" y="93" text-anchor="middle" font-size="13" fill="var(--txt)">b</text>
+<rect x="240" y="70" width="36" height="36" rx="4" fill="var(--s3)" stroke="var(--b2)"/><text x="258" y="93" text-anchor="middle" font-size="13" fill="var(--txt)">c</text>
+<rect x="284" y="70" width="36" height="36" rx="4" fill="var(--s3)" stroke="var(--b2)"/><text x="302" y="93" text-anchor="middle" font-size="13" fill="var(--txt)">b</text>
+<rect x="328" y="70" width="36" height="36" rx="4" fill="var(--s3)" stroke="var(--b2)"/><text x="346" y="93" text-anchor="middle" font-size="13" fill="var(--txt)">b</text>
+<text x="20" y="133" font-size="11" fill="var(--muted)">right=3 hits duplicate 'a' → left jumps to 1: window "bca"</text>
+<text x="82" y="149" text-anchor="middle" font-size="11" fill="var(--blul)">L</text>
+<line x1="82" y1="153" x2="82" y2="181" stroke="var(--blul)" stroke-width="1.5" marker-end="url(#arrow-dsa-2)"/>
+<text x="170" y="149" text-anchor="middle" font-size="11" fill="var(--ambl)">R</text>
+<line x1="170" y1="153" x2="170" y2="181" stroke="var(--ambl)" stroke-width="1.5" marker-end="url(#arrow-dsa-2)"/>
+<rect x="20" y="185" width="36" height="36" rx="4" fill="var(--s3)" stroke="var(--b2)"/><text x="38" y="208" text-anchor="middle" font-size="13" fill="var(--txt)">a</text>
+<rect x="64" y="185" width="36" height="36" rx="4" fill="var(--purb)" stroke="var(--pur)"/><text x="82" y="208" text-anchor="middle" font-size="13" fill="var(--purl)">b</text>
+<rect x="108" y="185" width="36" height="36" rx="4" fill="var(--purb)" stroke="var(--pur)"/><text x="126" y="208" text-anchor="middle" font-size="13" fill="var(--purl)">c</text>
+<rect x="152" y="185" width="36" height="36" rx="4" fill="var(--purb)" stroke="var(--pur)"/><text x="170" y="208" text-anchor="middle" font-size="13" fill="var(--purl)">a</text>
+<rect x="196" y="185" width="36" height="36" rx="4" fill="var(--s3)" stroke="var(--b2)"/><text x="214" y="208" text-anchor="middle" font-size="13" fill="var(--txt)">b</text>
+<rect x="240" y="185" width="36" height="36" rx="4" fill="var(--s3)" stroke="var(--b2)"/><text x="258" y="208" text-anchor="middle" font-size="13" fill="var(--txt)">c</text>
+<rect x="284" y="185" width="36" height="36" rx="4" fill="var(--s3)" stroke="var(--b2)"/><text x="302" y="208" text-anchor="middle" font-size="13" fill="var(--txt)">b</text>
+<rect x="328" y="185" width="36" height="36" rx="4" fill="var(--s3)" stroke="var(--b2)"/><text x="346" y="208" text-anchor="middle" font-size="13" fill="var(--txt)">b</text>
+<text x="20" y="248" font-size="11" fill="var(--muted)">…later: right=6 hits duplicate 'b' → left=5: window "cb"</text>
+<text x="258" y="264" text-anchor="middle" font-size="11" fill="var(--blul)">L</text>
+<line x1="258" y1="268" x2="258" y2="296" stroke="var(--blul)" stroke-width="1.5" marker-end="url(#arrow-dsa-2)"/>
+<text x="302" y="264" text-anchor="middle" font-size="11" fill="var(--ambl)">R</text>
+<line x1="302" y1="268" x2="302" y2="296" stroke="var(--ambl)" stroke-width="1.5" marker-end="url(#arrow-dsa-2)"/>
+<rect x="20" y="300" width="36" height="36" rx="4" fill="var(--s3)" stroke="var(--b2)"/><text x="38" y="323" text-anchor="middle" font-size="13" fill="var(--txt)">a</text>
+<rect x="64" y="300" width="36" height="36" rx="4" fill="var(--s3)" stroke="var(--b2)"/><text x="82" y="323" text-anchor="middle" font-size="13" fill="var(--txt)">b</text>
+<rect x="108" y="300" width="36" height="36" rx="4" fill="var(--s3)" stroke="var(--b2)"/><text x="126" y="323" text-anchor="middle" font-size="13" fill="var(--txt)">c</text>
+<rect x="152" y="300" width="36" height="36" rx="4" fill="var(--s3)" stroke="var(--b2)"/><text x="170" y="323" text-anchor="middle" font-size="13" fill="var(--txt)">a</text>
+<rect x="196" y="300" width="36" height="36" rx="4" fill="var(--s3)" stroke="var(--b2)"/><text x="214" y="323" text-anchor="middle" font-size="13" fill="var(--txt)">b</text>
+<rect x="240" y="300" width="36" height="36" rx="4" fill="var(--purb)" stroke="var(--pur)"/><text x="258" y="323" text-anchor="middle" font-size="13" fill="var(--purl)">c</text>
+<rect x="284" y="300" width="36" height="36" rx="4" fill="var(--purb)" stroke="var(--pur)"/><text x="302" y="323" text-anchor="middle" font-size="13" fill="var(--purl)">b</text>
+<rect x="328" y="300" width="36" height="36" rx="4" fill="var(--s3)" stroke="var(--b2)"/><text x="346" y="323" text-anchor="middle" font-size="13" fill="var(--txt)">b</text>
+</svg>
+</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">P2-2</span><span class="qt">Minimum Window Substring</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="kw">fun</span> <span class="fn">minWindow</span>(s: <span class="ty">String</span>, t: <span class="ty">String</span>): <span class="ty">String</span> {
+    <span class="kw">if</span> (s.<span class="fn">isEmpty</span>() || t.<span class="fn">isEmpty</span>()) <span class="kw">return</span> <span class="st">""</span>
+    <span class="kw">val</span> <span class="cn">need</span> = <span class="ty">HashMap</span>&lt;<span class="ty">Char</span>, <span class="ty">Int</span>&gt;()
+    <span class="kw">for</span> (c <span class="kw">in</span> t) need[c] = (need[c] ?: <span class="cn">0</span>) + <span class="cn">1</span>
+    <span class="kw">var</span> <span class="cn">left</span> = <span class="cn">0</span>; <span class="kw">var</span> <span class="cn">formed</span> = <span class="cn">0</span>; <span class="kw">val</span> <span class="cn">window</span> = <span class="ty">HashMap</span>&lt;<span class="ty">Char</span>, <span class="ty">Int</span>&gt;()
+    <span class="kw">var</span> <span class="cn">minLen</span> = <span class="ty">Int</span>.MAX_VALUE; <span class="kw">var</span> <span class="cn">minLeft</span> = <span class="cn">0</span>
+    <span class="kw">for</span> (right <span class="kw">in</span> s.<span class="fn">indices</span>) {
+        window[s[right]] = (window[s[right]] ?: <span class="cn">0</span>) + <span class="cn">1</span>
+        <span class="kw">if</span> (need.<span class="fn">containsKey</span>(s[right]) && window[s[right]] == need[s[right]]) formed++
+        <span class="kw">while</span> (formed == need.size) { <span class="cm">// window is valid, try to shrink</span>
+            <span class="kw">if</span> (right - left + <span class="cn">1</span> &lt; minLen) { minLen = right - left + <span class="cn">1</span>; minLeft = left }
+            window[s[left]] = window[s[left]]!! - <span class="cn">1</span>
+            <span class="kw">if</span> (need.<span class="fn">containsKey</span>(s[left]) && window[s[left]]!! &lt; need[s[left]]!!) formed--
+            left++
+        }
+    }
+    <span class="kw">return</span> <span class="kw">if</span> (minLen == <span class="ty">Int</span>.MAX_VALUE) <span class="st">""</span> <span class="kw">else</span> s.<span class="fn">substring</span>(minLeft, minLeft + minLen)
+}</code></pre>
+</div>
+</details>
+
+<h2>Pattern 3: Binary Search</h2>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">P3-1</span><span class="qt">Classic binary search template — know this cold</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// Template: find exact target</span>
+<span class="kw">fun</span> <span class="fn">binarySearch</span>(nums: <span class="ty">IntArray</span>, target: <span class="ty">Int</span>): <span class="ty">Int</span> {
+    <span class="kw">var</span> <span class="cn">lo</span> = <span class="cn">0</span>; <span class="kw">var</span> <span class="cn">hi</span> = nums.size - <span class="cn">1</span>
+    <span class="kw">while</span> (lo &lt;= hi) {
+        <span class="kw">val</span> <span class="cn">mid</span> = lo + (hi - lo) / <span class="cn">2</span> <span class="cm">// avoid overflow</span>
+        <span class="kw">when</span> {
+            nums[mid] == target -> <span class="kw">return</span> mid
+            nums[mid] &lt; target -> lo = mid + <span class="cn">1</span>
+            <span class="kw">else</span> -> hi = mid - <span class="cn">1</span>
+        }
+    }
+    <span class="kw">return</span> -<span class="cn">1</span>
+}
+
+<span class="cm">// Template: find leftmost position (first occurrence)</span>
+<span class="kw">fun</span> <span class="fn">lowerBound</span>(nums: <span class="ty">IntArray</span>, target: <span class="ty">Int</span>): <span class="ty">Int</span> {
+    <span class="kw">var</span> <span class="cn">lo</span> = <span class="cn">0</span>; <span class="kw">var</span> <span class="cn">hi</span> = nums.size <span class="cm">// hi = size (not size-1)</span>
+    <span class="kw">while</span> (lo &lt; hi) { <span class="cm">// strict less (not <=)</span>
+        <span class="kw">val</span> <span class="cn">mid</span> = lo + (hi - lo) / <span class="cn">2</span>
+        <span class="kw">if</span> (nums[mid] &lt; target) lo = mid + <span class="cn">1</span> <span class="kw">else</span> hi = mid
+    }
+    <span class="kw">return</span> lo <span class="cm">// first position where nums[pos] >= target</span>
+}</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">P3-2</span><span class="qt">Search in Rotated Sorted Array</span><span class="dif med">Medium — Google Favorite</span></summary>
+<div class="ans">
+<pre><code><span class="kw">fun</span> <span class="fn">search</span>(nums: <span class="ty">IntArray</span>, target: <span class="ty">Int</span>): <span class="ty">Int</span> {
+    <span class="kw">var</span> <span class="cn">lo</span> = <span class="cn">0</span>; <span class="kw">var</span> <span class="cn">hi</span> = nums.size - <span class="cn">1</span>
+    <span class="kw">while</span> (lo &lt;= hi) {
+        <span class="kw">val</span> <span class="cn">mid</span> = lo + (hi - lo) / <span class="cn">2</span>
+        <span class="kw">if</span> (nums[mid] == target) <span class="kw">return</span> mid
+        <span class="cm">// Determine which half is sorted</span>
+        <span class="kw">if</span> (nums[lo] &lt;= nums[mid]) { <span class="cm">// left half is sorted</span>
+            <span class="kw">if</span> (target &gt;= nums[lo] && target &lt; nums[mid]) hi = mid - <span class="cn">1</span>
+            <span class="kw">else</span> lo = mid + <span class="cn">1</span>
+        } <span class="kw">else</span> { <span class="cm">// right half is sorted</span>
+            <span class="kw">if</span> (target &gt; nums[mid] && target &lt;= nums[hi]) lo = mid + <span class="cn">1</span>
+            <span class="kw">else</span> hi = mid - <span class="cn">1</span>
+        }
+    }
+    <span class="kw">return</span> -<span class="cn">1</span>
+}
+<span class="cm">// Key insight: at least one half is always sorted. Check which half, then decide.</span></code></pre>
+</div>
+</details>
+
+<h2>Pattern 4: Trees</h2>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">P4-1</span><span class="qt">BFS and DFS templates for trees</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<pre><code><span class="kw">class</span> <span class="ty">TreeNode</span>(<span class="kw">var</span> <span class="cn">value</span>: <span class="ty">Int</span>, <span class="kw">var</span> <span class="cn">left</span>: <span class="ty">TreeNode</span>? = <span class="kw">null</span>, <span class="kw">var</span> <span class="cn">right</span>: <span class="ty">TreeNode</span>? = <span class="kw">null</span>)
+
+<span class="cm">// DFS: inorder (left-root-right) — gives sorted order for BST</span>
+<span class="kw">fun</span> <span class="fn">inorder</span>(root: <span class="ty">TreeNode</span>?, result: <span class="ty">MutableList</span>&lt;<span class="ty">Int</span>&gt;) {
+    <span class="kw">if</span> (root == <span class="kw">null</span>) <span class="kw">return</span>
+    <span class="fn">inorder</span>(root.left, result)
+    result.<span class="fn">add</span>(root.value)
+    <span class="fn">inorder</span>(root.right, result)
+}
+
+<span class="cm">// BFS: level order traversal</span>
+<span class="kw">fun</span> <span class="fn">levelOrder</span>(root: <span class="ty">TreeNode</span>?): <span class="ty">List</span>&lt;<span class="ty">List</span>&lt;<span class="ty">Int</span>&gt;&gt; {
+    <span class="kw">if</span> (root == <span class="kw">null</span>) <span class="kw">return</span> emptyList()
+    <span class="kw">val</span> <span class="cn">result</span> = <span class="ty">mutableListOf</span>&lt;<span class="ty">List</span>&lt;<span class="ty">Int</span>&gt;&gt;()
+    <span class="kw">val</span> <span class="cn">queue</span>: <span class="ty">ArrayDeque</span>&lt;<span class="ty">TreeNode</span>&gt; = <span class="ty">ArrayDeque</span>()
+    queue.<span class="fn">addLast</span>(root)
+    <span class="kw">while</span> (queue.<span class="fn">isNotEmpty</span>()) {
+        <span class="kw">val</span> <span class="cn">levelSize</span> = queue.size
+        <span class="kw">val</span> <span class="cn">level</span> = <span class="ty">mutableListOf</span>&lt;<span class="ty">Int</span>&gt;()
+        <span class="fn">repeat</span>(levelSize) {
+            <span class="kw">val</span> <span class="cn">node</span> = queue.<span class="fn">removeFirst</span>()
+            level.<span class="fn">add</span>(node.value)
+            node.left?.<span class="fn">let</span> { queue.<span class="fn">addLast</span>(it) }
+            node.right?.<span class="fn">let</span> { queue.<span class="fn">addLast</span>(it) }
+        }
+        result.<span class="fn">add</span>(level)
+    }
+    <span class="kw">return</span> result
+}</code></pre>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 640 420" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-dsa-1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+</marker>
+</defs>
+<line x1="320" y1="45" x2="200" y2="110" stroke="var(--b2)" stroke-width="2"/>
+<line x1="320" y1="45" x2="440" y2="110" stroke="var(--b2)" stroke-width="2"/>
+<line x1="200" y1="110" x2="120" y2="175" stroke="var(--b2)" stroke-width="2"/>
+<line x1="200" y1="110" x2="280" y2="175" stroke="var(--b2)" stroke-width="2"/>
+<line x1="440" y1="110" x2="360" y2="175" stroke="var(--b2)" stroke-width="2"/>
+<line x1="440" y1="110" x2="520" y2="175" stroke="var(--b2)" stroke-width="2"/>
+<circle cx="320" cy="45" r="18" fill="var(--grnb)" stroke="var(--grn)" stroke-width="2"/><text x="320" y="50" text-anchor="middle" font-size="13" fill="var(--grnl)">1</text>
+<circle cx="200" cy="110" r="18" fill="var(--blub)" stroke="var(--blu)" stroke-width="2"/><text x="200" y="115" text-anchor="middle" font-size="13" fill="var(--blul)">2</text>
+<circle cx="440" cy="110" r="18" fill="var(--blub)" stroke="var(--blu)" stroke-width="2"/><text x="440" y="115" text-anchor="middle" font-size="13" fill="var(--blul)">3</text>
+<circle cx="120" cy="175" r="18" fill="var(--purb)" stroke="var(--pur)" stroke-width="2"/><text x="120" y="180" text-anchor="middle" font-size="13" fill="var(--purl)">4</text>
+<circle cx="280" cy="175" r="18" fill="var(--purb)" stroke="var(--pur)" stroke-width="2"/><text x="280" y="180" text-anchor="middle" font-size="13" fill="var(--purl)">5</text>
+<circle cx="360" cy="175" r="18" fill="var(--purb)" stroke="var(--pur)" stroke-width="2"/><text x="360" y="180" text-anchor="middle" font-size="13" fill="var(--purl)">6</text>
+<circle cx="520" cy="175" r="18" fill="var(--purb)" stroke="var(--pur)" stroke-width="2"/><text x="520" y="180" text-anchor="middle" font-size="13" fill="var(--purl)">7</text>
+<text x="20" y="212" font-size="11" fill="var(--muted)">Step 1 — dequeue 1, enqueue its children</text>
+<line x1="91" y1="218" x2="91" y2="236" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-dsa-1)"/>
+<text x="20" y="256" font-size="12" fill="var(--txt)">Queue:</text>
+<rect x="75" y="238" width="32" height="26" rx="4" fill="var(--grnb)" stroke="var(--grn)"/><text x="91" y="256" text-anchor="middle" font-size="12" fill="var(--grnl)">1</text>
+<text x="20" y="282" font-size="11" fill="var(--muted)">Step 2 — dequeue 2, 3, enqueue their children</text>
+<line x1="91" y1="288" x2="91" y2="306" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-dsa-1)"/>
+<text x="20" y="326" font-size="12" fill="var(--txt)">Queue:</text>
+<rect x="75" y="308" width="32" height="26" rx="4" fill="var(--blub)" stroke="var(--blu)"/><text x="91" y="326" text-anchor="middle" font-size="12" fill="var(--blul)">2</text>
+<rect x="111" y="308" width="32" height="26" rx="4" fill="var(--blub)" stroke="var(--blu)"/><text x="127" y="326" text-anchor="middle" font-size="12" fill="var(--blul)">3</text>
+<text x="20" y="352" font-size="11" fill="var(--muted)">Step 3 — all 4 leaves enqueued, level order complete</text>
+<line x1="91" y1="358" x2="91" y2="376" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrow-dsa-1)"/>
+<text x="20" y="396" font-size="12" fill="var(--txt)">Queue:</text>
+<rect x="75" y="378" width="32" height="26" rx="4" fill="var(--purb)" stroke="var(--pur)"/><text x="91" y="396" text-anchor="middle" font-size="12" fill="var(--purl)">4</text>
+<rect x="111" y="378" width="32" height="26" rx="4" fill="var(--purb)" stroke="var(--pur)"/><text x="127" y="396" text-anchor="middle" font-size="12" fill="var(--purl)">5</text>
+<rect x="147" y="378" width="32" height="26" rx="4" fill="var(--purb)" stroke="var(--pur)"/><text x="163" y="396" text-anchor="middle" font-size="12" fill="var(--purl)">6</text>
+<rect x="183" y="378" width="32" height="26" rx="4" fill="var(--purb)" stroke="var(--pur)"/><text x="199" y="396" text-anchor="middle" font-size="12" fill="var(--purl)">7</text>
+</svg>
+</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">P4-2</span><span class="qt">Lowest Common Ancestor of Binary Tree</span><span class="dif med">Medium — Google Favorite</span></summary>
+<div class="ans">
+<pre><code><span class="kw">fun</span> <span class="fn">lowestCommonAncestor</span>(root: <span class="ty">TreeNode</span>?, p: <span class="ty">TreeNode</span>?, q: <span class="ty">TreeNode</span>?): <span class="ty">TreeNode</span>? {
+    <span class="kw">if</span> (root == <span class="kw">null</span> || root == p || root == q) <span class="kw">return</span> root
+    <span class="kw">val</span> <span class="cn">left</span> = <span class="fn">lowestCommonAncestor</span>(root.left, p, q)
+    <span class="kw">val</span> <span class="cn">right</span> = <span class="fn">lowestCommonAncestor</span>(root.right, p, q)
+    <span class="cm">// If found in both subtrees, root is LCA</span>
+    <span class="kw">if</span> (left != <span class="kw">null</span> && right != <span class="kw">null</span>) <span class="kw">return</span> root
+    <span class="kw">return</span> left ?: right
+}
+<span class="cm">// O(n) time — visits each node once. Key: if both subtrees return non-null, root is LCA</span></code></pre>
+</div>
+</details>
+
+<h2>Pattern 5: Dynamic Programming</h2>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">P5-1</span><span class="qt">Climbing Stairs — DP foundation</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// Recurrence: ways(n) = ways(n-1) + ways(n-2)</span>
+<span class="cm">// O(n) time, O(1) space — rolling variables</span>
+<span class="kw">fun</span> <span class="fn">climbStairs</span>(n: <span class="ty">Int</span>): <span class="ty">Int</span> {
+    <span class="kw">if</span> (n &lt;= <span class="cn">2</span>) <span class="kw">return</span> n
+    <span class="kw">var</span> <span class="cn">prev2</span> = <span class="cn">1</span>; <span class="kw">var</span> <span class="cn">prev1</span> = <span class="cn">2</span>
+    <span class="kw">for</span> (i <span class="kw">in</span> <span class="cn">3</span>..n) {
+        <span class="kw">val</span> <span class="cn">cur</span> = prev1 + prev2
+        prev2 = prev1; prev1 = cur
+    }
+    <span class="kw">return</span> prev1
+}</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">P5-2</span><span class="qt">Longest Common Subsequence</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="kw">fun</span> <span class="fn">longestCommonSubsequence</span>(text1: <span class="ty">String</span>, text2: <span class="ty">String</span>): <span class="ty">Int</span> {
+    <span class="kw">val</span> <span class="cn">m</span> = text1.length; <span class="kw">val</span> <span class="cn">n</span> = text2.length
+    <span class="kw">val</span> <span class="cn">dp</span> = <span class="ty">Array</span>(m + <span class="cn">1</span>) { <span class="ty">IntArray</span>(n + <span class="cn">1</span>) } <span class="cm">// dp[i][j] = LCS of text1[0..i-1] and text2[0..j-1]</span>
+    <span class="kw">for</span> (i <span class="kw">in</span> <span class="cn">1</span>..m) {
+        <span class="kw">for</span> (j <span class="kw">in</span> <span class="cn">1</span>..n) {
+            dp[i][j] = <span class="kw">if</span> (text1[i-<span class="cn">1</span>] == text2[j-<span class="cn">1</span>]) dp[i-<span class="cn">1</span>][j-<span class="cn">1</span>] + <span class="cn">1</span>
+                       <span class="kw">else</span> <span class="fn">maxOf</span>(dp[i-<span class="cn">1</span>][j], dp[i][j-<span class="cn">1</span>])
+        }
+    }
+    <span class="kw">return</span> dp[m][n]
+}
+<span class="cm">// O(m*n) time and space. Classic 2D DP problem.</span></code></pre>
+</div>
+</details>
+
+<h2>Pattern 6: Graph BFS/DFS</h2>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">P6-1</span><span class="qt">Number of Islands — DFS on grid</span><span class="dif med">Medium — Must Know</span></summary>
+<div class="ans">
+<pre><code><span class="kw">fun</span> <span class="fn">numIslands</span>(grid: <span class="ty">Array</span>&lt;<span class="ty">CharArray</span>&gt;): <span class="ty">Int</span> {
+    <span class="kw">var</span> <span class="cn">count</span> = <span class="cn">0</span>
+    <span class="kw">for</span> (r <span class="kw">in</span> grid.<span class="fn">indices</span>) {
+        <span class="kw">for</span> (c <span class="kw">in</span> grid[r].<span class="fn">indices</span>) {
+            <span class="kw">if</span> (grid[r][c] == <span class="st">'1'</span>) {
+                count++
+                <span class="fn">dfs</span>(grid, r, c) <span class="cm">// mark all connected land as visited</span>
+            }
+        }
+    }
+    <span class="kw">return</span> count
+}
+
+<span class="kw">private fun</span> <span class="fn">dfs</span>(grid: <span class="ty">Array</span>&lt;<span class="ty">CharArray</span>&gt;, r: <span class="ty">Int</span>, c: <span class="ty">Int</span>) {
+    <span class="kw">if</span> (r &lt; <span class="cn">0</span> || r >= grid.size || c &lt; <span class="cn">0</span> || c >= grid[<span class="cn">0</span>].size || grid[r][c] != <span class="st">'1'</span>) <span class="kw">return</span>
+    grid[r][c] = <span class="st">'0'</span> <span class="cm">// mark visited</span>
+    <span class="fn">dfs</span>(grid, r+<span class="cn">1</span>, c); <span class="fn">dfs</span>(grid, r-<span class="cn">1</span>, c)
+    <span class="fn">dfs</span>(grid, r, c+<span class="cn">1</span>); <span class="fn">dfs</span>(grid, r, c-<span class="cn">1</span>)
+}
+<span class="cm">// O(m*n) time. Modify grid in-place to avoid visited set.</span></code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">P6-2</span><span class="qt">Word Ladder — BFS shortest path</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="kw">fun</span> <span class="fn">ladderLength</span>(beginWord: <span class="ty">String</span>, endWord: <span class="ty">String</span>, wordList: <span class="ty">List</span>&lt;<span class="ty">String</span>&gt;): <span class="ty">Int</span> {
+    <span class="kw">val</span> <span class="cn">wordSet</span> = wordList.<span class="fn">toHashSet</span>()
+    <span class="kw">if</span> (!wordSet.<span class="fn">contains</span>(endWord)) <span class="kw">return</span> <span class="cn">0</span>
+    <span class="kw">val</span> <span class="cn">queue</span>: <span class="ty">ArrayDeque</span>&lt;<span class="ty">String</span>&gt; = <span class="ty">ArrayDeque</span>()
+    queue.<span class="fn">addLast</span>(beginWord); <span class="kw">var</span> <span class="cn">steps</span> = <span class="cn">1</span>
+    <span class="kw">while</span> (queue.<span class="fn">isNotEmpty</span>()) {
+        <span class="fn">repeat</span>(queue.size) {
+            <span class="kw">val</span> <span class="cn">word</span> = queue.<span class="fn">removeFirst</span>()
+            <span class="kw">for</span> (i <span class="kw">in</span> word.<span class="fn">indices</span>) {
+                <span class="kw">for</span> (c <span class="kw">in</span> <span class="st">'a'</span>..<span class="st">'z'</span>) {
+                    <span class="kw">val</span> <span class="cn">next</span> = word.<span class="fn">substring</span>(<span class="cn">0</span>, i) + c + word.<span class="fn">substring</span>(i+<span class="cn">1</span>)
+                    <span class="kw">if</span> (next == endWord) <span class="kw">return</span> steps + <span class="cn">1</span>
+                    <span class="kw">if</span> (wordSet.<span class="fn">remove</span>(next)) queue.<span class="fn">addLast</span>(next)
+                }
+            }
+        }
+        steps++
+    }
+    <span class="kw">return</span> <span class="cn">0</span>
+}
+<span class="cm">// BFS guarantees shortest path. Remove from set to mark visited.</span></code></pre>
+</div>
+</details>
+
+<h2>Pattern 7: Backtracking</h2>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">P7-1</span><span class="qt">Subsets — all possible subsets of a set</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>Backtracking explores a decision tree where at each index you either <strong>include</strong> or <strong>exclude</strong> the current element, then recurse on the rest. Because every partial path is itself a valid subset, <span class="ic">current</span> is recorded at the top of every call rather than only at a "base case" — together the tree's nodes account for all 2^n subsets.</p>
+<pre><code><span class="kw">fun</span> <span class="fn">subsets</span>(nums: <span class="ty">IntArray</span>): <span class="ty">List</span>&lt;<span class="ty">List</span>&lt;<span class="ty">Int</span>&gt;&gt; {
+    <span class="kw">val</span> <span class="cn">result</span> = <span class="ty">mutableListOf</span>&lt;<span class="ty">List</span>&lt;<span class="ty">Int</span>&gt;&gt;()
+    <span class="kw">val</span> <span class="cn">current</span> = <span class="ty">mutableListOf</span>&lt;<span class="ty">Int</span>&gt;()
+    <span class="kw">fun</span> <span class="fn">backtrack</span>(start: <span class="ty">Int</span>) {
+        result.<span class="fn">add</span>(current.<span class="fn">toList</span>())       <span class="cm">// every partial state is a valid subset</span>
+        <span class="kw">for</span> (i <span class="kw">in</span> start <span class="kw">until</span> nums.size) {
+            current.<span class="fn">add</span>(nums[i])              <span class="cm">// include</span>
+            <span class="fn">backtrack</span>(i + <span class="cn">1</span>)
+            current.<span class="fn">removeAt</span>(current.size - <span class="cn">1</span>) <span class="cm">// exclude — undo</span>
+        }
+    }
+    <span class="fn">backtrack</span>(<span class="cn">0</span>)
+    <span class="kw">return</span> result
+}
+<span class="cm">// O(n * 2^n) time, O(n) space (recursion depth)</span></code></pre>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 340 150" style="width:100%;height:auto">
+<line x1="170" y1="32" x2="90" y2="65" stroke="var(--b2)" stroke-width="2"/>
+<line x1="170" y1="32" x2="250" y2="65" stroke="var(--b2)" stroke-width="2"/>
+<line x1="90" y1="87" x2="45" y2="120" stroke="var(--b2)" stroke-width="2"/>
+<line x1="90" y1="87" x2="135" y2="120" stroke="var(--b2)" stroke-width="2"/>
+<line x1="250" y1="87" x2="205" y2="120" stroke="var(--b2)" stroke-width="2"/>
+<line x1="250" y1="87" x2="295" y2="120" stroke="var(--b2)" stroke-width="2"/>
+<text x="115" y="52" font-size="10" fill="var(--muted)">incl 1</text>
+<text x="215" y="52" font-size="10" fill="var(--muted)">excl 1</text>
+<text x="55" y="107" font-size="10" fill="var(--muted)">incl 2</text>
+<text x="105" y="107" font-size="10" fill="var(--muted)">excl 2</text>
+<text x="215" y="107" font-size="10" fill="var(--muted)">incl 2</text>
+<text x="265" y="107" font-size="10" fill="var(--muted)">excl 2</text>
+<rect x="150" y="10" width="40" height="22" rx="4" fill="var(--blub)" stroke="var(--blu)"/><text x="170" y="26" text-anchor="middle" font-size="11" fill="var(--blul)">[ ]</text>
+<rect x="65" y="65" width="50" height="22" rx="4" fill="var(--s3)" stroke="var(--b2)"/><text x="90" y="81" text-anchor="middle" font-size="11" fill="var(--txt)">{1}</text>
+<rect x="225" y="65" width="50" height="22" rx="4" fill="var(--s3)" stroke="var(--b2)"/><text x="250" y="81" text-anchor="middle" font-size="11" fill="var(--txt)">{}</text>
+<rect x="20" y="120" width="50" height="22" rx="4" fill="var(--grnb)" stroke="var(--grn)"/><text x="45" y="136" text-anchor="middle" font-size="11" fill="var(--grnl)">{1,2}</text>
+<rect x="110" y="120" width="50" height="22" rx="4" fill="var(--grnb)" stroke="var(--grn)"/><text x="135" y="136" text-anchor="middle" font-size="11" fill="var(--grnl)">{1}</text>
+<rect x="180" y="120" width="50" height="22" rx="4" fill="var(--grnb)" stroke="var(--grn)"/><text x="205" y="136" text-anchor="middle" font-size="11" fill="var(--grnl)">{2}</text>
+<rect x="270" y="120" width="50" height="22" rx="4" fill="var(--grnb)" stroke="var(--grn)"/><text x="295" y="136" text-anchor="middle" font-size="11" fill="var(--grnl)">{}</text>
+</svg>
+</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">P7-2</span><span class="qt">Permutations — all orderings of a set</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>Same include/exclude recursion shape as Subsets above, but here <strong>order matters</strong> and every element must appear exactly once. A <span class="ic">used[]</span> array tracks which indices are already placed in the current path — skipping used indices while descending, then un-marking them after the recursive call returns ("undo"), is what lets one array serve every branch. The recursion tree looks just like the Subsets diagram above, except every root-to-leaf path has length n instead of a varying length.</p>
+<pre><code><span class="kw">fun</span> <span class="fn">permute</span>(nums: <span class="ty">IntArray</span>): <span class="ty">List</span>&lt;<span class="ty">List</span>&lt;<span class="ty">Int</span>&gt;&gt; {
+    <span class="kw">val</span> <span class="cn">result</span> = <span class="ty">mutableListOf</span>&lt;<span class="ty">List</span>&lt;<span class="ty">Int</span>&gt;&gt;()
+    <span class="kw">val</span> <span class="cn">path</span> = <span class="ty">mutableListOf</span>&lt;<span class="ty">Int</span>&gt;()
+    <span class="kw">val</span> <span class="cn">used</span> = <span class="ty">BooleanArray</span>(nums.size)
+    <span class="kw">fun</span> <span class="fn">backtrack</span>() {
+        <span class="kw">if</span> (path.size == nums.size) { result.<span class="fn">add</span>(path.<span class="fn">toList</span>()); <span class="kw">return</span> }
+        <span class="kw">for</span> (i <span class="kw">in</span> nums.<span class="fn">indices</span>) {
+            <span class="kw">if</span> (used[i]) <span class="kw">continue</span>
+            used[i] = <span class="kw">true</span>; path.<span class="fn">add</span>(nums[i])
+            <span class="fn">backtrack</span>()
+            path.<span class="fn">removeAt</span>(path.size - <span class="cn">1</span>); used[i] = <span class="kw">false</span> <span class="cm">// undo</span>
+        }
+    }
+    <span class="fn">backtrack</span>()
+    <span class="kw">return</span> result
+}
+<span class="cm">// O(n * n!) time, O(n) space</span></code></pre>
+</div>
+</details>
+
+<h2>Pattern 8: Heap / Priority Queue</h2>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">P8-1</span><span class="qt">Kth Largest Element in an Array</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>Keep a <strong>min-heap capped at size k</strong>. Push every value; whenever the heap grows past k, pop — that always evicts the current smallest of the k largest-so-far. After scanning all n elements, whatever remains at the root is the kth largest. This beats sorting the whole array (O(n log n)) whenever k is much smaller than n.</p>
+<pre><code><span class="kw">fun</span> <span class="fn">findKthLargest</span>(nums: <span class="ty">IntArray</span>, k: <span class="ty">Int</span>): <span class="ty">Int</span> {
+    <span class="kw">val</span> <span class="cn">minHeap</span> = <span class="ty">PriorityQueue</span>&lt;<span class="ty">Int</span>&gt;()
+    <span class="kw">for</span> (num <span class="kw">in</span> nums) {
+        minHeap.<span class="fn">add</span>(num)
+        <span class="kw">if</span> (minHeap.size &gt; k) minHeap.<span class="fn">poll</span>() <span class="cm">// evict smallest, keep size == k</span>
+    }
+    <span class="kw">return</span> minHeap.<span class="fn">peek</span>()
+}
+<span class="cm">// O(n log k) time, O(k) space</span></code></pre>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 300 130" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-dsa-4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+</marker>
+</defs>
+<text x="150" y="14" text-anchor="middle" font-size="10" fill="var(--muted)">min-heap holding the k=3 largest values seen so far</text>
+<line x1="150" y1="48" x2="95" y2="90" stroke="var(--b2)" stroke-width="2"/>
+<line x1="150" y1="48" x2="205" y2="90" stroke="var(--b2)" stroke-width="2"/>
+<circle cx="150" cy="35" r="18" fill="var(--redb)" stroke="var(--red)" stroke-width="2"/><text x="150" y="40" text-anchor="middle" font-size="13" fill="var(--redl)">5</text>
+<circle cx="95" cy="100" r="16" fill="var(--s3)" stroke="var(--b2)" stroke-width="2"/><text x="95" y="105" text-anchor="middle" font-size="12" fill="var(--txt)">9</text>
+<circle cx="205" cy="100" r="16" fill="var(--s3)" stroke="var(--b2)" stroke-width="2"/><text x="205" y="105" text-anchor="middle" font-size="12" fill="var(--txt)">6</text>
+<path d="M168,32 Q225,15 240,42" stroke="var(--muted)" stroke-width="1.5" fill="none" marker-end="url(#arrow-dsa-4)"/>
+<text x="243" y="46" font-size="9" fill="var(--muted)">poll() if size&gt;k</text>
+<text x="150" y="122" text-anchor="middle" font-size="9" fill="var(--redl)">root = kth (3rd) largest = answer</text>
+</svg>
+</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">P8-2</span><span class="qt">Merge K Sorted Lists</span><span class="dif hard">Hard — Google Favorite</span></summary>
+<div class="ans">
+<p>Seed a <strong>min-heap ordered by node value</strong> with the head of each of the k lists. Repeatedly pop the smallest node, append it to the merged output, then push that node's <span class="ic">next</span> (if it exists) back into the heap. This is the same k-way merge used inside merge sort — the heap just replaces manually comparing k pointers on every step.</p>
+<pre><code><span class="kw">class</span> <span class="ty">ListNode</span>(<span class="kw">var</span> <span class="cn">value</span>: <span class="ty">Int</span>, <span class="kw">var</span> <span class="cn">next</span>: <span class="ty">ListNode</span>? = <span class="kw">null</span>)
+
+<span class="kw">fun</span> <span class="fn">mergeKLists</span>(lists: <span class="ty">Array</span>&lt;<span class="ty">ListNode</span>?&gt;): <span class="ty">ListNode</span>? {
+    <span class="kw">val</span> <span class="cn">heap</span> = <span class="ty">PriorityQueue</span>&lt;<span class="ty">ListNode</span>&gt;(<span class="fn">compareBy</span> { it.value })
+    <span class="kw">for</span> (node <span class="kw">in</span> lists) node?.<span class="fn">let</span> { heap.<span class="fn">add</span>(it) }
+    <span class="kw">val</span> <span class="cn">dummy</span> = <span class="ty">ListNode</span>(<span class="cn">0</span>); <span class="kw">var</span> <span class="cn">tail</span> = dummy
+    <span class="kw">while</span> (heap.<span class="fn">isNotEmpty</span>()) {
+        <span class="kw">val</span> <span class="cn">smallest</span> = heap.<span class="fn">poll</span>()
+        tail.next = smallest; tail = smallest
+        smallest.next?.<span class="fn">let</span> { heap.<span class="fn">add</span>(it) } <span class="cm">// push popped list's next node</span>
+    }
+    <span class="kw">return</span> dummy.next
+}
+<span class="cm">// O(n log k) time, O(k) space</span></code></pre>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 320 170" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-dsa-5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="var(--blul)"/>
+</marker>
+</defs>
+<text x="10" y="14" font-size="10" fill="var(--muted)">3 sorted lists — heads (ringed) are the heap candidates</text>
+<circle cx="30" cy="35" r="14" fill="var(--blub)" stroke="var(--blu)" stroke-width="2"/><text x="30" y="39" text-anchor="middle" font-size="11" fill="var(--blul)">1</text>
+<line x1="44" y1="35" x2="66" y2="35" stroke="var(--b2)"/>
+<circle cx="80" cy="35" r="14" fill="var(--s3)" stroke="var(--b2)"/><text x="80" y="39" text-anchor="middle" font-size="11" fill="var(--txt)">4</text>
+<line x1="94" y1="35" x2="116" y2="35" stroke="var(--b2)"/>
+<circle cx="130" cy="35" r="14" fill="var(--s3)" stroke="var(--b2)"/><text x="130" y="39" text-anchor="middle" font-size="11" fill="var(--txt)">5</text>
+<circle cx="30" cy="80" r="14" fill="var(--blub)" stroke="var(--blu)" stroke-width="2"/><text x="30" y="84" text-anchor="middle" font-size="11" fill="var(--blul)">1</text>
+<line x1="44" y1="80" x2="66" y2="80" stroke="var(--b2)"/>
+<circle cx="80" cy="80" r="14" fill="var(--s3)" stroke="var(--b2)"/><text x="80" y="84" text-anchor="middle" font-size="11" fill="var(--txt)">3</text>
+<line x1="94" y1="80" x2="116" y2="80" stroke="var(--b2)"/>
+<circle cx="130" cy="80" r="14" fill="var(--s3)" stroke="var(--b2)"/><text x="130" y="84" text-anchor="middle" font-size="11" fill="var(--txt)">4</text>
+<circle cx="30" cy="125" r="14" fill="var(--blub)" stroke="var(--blu)" stroke-width="2"/><text x="30" y="129" text-anchor="middle" font-size="11" fill="var(--blul)">2</text>
+<line x1="44" y1="125" x2="66" y2="125" stroke="var(--b2)"/>
+<circle cx="80" cy="125" r="14" fill="var(--s3)" stroke="var(--b2)"/><text x="80" y="129" text-anchor="middle" font-size="11" fill="var(--txt)">6</text>
+<path d="M44,32 Q170,20 220,55" stroke="var(--blul)" stroke-width="1.5" fill="none" marker-end="url(#arrow-dsa-5)"/>
+<path d="M44,80 Q170,80 220,75" stroke="var(--blul)" stroke-width="1.5" fill="none" marker-end="url(#arrow-dsa-5)"/>
+<path d="M44,125 Q170,120 220,90" stroke="var(--blul)" stroke-width="1.5" fill="none" marker-end="url(#arrow-dsa-5)"/>
+<rect x="225" y="50" width="80" height="50" rx="6" fill="var(--s2)" stroke="var(--b2)"/>
+<text x="265" y="70" text-anchor="middle" font-size="10" fill="var(--txt)">heap:</text>
+<text x="265" y="86" text-anchor="middle" font-size="11" fill="var(--blul)">{1,1,2}</text>
+<text x="10" y="150" font-size="9" fill="var(--muted)">poll smallest (1) → append to result → push its next (4) back into heap</text>
+</svg>
+</div>
+</div>
+</details>
+
+<h2>Pattern 9: Trie</h2>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">P9-1</span><span class="qt">Implement Trie (Prefix Tree)</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>Each <span class="ic">TrieNode</span> holds a map from the next character to a child node, plus an <span class="ic">isEnd</span> flag. <span class="ic">insert</span> walks the word, creating child nodes on demand; <span class="ic">search</span> walks the same path and only succeeds if it lands on a node flagged <span class="ic">isEnd</span> (<span class="ic">startsWith</span> is identical but skips that final check). The diagram below shows the shared structure after inserting "cat", "car" and "dog" — note how "cat" and "car" share the c→a path before splitting.</p>
+<pre><code><span class="kw">class</span> <span class="ty">TrieNode</span> {
+    <span class="kw">val</span> <span class="cn">children</span> = <span class="ty">HashMap</span>&lt;<span class="ty">Char</span>, <span class="ty">TrieNode</span>&gt;()
+    <span class="kw">var</span> <span class="cn">isEnd</span> = <span class="kw">false</span>
+}
+
+<span class="kw">class</span> <span class="ty">Trie</span> {
+    <span class="kw">private val</span> <span class="cn">root</span> = <span class="ty">TrieNode</span>()
+    <span class="kw">fun</span> <span class="fn">insert</span>(word: <span class="ty">String</span>) {
+        <span class="kw">var</span> <span class="cn">node</span> = root
+        <span class="kw">for</span> (c <span class="kw">in</span> word) node = node.children.<span class="fn">getOrPut</span>(c) { <span class="ty">TrieNode</span>() }
+        node.isEnd = <span class="kw">true</span>
+    }
+    <span class="kw">fun</span> <span class="fn">search</span>(word: <span class="ty">String</span>): <span class="ty">Boolean</span> {
+        <span class="kw">var</span> <span class="cn">node</span> = root
+        <span class="kw">for</span> (c <span class="kw">in</span> word) node = node.children[c] ?: <span class="kw">return</span> <span class="kw">false</span>
+        <span class="kw">return</span> node.isEnd
+    }
+}
+<span class="cm">// insert/search: O(L) time, L = word length</span></code></pre>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 560 320" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-dsa-3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+</marker>
+</defs>
+<text x="280" y="18" text-anchor="middle" font-size="11" fill="var(--muted)">Trie after inserting: "cat", "car", "dog"</text>
+<line x1="290" y1="55" x2="190" y2="115" stroke="var(--b2)" stroke-width="2" marker-end="url(#arrow-dsa-3)"/>
+<text x="225" y="80" font-size="11" fill="var(--muted)">c</text>
+<line x1="290" y1="55" x2="410" y2="115" stroke="var(--b2)" stroke-width="2" marker-end="url(#arrow-dsa-3)"/>
+<text x="355" y="80" font-size="11" fill="var(--muted)">d</text>
+<line x1="190" y1="120" x2="190" y2="180" stroke="var(--b2)" stroke-width="2" marker-end="url(#arrow-dsa-3)"/>
+<text x="202" y="153" font-size="11" fill="var(--muted)">a</text>
+<line x1="410" y1="120" x2="410" y2="180" stroke="var(--b2)" stroke-width="2" marker-end="url(#arrow-dsa-3)"/>
+<text x="422" y="153" font-size="11" fill="var(--muted)">o</text>
+<line x1="182" y1="196" x2="140" y2="250" stroke="var(--b2)" stroke-width="2" marker-end="url(#arrow-dsa-3)"/>
+<text x="150" y="225" font-size="11" fill="var(--muted)">t</text>
+<line x1="198" y1="196" x2="230" y2="250" stroke="var(--b2)" stroke-width="2" marker-end="url(#arrow-dsa-3)"/>
+<text x="222" y="225" font-size="11" fill="var(--muted)">r</text>
+<line x1="410" y1="196" x2="410" y2="250" stroke="var(--b2)" stroke-width="2" marker-end="url(#arrow-dsa-3)"/>
+<text x="422" y="225" font-size="11" fill="var(--muted)">g</text>
+<circle cx="290" cy="40" r="17" fill="var(--blub)" stroke="var(--blu)" stroke-width="2"/>
+<text x="290" y="45" text-anchor="middle" font-size="12" fill="var(--blul)">•</text>
+<circle cx="190" cy="118" r="17" fill="var(--s3)" stroke="var(--b2)" stroke-width="2"/>
+<text x="190" y="123" text-anchor="middle" font-size="13" fill="var(--txt)">c</text>
+<circle cx="410" cy="118" r="17" fill="var(--s3)" stroke="var(--b2)" stroke-width="2"/>
+<text x="410" y="123" text-anchor="middle" font-size="13" fill="var(--txt)">d</text>
+<circle cx="190" cy="188" r="17" fill="var(--s3)" stroke="var(--b2)" stroke-width="2"/>
+<text x="190" y="193" text-anchor="middle" font-size="13" fill="var(--txt)">a</text>
+<circle cx="410" cy="188" r="17" fill="var(--s3)" stroke="var(--b2)" stroke-width="2"/>
+<text x="410" y="193" text-anchor="middle" font-size="13" fill="var(--txt)">o</text>
+<circle cx="140" cy="258" r="18" fill="var(--redb)" stroke="var(--red)" stroke-width="2"/>
+<circle cx="140" cy="258" r="12" fill="none" stroke="var(--red)" stroke-width="1.5"/>
+<text x="140" y="263" text-anchor="middle" font-size="13" fill="var(--redl)">t</text>
+<circle cx="230" cy="258" r="18" fill="var(--redb)" stroke="var(--red)" stroke-width="2"/>
+<circle cx="230" cy="258" r="12" fill="none" stroke="var(--red)" stroke-width="1.5"/>
+<text x="230" y="263" text-anchor="middle" font-size="13" fill="var(--redl)">r</text>
+<circle cx="410" cy="258" r="18" fill="var(--redb)" stroke="var(--red)" stroke-width="2"/>
+<circle cx="410" cy="258" r="12" fill="none" stroke="var(--red)" stroke-width="1.5"/>
+<text x="410" y="263" text-anchor="middle" font-size="13" fill="var(--redl)">g</text>
+<text x="280" y="298" text-anchor="middle" font-size="10" fill="var(--muted)">double ring = isEnd (end of "cat" / "car" / "dog")</text>
+</svg>
+</div>
+<div class="note nblu">💡 <strong>Extension — Word Search II:</strong> build one Trie from the whole dictionary, then backtrack over the grid; at each cell, step into <span class="ic">node.children[grid[r][c]]</span> and prune immediately if it doesn't exist. Far cheaper than searching the grid once per word.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">P9-2</span><span class="qt">Longest Common Prefix (Trie-based)</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<p>Insert every string into a Trie, then walk the path spelled by <span class="ic">strs[0]</span>. The shared prefix ends the instant a node has more than one child (the strings diverge) or a shorter inserted word ends exactly there (<span class="ic">isEnd</span>). In the Trie diagram above, inserting "cat","car","dog" branches at the <strong>root</strong> immediately (children c and d), so their combined LCP is <span class="ic">""</span>; insert just "cat","car" and the shared path continues through c→a before splitting at t vs r, giving LCP <span class="ic">"ca"</span>.</p>
+<pre><code><span class="kw">fun</span> <span class="fn">longestCommonPrefix</span>(strs: <span class="ty">Array</span>&lt;<span class="ty">String</span>&gt;): <span class="ty">String</span> {
+    <span class="kw">if</span> (strs.<span class="fn">isEmpty</span>()) <span class="kw">return</span> <span class="st">""</span>
+    <span class="kw">val</span> <span class="cn">root</span> = <span class="ty">TrieNode</span>()
+    <span class="kw">for</span> (s <span class="kw">in</span> strs) {
+        <span class="kw">var</span> <span class="cn">node</span> = root
+        <span class="kw">for</span> (c <span class="kw">in</span> s) node = node.children.<span class="fn">getOrPut</span>(c) { <span class="ty">TrieNode</span>() }
+        node.isEnd = <span class="kw">true</span>
+    }
+    <span class="kw">val</span> <span class="cn">sb</span> = <span class="ty">StringBuilder</span>()
+    <span class="kw">var</span> <span class="cn">node</span> = root
+    <span class="kw">for</span> (c <span class="kw">in</span> strs[<span class="cn">0</span>]) {
+        <span class="kw">if</span> (node.children.size != <span class="cn">1</span> || node.isEnd) <span class="kw">break</span> <span class="cm">// branch, or a shorter word ends here</span>
+        node = node.children[c]!!; sb.<span class="fn">append</span>(c)
+    }
+    <span class="kw">return</span> sb.<span class="fn">toString</span>()
+}
+<span class="cm">// O(sum of string lengths) time and space</span></code></pre>
+</div>
+</details>
+
+<h2>Pattern 10: Linked List</h2>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">P10-1</span><span class="qt">Reverse a Linked List</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<p>Walk the list once with three pointers: <span class="ic">prev</span> (the already-reversed portion), <span class="ic">cur</span> (the node being processed), and a temporary <span class="ic">next</span> that saves where to go before you overwrite <span class="ic">cur.next</span>. Each iteration flips exactly one link; once <span class="ic">cur</span> runs out, <span class="ic">prev</span> is sitting on the new head.</p>
+<pre><code><span class="kw">class</span> <span class="ty">ListNode</span>(<span class="kw">var</span> <span class="cn">value</span>: <span class="ty">Int</span>, <span class="kw">var</span> <span class="cn">next</span>: <span class="ty">ListNode</span>? = <span class="kw">null</span>)
+
+<span class="kw">fun</span> <span class="fn">reverseList</span>(head: <span class="ty">ListNode</span>?): <span class="ty">ListNode</span>? {
+    <span class="kw">var</span> <span class="cn">prev</span>: <span class="ty">ListNode</span>? = <span class="kw">null</span>
+    <span class="kw">var</span> <span class="cn">cur</span> = head
+    <span class="kw">while</span> (cur != <span class="kw">null</span>) {
+        <span class="kw">val</span> <span class="cn">next</span> = cur.next   <span class="cm">// save before overwriting</span>
+        cur.next = prev
+        prev = cur; cur = next
+    }
+    <span class="kw">return</span> prev <span class="cm">// new head</span>
+}
+<span class="cm">// O(n) time, O(1) space</span></code></pre>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 340 140" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-dsa-6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="var(--grnl)"/>
+</marker>
+</defs>
+<text x="10" y="16" font-size="10" fill="var(--muted)">before: 1 → 2 → 3 → null (dashed, faded)</text>
+<text x="10" y="132" font-size="10" fill="var(--grnl)">after: null ← 1 ← 2 ← 3 (solid, reversed)</text>
+<rect x="10" y="60" width="30" height="26" rx="4" stroke-dasharray="3,2" fill="none" stroke="var(--muted)"/><text x="25" y="78" text-anchor="middle" font-size="10" fill="var(--muted)">null</text>
+<rect x="70" y="60" width="34" height="26" rx="4" fill="var(--s3)" stroke="var(--b2)"/><text x="87" y="78" text-anchor="middle" font-size="12" fill="var(--txt)">1</text>
+<rect x="150" y="60" width="34" height="26" rx="4" fill="var(--s3)" stroke="var(--b2)"/><text x="167" y="78" text-anchor="middle" font-size="12" fill="var(--txt)">2</text>
+<rect x="230" y="60" width="34" height="26" rx="4" fill="var(--s3)" stroke="var(--b2)"/><text x="247" y="78" text-anchor="middle" font-size="12" fill="var(--txt)">3</text>
+<rect x="295" y="60" width="34" height="26" rx="4" stroke-dasharray="3,2" fill="none" stroke="var(--muted)"/><text x="312" y="78" text-anchor="middle" font-size="10" fill="var(--muted)">null</text>
+<line x1="104" y1="55" x2="146" y2="55" stroke="var(--muted)" stroke-dasharray="3,2"/>
+<line x1="184" y1="55" x2="226" y2="55" stroke="var(--muted)" stroke-dasharray="3,2"/>
+<line x1="264" y1="55" x2="291" y2="55" stroke="var(--muted)" stroke-dasharray="3,2"/>
+<line x1="150" y1="92" x2="108" y2="92" stroke="var(--grnl)" stroke-width="1.5" marker-end="url(#arrow-dsa-6)"/>
+<line x1="230" y1="92" x2="188" y2="92" stroke="var(--grnl)" stroke-width="1.5" marker-end="url(#arrow-dsa-6)"/>
+<line x1="70" y1="92" x2="44" y2="92" stroke="var(--grnl)" stroke-width="1.5" marker-end="url(#arrow-dsa-6)"/>
+</svg>
+</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">P10-2</span><span class="qt">Detect Cycle in a Linked List</span><span class="dif med">Medium — Google Favorite</span></summary>
+<div class="ans">
+<p><strong>Floyd's Tortoise and Hare:</strong> advance <span class="ic">slow</span> one step and <span class="ic">fast</span> two steps per round. If there's a cycle, <span class="ic">fast</span> eventually laps <span class="ic">slow</span> and they land on the same node; if <span class="ic">fast</span> reaches <span class="ic">null</span> first, there's no cycle. To find where the cycle <em>begins</em>: once they meet, reset one pointer to <span class="ic">head</span> and advance both one step at a time — they meet again exactly at the cycle's entry point (the distance from <span class="ic">head</span> to the entry equals the distance from the meeting point to the entry, modulo the cycle length).</p>
+<pre><code><span class="kw">fun</span> <span class="fn">hasCycle</span>(head: <span class="ty">ListNode</span>?): <span class="ty">Boolean</span> {
+    <span class="kw">var</span> <span class="cn">slow</span> = head; <span class="kw">var</span> <span class="cn">fast</span> = head
+    <span class="kw">while</span> (fast?.next != <span class="kw">null</span>) {
+        slow = slow?.next
+        fast = fast.next?.next
+        <span class="kw">if</span> (slow === fast) <span class="kw">return</span> <span class="kw">true</span> <span class="cm">// pointers meet -> cycle</span>
+    }
+    <span class="kw">return</span> <span class="kw">false</span>
+}
+<span class="cm">// O(n) time, O(1) space</span></code></pre>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 260 190" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-dsa-7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="var(--pur)"/>
+</marker>
+</defs>
+<text x="130" y="16" text-anchor="middle" font-size="10" fill="var(--muted)">slow moves 1 step, fast moves 2 steps per round</text>
+<line x1="44" y1="60" x2="76" y2="60" stroke="var(--b2)" stroke-width="2"/>
+<line x1="104" y1="60" x2="146" y2="60" stroke="var(--b2)" stroke-width="2"/>
+<line x1="171" y1="72" x2="199" y2="98" stroke="var(--b2)" stroke-width="2"/>
+<line x1="200" y1="122" x2="171" y2="148" stroke="var(--b2)" stroke-width="2"/>
+<path d="M146,155 Q100,110 148,72" stroke="var(--pur)" stroke-width="2" fill="none" marker-end="url(#arrow-dsa-7)"/>
+<circle cx="30" cy="60" r="15" fill="var(--s3)" stroke="var(--b2)"/><text x="30" y="64" text-anchor="middle" font-size="11" fill="var(--txt)">1</text>
+<circle cx="90" cy="60" r="15" fill="var(--s3)" stroke="var(--b2)"/><text x="90" y="64" text-anchor="middle" font-size="11" fill="var(--txt)">2</text>
+<circle cx="160" cy="60" r="16" fill="var(--redb)" stroke="var(--red)" stroke-width="2"/><text x="160" y="64" text-anchor="middle" font-size="11" fill="var(--redl)">3</text>
+<circle cx="210" cy="110" r="15" fill="var(--s3)" stroke="var(--b2)"/><text x="210" y="114" text-anchor="middle" font-size="11" fill="var(--txt)">4</text>
+<circle cx="160" cy="160" r="15" fill="var(--s3)" stroke="var(--b2)"/><text x="160" y="164" text-anchor="middle" font-size="11" fill="var(--txt)">5</text>
+<text x="160" y="184" text-anchor="middle" font-size="9" fill="var(--redl)">slow &amp; fast meet inside the cycle (node 3)</text>
+</svg>
+</div>
+</div>
+</details>
+
+<h2>Pattern 11: Intervals / Greedy</h2>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">P11-1</span><span class="qt">Merge Intervals</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>Sort intervals by <strong>start time</strong> — that guarantees any overlap can only happen between an interval and the one most recently merged. Then scan once: if the next interval starts before (or exactly when) the last merged interval ends, extend that interval's end; otherwise it's disjoint and starts a new group.</p>
+<pre><code><span class="kw">fun</span> <span class="fn">merge</span>(intervals: <span class="ty">Array</span>&lt;<span class="ty">IntArray</span>&gt;): <span class="ty">List</span>&lt;<span class="ty">IntArray</span>&gt; {
+    intervals.<span class="fn">sortBy</span> { it[<span class="cn">0</span>] }              <span class="cm">// sort by start time</span>
+    <span class="kw">val</span> <span class="cn">result</span> = <span class="ty">mutableListOf</span>(intervals[<span class="cn">0</span>])
+    <span class="kw">for</span> (i <span class="kw">in</span> <span class="cn">1</span> <span class="kw">until</span> intervals.size) {
+        <span class="kw">val</span> <span class="cn">last</span> = result.<span class="fn">last</span>(); <span class="kw">val</span> <span class="cn">cur</span> = intervals[i]
+        <span class="kw">if</span> (cur[<span class="cn">0</span>] &lt;= last[<span class="cn">1</span>]) last[<span class="cn">1</span>] = <span class="fn">maxOf</span>(last[<span class="cn">1</span>], cur[<span class="cn">1</span>]) <span class="cm">// overlap -> merge</span>
+        <span class="kw">else</span> result.<span class="fn">add</span>(cur)                                            <span class="cm">// disjoint -> new group</span>
+    }
+    <span class="kw">return</span> result
+}
+<span class="cm">// O(n log n) time (sort dominates), O(n) space</span></code></pre>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 330 100" style="width:100%;height:auto">
+<text x="10" y="14" font-size="10" fill="var(--muted)">before (sorted by start):</text>
+<rect x="36" y="20" width="32" height="14" rx="3" fill="var(--blub)" stroke="var(--blu)"/>
+<rect x="52" y="38" width="64" height="14" rx="3" fill="var(--purb)" stroke="var(--pur)"/>
+<rect x="148" y="20" width="32" height="14" rx="3" fill="var(--ambb)" stroke="var(--amb)"/>
+<rect x="260" y="20" width="48" height="14" rx="3" fill="var(--cyab)" stroke="var(--cya)"/>
+<text x="10" y="70" font-size="10" fill="var(--muted)">after merge:</text>
+<rect x="36" y="76" width="80" height="14" rx="3" fill="var(--grnb)" stroke="var(--grn)"/>
+<rect x="148" y="76" width="32" height="14" rx="3" fill="var(--grnb)" stroke="var(--grn)"/>
+<rect x="260" y="76" width="48" height="14" rx="3" fill="var(--grnb)" stroke="var(--grn)"/>
+<text x="76" y="94" text-anchor="middle" font-size="9" fill="var(--grnl)">[1,6]</text>
+<text x="164" y="94" text-anchor="middle" font-size="9" fill="var(--grnl)">[8,10]</text>
+<text x="284" y="94" text-anchor="middle" font-size="9" fill="var(--grnl)">[15,18]</text>
+</svg>
+</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">P11-2</span><span class="qt">Meeting Rooms II — minimum rooms needed</span><span class="dif med">Medium — Google Favorite</span></summary>
+<div class="ans">
+<p>Sort meetings by start time, then track the <strong>end times of rooms currently in use</strong> in a min-heap. For each meeting, check the room that frees up earliest: if its end time is ≤ this meeting's start, that room is free — pop it and reuse it. Otherwise no existing room works, so the heap grows (a new room opens). The heap's final size is the peak number of rooms needed at once.</p>
+<pre><code><span class="kw">fun</span> <span class="fn">minMeetingRooms</span>(intervals: <span class="ty">Array</span>&lt;<span class="ty">IntArray</span>&gt;): <span class="ty">Int</span> {
+    <span class="kw">val</span> <span class="cn">minHeap</span> = <span class="ty">PriorityQueue</span>&lt;<span class="ty">Int</span>&gt;()               <span class="cm">// end times of occupied rooms</span>
+    <span class="kw">for</span> (m <span class="kw">in</span> intervals.<span class="fn">sortedBy</span> { it[<span class="cn">0</span>] }) {
+        <span class="kw">if</span> (minHeap.<span class="fn">isNotEmpty</span>() && minHeap.<span class="fn">peek</span>() &lt;= m[<span class="cn">0</span>]) minHeap.<span class="fn">poll</span>() <span class="cm">// reuse freed room</span>
+        minHeap.<span class="fn">add</span>(m[<span class="cn">1</span>])
+    }
+    <span class="kw">return</span> minHeap.size
+}
+<span class="cm">// O(n log n) time, O(n) space</span></code></pre>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 200 90" style="width:100%;height:auto">
+<defs>
+<marker id="arrow-dsa-8" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="var(--ambl)"/>
+</marker>
+</defs>
+<text x="10" y="12" font-size="10" fill="var(--muted)">meetings [0,30] [5,10] [15,20] need 2 rooms at once</text>
+<text x="10" y="34" font-size="9" fill="var(--muted)">room 1:</text>
+<rect x="55" y="24" width="120" height="16" rx="3" fill="var(--blub)" stroke="var(--blu)"/><text x="115" y="36" text-anchor="middle" font-size="9" fill="var(--blul)">[0,30]</text>
+<text x="10" y="64" font-size="9" fill="var(--muted)">room 2:</text>
+<rect x="75" y="54" width="20" height="16" rx="3" fill="var(--ambb)" stroke="var(--amb)"/><text x="85" y="66" text-anchor="middle" font-size="8" fill="var(--ambl)">[5,10]</text>
+<rect x="135" y="54" width="20" height="16" rx="3" fill="var(--ambb)" stroke="var(--amb)"/><text x="145" y="66" text-anchor="middle" font-size="8" fill="var(--ambl)">[15,20]</text>
+<path d="M95,62 Q115,80 135,62" stroke="var(--ambl)" stroke-width="1.5" fill="none" marker-end="url(#arrow-dsa-8)"/>
+<text x="115" y="82" text-anchor="middle" font-size="8" fill="var(--ambl)">room reused once freed</text>
+</svg>
+</div>
+<div class="note namb">💡 Equivalent alternative: sort <span class="ic">starts[]</span> and <span class="ic">ends[]</span> separately and sweep both with two pointers — same O(n log n) time, O(1) extra space (excluding the sort).</div>
+</div>
+</details>
+
+<h2>Interview Tips for DSA</h2>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">★</span><span class="qt">How to approach a coding problem at Google</span><span class="dif goog">Must Know</span></summary>
+<div class="ans">
+<ol>
+<li><strong>Clarify (2 min):</strong> Edge cases? Input constraints? Can I modify input? Return type?</li>
+<li><strong>Example (2 min):</strong> Walk through 1-2 examples manually. Find the pattern.</li>
+<li><strong>Brute force (2 min):</strong> State the O(n²) or obvious solution. "Naive approach is X."</li>
+<li><strong>Optimize (5 min):</strong> Think about: sorting, two pointers, sliding window, hash map, DP, divide and conquer. State before coding.</li>
+<li><strong>Code (15 min):</strong> Clean, readable code. Name variables well. Comments on non-obvious parts.</li>
+<li><strong>Test (5 min):</strong> Walk through your code with the example. Test edge cases: empty, single element, all same.</li>
+<li><strong>Complexity:</strong> State time and space complexity. Know how to derive it.</li>
+</ol>
+<div class="note ngrn">✓ Never code in silence. Think out loud. Interviewers want to see your process, not just the answer.</div>
+<div class="note namb">💡 Most Google questions use: HashMap, BFS/DFS, Two Pointers, Binary Search, or DP. Recognize the pattern first.</div>
+</div>
+</details>
+</main>
+</body>
+</html>
