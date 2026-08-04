@@ -63,6 +63,7 @@ a{color:var(--grnl)}
 
 <details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q1</span><span class="qt">Explain the complete Activity lifecycle and when each callback is called</span><span class="dif hard">Hard</span></summary>
 <div class="ans">
+<p>Every Activity moves through a well-defined set of lifecycle callbacks that the system calls as the user navigates to, away from, and back to your screen — Android owns this lifecycle, not your app, so knowing exactly when each callback fires is how you decide where it's safe to acquire and release resources. The three states candidates most often get wrong are the transient ones: onPause fires when the Activity partially loses focus but might still be visible, onStop fires only once it's completely hidden, and onDestroy means the Activity object itself is going away. Interviewers ask this because so many real bugs — leaked camera or sensor handles, crashes on rotation, wasted battery from work that never stops — trace back to doing the wrong thing in the wrong callback. The mental model to lead with: onCreate/onDestroy bookend the Activity's entire existence, onStart/onStop bookend visibility, and onResume/onPause bookend whether it's actually in the foreground receiving input.</p>
 <p><strong>Complete lifecycle:</strong></p>
 <pre><code><span class="cm">// onCreate → onStart → onResume → [RUNNING]</span>
 <span class="cm">// [RUNNING] → onPause → onStop → onDestroy</span>
@@ -163,6 +164,7 @@ a{color:var(--grnl)}
 
 <details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q2</span><span class="qt">What is the difference between onSaveInstanceState and ViewModel for state preservation?</span><span class="dif hard">Hard</span></summary>
 <div class="ans">
+<p>This question is really about two different survival mechanisms that solve different problems and get confused constantly. onSaveInstanceState hooks into the system's own state-restoration pipeline — it's a Bundle the OS keeps around and hands back to you in onCreate/onRestoreInstanceState, and its whole reason to exist is surviving process death, not just rotation. A ViewModel takes a completely different approach: it's an object that survives configuration changes because the system deliberately keeps the same instance alive across an Activity recreation, but if the OS kills your process entirely while it's backgrounded, that ViewModel and everything in it is gone. Knowing when to reach for which — and why modern code often uses both together via SavedStateHandle — is exactly the kind of practical judgment interviewers are probing for.</p>
 <p><strong>onSaveInstanceState (Bundle):</strong></p>
 <ul>
 <li>Survives: rotation, process death (system kills app while backgrounded)</li>
@@ -193,6 +195,7 @@ a{color:var(--grnl)}
 
 <details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q3</span><span class="qt">Explain Fragment lifecycle and how it differs from Activity lifecycle</span><span class="dif med">Medium</span></summary>
 <div class="ans">
+<p>A Fragment's lifecycle layers on top of the Activity's — it has everything an Activity has (onCreate, onStart, onResume, etc.) plus extra callbacks that exist purely because a Fragment has two separate lifespans: the Fragment object itself, and the View it inflates. onAttach/onDetach mark when the Fragment is connected to or disconnected from its host Activity, while onCreateView/onDestroyView mark when its View hierarchy specifically exists. Interviewers care about this because it's the root cause of one of the most common Android memory leaks: a Fragment can sit on the back stack with its view destroyed while the Fragment object is still very much alive, so anything tied to the view needs to be cleaned up in onDestroyView, not left until onDestroy.</p>
 <pre><code><span class="cm">// Fragment has ADDITIONAL callbacks vs Activity:</span>
 <span class="fn">onAttach</span>()        <span class="cm">// Fragment attached to host Activity</span>
 <span class="fn">onCreate</span>()        <span class="cm">// Fragment created (no view yet)</span>
@@ -217,6 +220,7 @@ viewModel.data.<span class="fn">observe</span>(<span class="cn">viewLifecycleOwn
 
 <details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q4</span><span class="qt">What are the different types of Context and when do you use each?</span><span class="dif hard">Hard</span></summary>
 <div class="ans">
+<p>Context is Android's handle to "everything about the environment your code is running in" — access to resources, system services, the ability to start components — but there isn't just one Context, and picking the wrong one is a classic source of crashes and memory leaks. Application Context lives as long as the whole app process does, which makes it the safe choice for anything you want to outlive a single screen, like a Singleton or a database instance. Activity Context, by contrast, is tied to that specific screen's lifecycle and carries its theme, which is exactly why some UI operations — showing a Dialog, inflating a themed layout — require it and will crash or render incorrectly with an Application Context instead. Interviewers ask this to see if you understand the leak risk of holding an Activity Context longer than the Activity itself lives.</p>
 <p><strong>Types:</strong></p>
 <ul>
 <li><strong>Application Context:</strong> Tied to application lifecycle. Use for: creating Singletons, accessing resources, starting Services, registering broadcast receivers when you want them alive as long as the app is alive.</li>
@@ -242,6 +246,7 @@ viewModel.data.<span class="fn">observe</span>(<span class="cn">viewLifecycleOwn
 
 <details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q5</span><span class="qt">What is the difference between explicit and implicit intents? What is Intent resolution?</span><span class="dif med">Medium</span></summary>
 <div class="ans">
+<p>An Intent is Android's messaging object for asking some component — your own or another app's — to do something, and the explicit/implicit distinction really comes down to whether you already know exactly who should handle it. An explicit Intent names the target component directly by class, so it's the right choice whenever you're talking to your own app's Activities or Services and there's no ambiguity about the target. An implicit Intent instead just describes an action and some data and leaves it to the system to figure out who can handle it — useful for things like "open this URL" or "share this text" where you don't want to, or can't, know which app will respond. This matters in interviews because it leads directly into how Android actually resolves implicit intents and the security implications around PendingIntents, which is where a lot of real-world bugs and vulnerabilities live.</p>
 <pre><code><span class="cm">// Explicit — specifies exact component class</span>
 <span class="kw">val</span> <span class="cn">intent</span> = <span class="ty">Intent</span>(<span class="kw">this</span>, <span class="ty">DetailActivity</span>::<span class="kw">class</span>.java)
 intent.<span class="fn">putExtra</span>(<span class="st">"id"</span>, userId)
@@ -266,6 +271,7 @@ intent.<span class="fn">putExtra</span>(<span class="st">"id"</span>, userId)
 
 <details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q6</span><span class="qt">Explain Activity launch modes and how they affect the back stack</span><span class="dif hard">Hard</span></summary>
 <div class="ans">
+<p>Launch modes control what happens to the back stack when you start an Activity that might already have an instance running somewhere in the current task — do you get a brand new instance, or does Android reuse an existing one? This matters because the default behavior, standard, creates a new instance every single time, which is fine most of the time but can leave you with a stack full of duplicate screens if you're not careful, for example when a user repeatedly taps the same notification. The four modes trade off exactly how aggressively Android reuses and collapses the stack, from standard's "always create new" all the way to singleInstance's "this Activity owns its own isolated task and nothing else can join it." Interviewers use this question to check whether you can reason about real navigation bugs, like duplicate screens after notification taps or broken back-button behavior after deep links.</p>
 <ul>
 <li><strong>standard (default):</strong> New instance created every time, even if already on stack. Stack: A→B→B→B possible.</li>
 <li><strong>singleTop:</strong> If target is at the TOP of stack, reuses it (calls onNewIntent()). If not on top, creates new. Good for: notifications that launch an activity already open.</li>
@@ -288,6 +294,7 @@ intent.<span class="fn">addFlags</span>(<span class="ty">Intent</span>.FLAG_ACTI
 
 <details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q7</span><span class="qt">What are the different types of Services and when would you use each?</span><span class="dif hard">Hard</span></summary>
 <div class="ans">
+<p>A Service is a component for doing work without a UI, but "doing work in the background" means very different things depending on how long it runs and whether anything needs to talk to it — which is why Android splits this into several distinct flavors instead of one generic Service. A started Service is fire-and-forget: something starts it, it runs until it decides to stop itself, and it's vulnerable to being killed under memory pressure since the system has no automatic signal that it's important. A bound Service flips that around — it exists specifically so other components can communicate with it two-way, and it only lives as long as something is bound to it. A foreground Service is the one that comes with a real protection guarantee, but that guarantee costs you a mandatory persistent notification, which is exactly why interviewers want to hear you reach for WorkManager first for anything that can be deferred, rather than defaulting to a Service for every background task.</p>
 <ul>
 <li><strong>Started Service:</strong> Runs indefinitely after startService(). Must call stopSelf() or stopService(). Risk of being killed by OS under memory pressure.</li>
 <li><strong>Bound Service:</strong> Clients bind to it via bindService(). Lives as long as there are bound clients. Returns an IBinder interface. Good for: IPC, two-way communication.</li>
@@ -341,6 +348,7 @@ intent.<span class="fn">addFlags</span>(<span class="ty">Intent</span>.FLAG_ACTI
 
 <details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q9</span><span class="qt">Explain Handler, Looper, and MessageQueue — how does Android's message system work?</span><span class="dif hard">Hard</span></summary>
 <div class="ans">
+<p>Before coroutines existed, this was THE mechanism Android used to move work between threads, and it's still what coroutine dispatchers are built on top of under the hood, which is why interviewers still ask about it. The core idea is simple: a Looper sits on a thread and continuously pulls messages off that thread's MessageQueue and executes them one at a time, and the main thread is only special because Android gives it a Looper automatically at startup. A Handler is your entry point into that queue — it lets you post a Runnable or a Message onto a specific Looper's queue from any other thread, which is exactly how you "hop back to the main thread" after finishing background work. Understanding this model makes it much easier to reason about what something like withContext(Dispatchers.Main) is actually doing underneath the coroutine abstraction.</p>
 <p>This is the foundation of Android's threading model (predates coroutines):</p>
 <ul>
 <li><strong>Looper:</strong> Attached to a thread. Runs an infinite loop reading from MessageQueue. The main thread has a Looper by default (Looper.getMainLooper()).</li>
@@ -368,6 +376,7 @@ viewModelScope.<span class="fn">launch</span>(Dispatchers.IO) {
 
 <details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q10</span><span class="qt">What are common memory leak patterns in Android and how do you detect them?</span><span class="dif hard">Hard</span></summary>
 <div class="ans">
+<p>Memory leaks in Android almost always come down to the same root cause: something that should be garbage collected — usually an Activity or Fragment — is still being held onto by a reference that outlives it, so the whole View tree and everything it points to stays in memory even after the screen is gone. This matters enormously on mobile because devices have far less memory headroom than a server or desktop, so a handful of leaked Activities can be the difference between smooth performance and the OS killing your app for using too much RAM. Most of the classic patterns are variations on the same mistake — a long-lived object like a static field, a singleton, or a pending callback holding a reference to a short-lived one like an Activity, a View, or a Context — which is why the fix is almost always either scoping the reference correctly or explicitly clearing it when the short-lived object is destroyed.</p>
 <p><strong>Common leak patterns:</strong></p>
 <ul>
 <li><strong>Static reference to Activity/View:</strong> Static companion objects holding Context or View</li>
@@ -402,6 +411,7 @@ viewModelScope.<span class="fn">launch</span>(Dispatchers.IO) {
 
 <details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q11</span><span class="qt">What is a BroadcastReceiver? Static vs dynamic registration?</span><span class="dif med">Medium</span></summary>
 <div class="ans">
+<p>A BroadcastReceiver is Android's publish-subscribe mechanism for system-wide and app-wide events — things like battery state changes, connectivity changes, or your own app's custom events — where you want to react without polling or holding a persistent connection open. The static-vs-dynamic choice really comes down to lifetime and cost: a manifest-declared receiver can wake your app up even when it isn't running at all, which is powerful but also exactly why Google locked it down hard starting in API 26, since apps were abusing it to launch themselves constantly in the background and drain battery. A dynamically registered receiver only exists while the registering component is alive and must be explicitly unregistered, trading that always-on capability for being lighter weight and safer by default. Interviewers ask this to see whether you know that registering without unregistering is a leak, and whether you understand why the manifest approach was restricted in the first place.</p>
 <ul>
 <li><strong>Static (manifest):</strong> System can launch app to deliver broadcast even if app not running. Severely restricted since API 26 — only certain system broadcasts allowed (BOOT_COMPLETED, etc.).</li>
 <li><strong>Dynamic (code):</strong> Registered while app is running. Must unregister to avoid leaks.</li>
@@ -430,6 +440,7 @@ viewModelScope.<span class="fn">launch</span>(Dispatchers.IO) {
 
 <details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q12</span><span class="qt">When would you use a ContentProvider and how does it work?</span><span class="dif med">Medium</span></summary>
 <div class="ans">
+<p>ContentProvider is Android's abstraction for exposing a structured, queryable dataset behind a stable URI, with the OS enforcing permission checks on every access — it's how apps share data with each other and with the system without any of them needing direct file-system access to another app's private storage. It matters because it decouples the data's storage format from how other components consume it: the consumer just queries a URI and gets back a Cursor, with no idea, or need to know, whether the data lives in SQLite, a network cache, or in-memory. It's also the mechanism the platform itself uses for shared data like Contacts and MediaStore, and it's why several libraries piggyback a hidden ContentProvider onto your app purely to get an early, guaranteed initialization hook before your own Application code runs.</p>
 <p>ContentProvider exposes structured data via a URI scheme, allowing cross-process data sharing with access control.</p>
 <p><strong>Use cases:</strong> Contacts, Calendar, MediaStore, sharing data between apps, providing data to system (SearchSuggestions).</p>
 <pre><code><span class="cm">// URI pattern: content://authority/path/id</span>
@@ -661,6 +672,714 @@ cursor?.<span class="fn">use</span> {
 <div class="note ngrn">✓ Interview takeaway: prefer WorkManager for anything deferrable (it self-promotes to expedited/foreground execution when needed); reserve manual Foreground Services for genuinely user-aware, continuous work where the persistent notification is a feature, not a checkbox.</div>
 </div>
 </details>
+
+<h2>Permissions & Manifest</h2>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q19</span><span class="qt">Explain the runtime permission flow — dangerous vs normal vs signature permissions, and shouldShowRequestPermissionRationale</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<p>Android's permission model isn't one-size-fits-all — it splits permissions into tiers based on how much privacy or security risk they carry, and only the risky ones ever interrupt the user with a runtime dialog. Permissions that don't expose sensitive data or capabilities are granted automatically at install time so the user isn't nagged for things like checking network state. The ones that genuinely touch sensitive data — camera, location, contacts — must be requested at runtime starting with API 23, and critically the user can revoke any of them individually at any time from Settings, so your app can never assume a permission it had yesterday is still granted today. Interviewers ask this to see if you handle the full state machine correctly: not just the happy path of asking and getting granted, but denial, rationale, and the "don't ask again" case that you can't even detect directly.</p>
+<p><strong>Protection levels:</strong></p>
+<ul>
+<li><strong>normal:</strong> Auto-granted at install time (INTERNET, ACCESS_NETWORK_STATE) — low risk to privacy, no user prompt needed.</li>
+<li><strong>dangerous:</strong> Grouped into permission groups (CAMERA, LOCATION, CONTACTS...) and must be requested at runtime on API 23+; user can revoke individually anytime from Settings.</li>
+<li><strong>signature:</strong> Auto-granted only to apps signed with the same certificate as the app that declared the permission — used for permissions between your own apps.</li>
+</ul>
+<pre><code><span class="kw">private val</span> <span class="cn">requestPermission</span> = registerForActivityResult(
+    <span class="ty">ActivityResultContracts</span>.RequestPermission()
+) { granted: <span class="ty">Boolean</span> ->
+    <span class="kw">if</span> (granted) <span class="fn">startCamera</span>() <span class="kw">else</span> <span class="fn">showRationaleUi</span>()
+}
+
+<span class="kw">fun</span> <span class="fn">checkCameraPermission</span>() {
+    <span class="kw">when</span> {
+        <span class="ty">ContextCompat</span>.<span class="fn">checkSelfPermission</span>(<span class="kw">this</span>, <span class="ty">Manifest</span>.permission.CAMERA)
+            == <span class="ty">PackageManager</span>.PERMISSION_GRANTED -> <span class="fn">startCamera</span>()
+
+        <span class="fn">shouldShowRequestPermissionRationale</span>(<span class="ty">Manifest</span>.permission.CAMERA) ->
+            <span class="cm">// user denied once before but didn't check "don't ask again" — explain WHY you need it</span>
+            <span class="fn">showRationaleDialog</span> { requestPermission.<span class="fn">launch</span>(<span class="ty">Manifest</span>.permission.CAMERA) }
+
+        <span class="kw">else</span> -> requestPermission.<span class="fn">launch</span>(<span class="ty">Manifest</span>.permission.CAMERA)
+        <span class="cm">// covers both "never asked" AND "denied + checked don't ask again" — you can't tell them apart!</span>
+    }
+}</code></pre>
+<div class="note namb">💡 shouldShowRequestPermissionRationale() returning false has two meanings: never asked yet, or permanently denied. You can't distinguish them programmatically — track "have I asked before" yourself in SharedPreferences if you need to show a "go to Settings" prompt.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q20</span><span class="qt">What are special permissions and one-time permissions, and how does permission auto-reset work?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>Some capabilities are too sensitive for a simple runtime dialog and require an explicit Settings redirect instead of <span class="ic">requestPermissions()</span>:</p>
+<ul>
+<li><strong>SYSTEM_ALERT_WINDOW</strong> (draw over other apps) — granted only via <span class="ic">Settings.ACTION_MANAGE_OVERLAY_PERMISSION</span>.</li>
+<li><strong>SCHEDULE_EXACT_ALARM</strong> (API 31+) — check with <span class="ic">AlarmManager.canScheduleExactAlarms()</span>, redirect to <span class="ic">ACTION_REQUEST_SCHEDULE_EXACT_ALARM</span> if denied.</li>
+<li><strong>Background location</strong> (API 29+) — must be requested as a SEPARATE second step after foreground location is already granted; the system won't even show a combined dialog on API 30+, forcing a two-step flow so users understand exactly what they're granting.</li>
+</ul>
+<p><strong>One-time permission</strong> (API 30+): the permission dialog offers "Only this time" — the grant is automatically revoked once the user leaves the app (backgrounds it or swipes it away).</p>
+<p><strong>Permission auto-reset</strong> (API 30+, and Play-enforced on older targets via Google Play services): if a user hasn't opened your app for a few months, the system automatically revokes all granted runtime permissions to reduce the app's ambient attack surface — your app must gracefully re-request on next launch rather than assume a prior grant still holds.</p>
+<pre><code><span class="kw">val</span> <span class="cn">canScheduleExact</span> = alarmManager.<span class="fn">canScheduleExactAlarms</span>()
+<span class="kw">if</span> (!canScheduleExact) {
+    <span class="fn">startActivity</span>(<span class="ty">Intent</span>(<span class="ty">Settings</span>.ACTION_REQUEST_SCHEDULE_EXACT_ALARM))
+}</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q21</span><span class="qt">How does manifest merging work when a project has multiple modules and libraries?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>Gradle merges every manifest that contributes to a build variant — the app module's <span class="ic">main</span> manifest, its build-variant-specific manifest (e.g. <span class="ic">debug/AndroidManifest.xml</span>), and every AAR library's own manifest — into one final manifest. <strong>Priority order (highest wins on conflict):</strong> build-variant manifest > build-type manifest > app main manifest > library manifest > lower-priority library manifest (dependency order).</p>
+<p>Merging is attribute-by-attribute: matching elements (same tag + same identifying attribute, e.g. same <span class="ic">android:name</span> on an <span class="ic">&lt;activity&gt;</span>) merge their non-conflicting attributes; a real conflict (e.g. two libraries requesting different <span class="ic">android:value</span> for the same meta-data key) fails the build unless resolved explicitly.</p>
+<pre><code><span class="cm">&lt;!-- force-remove a permission a library declares that you don't want --&gt;</span>
+&lt;uses-permission android:name=<span class="st">"android.permission.ACCESS_FINE_LOCATION"</span>
+    tools:node=<span class="st">"remove"</span>/&gt;
+
+<span class="cm">&lt;!-- override a conflicting attribute instead of merging --&gt;</span>
+&lt;activity android:name=<span class="st">"com.lib.SomeActivity"</span>
+    android:theme=<span class="st">"@style/MyTheme"</span>
+    tools:node=<span class="st">"replace"</span>/&gt;</code></pre>
+<div class="note ngrn">✓ Android Studio's "Merged Manifest" tab (bottom of the manifest editor) shows exactly which source file contributed each line — the fastest way to debug an unexpected permission or attribute.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--blub);color:var(--blul)">Q22</span><span class="qt">Walk through the intent-filter matching algorithm — how does Android decide which components can handle an implicit Intent?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>PackageManager runs three independent tests against every declared <span class="ic">&lt;intent-filter&gt;</span>; <strong>all three must pass</strong> for a match:</p>
+<ul>
+<li><strong>Action test:</strong> if the Intent specifies an action, the filter must list that exact action (a filter can list several). If the Intent has no action, it passes automatically.</li>
+<li><strong>Category test:</strong> every category on the Intent must be present in the filter (filter can have extra categories, that's fine — it's a subset check). Note: <span class="ic">startActivity()</span> implicitly adds <span class="ic">CATEGORY_DEFAULT</span> to the Intent, so a filter that omits <span class="ic">&lt;category android:name="android.intent.category.DEFAULT"/&gt;</span> will never match an implicit startActivity() call.</li>
+<li><strong>Data test:</strong> compares scheme, host, port, path, and MIME type against the filter's <span class="ic">&lt;data&gt;</span> tags. If the Intent supplies a URI/type and the filter declares no <span class="ic">&lt;data&gt;</span> at all, it fails — unless the Intent also supplies neither.</li>
+</ul>
+<pre><code>&lt;intent-filter&gt;
+    &lt;action android:name=<span class="st">"android.intent.action.VIEW"</span>/&gt;
+    &lt;category android:name=<span class="st">"android.intent.category.DEFAULT"</span>/&gt;
+    &lt;category android:name=<span class="st">"android.intent.category.BROWSABLE"</span>/&gt;
+    &lt;data android:scheme=<span class="st">"https"</span> android:host=<span class="st">"example.com"</span> android:pathPrefix=<span class="st">"/product"</span>/&gt;
+&lt;/intent-filter&gt;</code></pre>
+<div class="note namb">💡 If multiple installed apps match, the system shows a disambiguation chooser (unless the caller used createChooser() to force it, or the target uses App Links / autoVerify to skip it entirely).</div>
+</div>
+</details>
+
+<h2>Fragments Deep Dive</h2>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">Q23</span><span class="qt">Explain FragmentManager's back stack, and when to use childFragmentManager vs parentFragmentManager</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>A <span class="ic">FragmentTransaction</span> (add/replace/remove) becomes undoable history only if you call <span class="ic">addToBackStack(name)</span> before <span class="ic">commit()</span> — pressing Back then pops the transaction rather than the whole Activity. <span class="ic">commit()</span> is asynchronous (queued on the main thread's message queue); <span class="ic">commitNow()</span> executes synchronously but is incompatible with addToBackStack.</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 440 190" style="width:100%;height:auto">
+<rect x="20" y="15" width="190" height="160" rx="6" fill="var(--blub)" stroke="var(--blul)" stroke-width="1.5"/>
+<text x="115" y="35" text-anchor="middle" fill="var(--blul)" font-size="11" font-weight="700">Activity</text>
+<rect x="35" y="48" width="160" height="34" rx="4" fill="var(--s2)" stroke="var(--b2)"/>
+<text x="115" y="69" text-anchor="middle" fill="var(--txt)" font-size="10">supportFragmentManager</text>
+<rect x="35" y="95" width="160" height="65" rx="4" fill="var(--grnb)" stroke="var(--grnl)"/>
+<text x="115" y="115" text-anchor="middle" fill="var(--txt)" font-size="10" font-weight="600">ParentFragment</text>
+<text x="115" y="132" text-anchor="middle" fill="var(--muted)" font-size="9">hosts nested tabs/</text>
+<text x="115" y="145" text-anchor="middle" fill="var(--muted)" font-size="9">ViewPager children</text>
+<rect x="245" y="95" width="175" height="65" rx="4" fill="var(--ambb)" stroke="var(--ambl)"/>
+<text x="332" y="115" text-anchor="middle" fill="var(--txt)" font-size="10" font-weight="600">childFragmentManager</text>
+<text x="332" y="132" text-anchor="middle" fill="var(--muted)" font-size="9">private to ParentFragment —</text>
+<text x="332" y="145" text-anchor="middle" fill="var(--muted)" font-size="9">its own independent back stack</text>
+<line x1="195" y1="127" x2="243" y2="127" stroke="var(--ambl)" stroke-width="1.5"/>
+</svg>
+</div>
+<p><strong>parentFragmentManager</strong> is the FragmentManager that hosts THIS fragment (usually the Activity's, or another fragment's if nested) — use it when a fragment needs to replace itself or a sibling. <strong>childFragmentManager</strong> belongs to this fragment and manages fragments nested INSIDE it (e.g. a ViewPager's pages, or a nested tab layout) — using it instead of the parent's keeps container view IDs, back stack entries, and fragment tags scoped to this fragment, avoiding ID collisions when the same fragment class is reused in multiple places.</p>
+<pre><code><span class="cm">// Inside a Fragment hosting its own nested tabs</span>
+childFragmentManager.<span class="fn">beginTransaction</span>()
+    .<span class="fn">replace</span>(R.id.nested_container, <span class="ty">TabContentFragment</span>())
+    .<span class="fn">addToBackStack</span>(<span class="kw">null</span>)
+    .<span class="fn">commit</span>()</code></pre>
+<div class="note nred">⚠ Using parentFragmentManager (or the Activity's manager) for nested UI is a classic bug source: two instances of the same fragment end up sharing container IDs and stomping each other's back stack entries.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--cyab);color:var(--cyal)">Q24</span><span class="qt">How does the Fragment Result API work, and why did it replace setTargetFragment()?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p><span class="ic">setTargetFragment()</span> was deprecated because it created a direct, non-lifecycle-aware reference between two fragments — if the target fragment was recreated (e.g. after a config change) the link silently broke, and it only worked one level deep (no support for Activity-to-Fragment results).</p>
+<p>The <strong>Fragment Result API</strong> routes results through the shared FragmentManager using a String key, so the sender and listener never hold a direct reference to each other — either side can be recreated independently:</p>
+<pre><code><span class="cm">// Fragment B sets a result before popping back</span>
+setFragmentResult(<span class="st">"requestKey"</span>, bundleOf(<span class="st">"selectedId"</span> <span class="kw">to</span> id))
+
+<span class="cm">// Fragment A listens — lifecycle-aware, only delivered when STARTED</span>
+parentFragmentManager.<span class="fn">setFragmentResultListener</span>(<span class="st">"requestKey"</span>, viewLifecycleOwner) { _, bundle ->
+    <span class="kw">val</span> <span class="cn">id</span> = bundle.<span class="fn">getInt</span>(<span class="st">"selectedId"</span>)
+    <span class="fn">updateSelection</span>(id)
+}</code></pre>
+<p>Both fragments must share the same FragmentManager (i.e. the listener is registered on the manager that hosts the fragment sending the result, or an ancestor of it) — a child fragment's result naturally propagates up through <span class="ic">parentFragmentManager</span> calls.</p>
+<div class="note ngrn">✓ Results are cached if the listener isn't STARTED yet, and delivered as soon as it reaches STARTED — no race condition on rotation.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--orab);color:var(--oral)">Q25</span><span class="qt">A single Fragment instance can have its view created and destroyed multiple times — how does that affect ViewBinding and RecyclerView adapter setup?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>The <strong>Fragment object</strong> (and its non-view state) can survive across multiple view creations: every time the fragment becomes visible again from the back stack, <span class="ic">onCreateView()</span>/<span class="ic">onViewCreated()</span> run again on the SAME Fragment instance, and every time it's pushed under another fragment, <span class="ic">onDestroyView()</span> runs — the Fragment itself is not recreated. Anything tied to the view (ViewBinding, RecyclerView adapters, listeners) must therefore be created in <span class="ic">onViewCreated()</span> and explicitly released in <span class="ic">onDestroyView()</span>, never held for the Fragment's full lifetime.</p>
+<pre><code><span class="kw">class</span> <span class="ty">ListFragment</span> : <span class="ty">Fragment</span>(R.layout.fragment_list) {
+    <span class="kw">private var</span> _binding: <span class="ty">FragmentListBinding</span>? = <span class="kw">null</span>
+    <span class="kw">private val</span> <span class="cn">binding</span> <span class="kw">get</span>() = _binding!! <span class="cm">// only valid between onViewCreated..onDestroyView</span>
+
+    <span class="kw">override fun</span> <span class="fn">onViewCreated</span>(view: <span class="ty">View</span>, savedInstanceState: <span class="ty">Bundle</span>?) {
+        _binding = <span class="ty">FragmentListBinding</span>.<span class="fn">bind</span>(view)
+        binding.recyclerView.adapter = <span class="ty">ItemAdapter</span>() <span class="cm">// created fresh every time the view exists</span>
+    }
+
+    <span class="kw">override fun</span> <span class="fn">onDestroyView</span>() {
+        <span class="kw">super</span>.<span class="fn">onDestroyView</span>()
+        binding.recyclerView.adapter = <span class="kw">null</span> <span class="cm">// break the adapter → view reference</span>
+        _binding = <span class="kw">null</span> <span class="cm">// prevents leaking the old View through the binding</span>
+    }
+}</code></pre>
+<div class="note nred">⚠ Forgetting to null out the binding in onDestroyView leaks the entire View tree for as long as the Fragment instance survives on the back stack — a very common LeakCanary finding.</div>
+</div>
+</details>
+
+<h2>Resources, Configuration & Packaging</h2>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q26</span><span class="qt">What actually happens to an Activity on a configuration change like rotation, and when (if ever) should you handle it manually with android:configChanges?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>By default, ANY relevant configuration change (orientation, screen size, locale, keyboard availability, UI mode/night mode, density...) <strong>destroys and recreates the current Activity</strong>: onPause→onStop→onDestroy, then onCreate→onStart→onResume, so it can reload resources from the newly-matching qualifier buckets (e.g. a layout-land/ folder) and rebuild its views against the new configuration.</p>
+<pre><code><span class="cm">&lt;!-- Manually handle instead of recreating — Activity gets a callback instead --&gt;</span>
+&lt;activity android:name=<span class="st">".CameraActivity"</span>
+    android:configChanges=<span class="st">"orientation|screenSize|keyboardHidden"</span>/&gt;</code></pre>
+<pre><code><span class="kw">override fun</span> <span class="fn">onConfigurationChanged</span>(newConfig: <span class="ty">Configuration</span>) {
+    <span class="kw">super</span>.<span class="fn">onConfigurationChanged</span>(newConfig)
+    <span class="cm">// you're now responsible for re-laying-out anything orientation-dependent yourself</span>
+}</code></pre>
+<p><strong>When it's justified:</strong> rare cases where recreation is genuinely too expensive or disruptive to restart mid-operation — e.g. an active Camera preview or a video call where tearing down the surface would be jarring.</p>
+<div class="note nred">⚠ It's discouraged as a general fix for "rotation breaks my screen": it silently skips the entire resource-reload mechanism (you won't pick up layout-land/values-w600dp/etc. automatically), and it doesn't exist as an option for most real config-change bugs — the correct fix is almost always ViewModel + proper state restoration, not opting out of recreation.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q27</span><span class="qt">How does Android pick the best-matching resource when you have multiple qualified resource folders (drawable-hdpi, values-fr, layout-sw600dp...)?</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<p>At runtime, Android walks a fixed <strong>precedence order</strong> of qualifier types and, for each one in turn, eliminates every resource folder that doesn't match the device's current value for that qualifier — unless eliminating would leave zero candidates, in which case that qualifier is skipped. Roughly, from highest to lowest precedence: MCC/MNC → language/region → layout direction (ltr/rtl) → smallest width (sw&lt;N&gt;dp) → available width/height → screen size (small/normal/large) → screen aspect → round screen → orientation → UI mode (car/tv/watch) → night mode → <strong>density</strong> → touchscreen → keyboard/nav availability → platform version.</p>
+<pre><code><span class="cm">res/
+  values/strings.xml           // default fallback
+  values-fr/strings.xml        // French locale
+  layout/activity_main.xml     // default
+  layout-sw600dp/activity_main.xml   // tablets (≥600dp smallest width)
+  drawable-hdpi/icon.png
+  drawable-xxhdpi/icon.png     // closest density match preferred, else scaled</span></code></pre>
+<p><strong>Density is special:</strong> if no exact density match exists, Android picks the nearest available bucket and scales the bitmap (e.g. an xxhdpi asset scaled down for an hdpi screen) rather than failing — which is why shipping only one very high-res density folder still "works" everywhere, just with runtime scaling cost and blur risk on very low-density devices.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q28</span><span class="qt">What's the difference between an APK and an Android App Bundle (.aab), and what are dynamic feature modules?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>An <strong>APK</strong> is the installable unit — one file containing all code and resources for every device configuration you support. An <strong>App Bundle (.aab)</strong> is NOT installable directly; it's a publishing format you upload to Play Console containing everything unsplit, plus metadata. Play's servers then perform <strong>dynamic delivery</strong>: they generate and serve a set of small <strong>split APKs</strong> tailored to each requesting device — a base APK plus splits for its specific ABI, screen density, and language only — instead of shipping every density/ABI/language to every device.</p>
+<ul>
+<li><strong>Base APK:</strong> core code + resources needed to launch.</li>
+<li><strong>Configuration splits:</strong> device-specific density/ABI/language splits, auto-generated by Play — you never write these yourself.</li>
+<li><strong>Dynamic feature modules:</strong> separate Gradle modules (<span class="ic">com.android.dynamic-feature</span> plugin) for optional functionality, delivered <strong>on-demand</strong> (fetched only when requested via <span class="ic">SplitInstallManager</span>), <strong>install-time</strong> but as a separate split, or <strong>conditionally</strong> (device meets criteria like minSdk or feature availability).</li>
+</ul>
+<div class="note ngrn">✓ Since August 2021, Play Console requires AAB for new apps — the size savings from per-device splitting (often 15-50% smaller downloads) are the main driver, on top of enabling dynamic feature delivery.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--blub);color:var(--blul)">Q29</span><span class="qt">What was Multidex, why was it needed, and is it still relevant?</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<p>A single classic DEX file can reference at most <strong>65,536 methods</strong> (the "64K limit") — the method reference index is a 16-bit short. Once an app plus its dependencies crossed that count (very easy with libraries like Google Play Services, AndroidX, etc.), the build would fail with <span class="ic">DexIndexOverflowException</span>.</p>
+<p>The <strong>androidx.multidex</strong> support library solved this pre-API 21 by splitting compiled code across multiple classes.dex files and patching the Application class (<span class="ic">MultiDexApplication</span>, or manually calling <span class="ic">MultiDex.install(this)</span> in <span class="ic">attachBaseContext()</span>) to load them all at startup.</p>
+<pre><code><span class="cm">// build.gradle — only relevant if minSdk &lt; 21</span>
+android {
+    defaultConfig { multiDexEnabled = <span class="kw">true</span> }
+}
+dependencies { implementation(<span class="st">"androidx.multidex:multidex:2.0.1"</span>) }</code></pre>
+<div class="note nblu">💡 Is it still relevant? Since API 21, ART (Android RunTime) natively supports loading multiple DEX files at install time with no extra work — so if your minSdk is 21+, you almost never need to touch multidex config manually; AGP handles multiple dex files transparently. It only still matters for very large legacy apps targeting API &lt;21, which is now rare.</div>
+</div>
+</details>
+
+<h2>Notifications & Deep Links</h2>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">Q30</span><span class="qt">How do notification channels work (API 26+), and why can't your app change a channel's importance after creating it?</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<p>Since Android 8.0, every notification must belong to a <strong>NotificationChannel</strong> (grouped further into optional channel groups), each with its own <strong>importance level</strong> controlling how intrusive it is: from <span class="ic">IMPORTANCE_NONE</span> (blocked, no display) up through <span class="ic">LOW</span> (no sound, shows in shade), <span class="ic">DEFAULT</span> (sound, no peek), to <span class="ic">HIGH</span>/<span class="ic">MAX</span> (sound + heads-up peek).</p>
+<pre><code><span class="kw">val</span> <span class="cn">channel</span> = <span class="ty">NotificationChannel</span>(
+    <span class="st">"messages"</span>, <span class="st">"New Messages"</span>, <span class="ty">NotificationManager</span>.IMPORTANCE_HIGH
+).apply { description = <span class="st">"Incoming chat messages"</span> }
+notificationManager.<span class="fn">createNotificationChannel</span>(channel) <span class="cm">// safe to call every launch — no-op if it already exists</span></code></pre>
+<p><strong>Why the app can't change importance later:</strong> once a channel is created, its behavioral settings (importance, sound, vibration) become <strong>user-owned</strong> — only the user can change them via system Settings, exactly to stop apps from silently escalating themselves back to noisy after a user turns a channel down. Calling <span class="ic">createNotificationChannel()</span> again with a different importance on an existing channel ID is silently ignored; only non-behavioral fields like <span class="ic">name</span>/<span class="ic">description</span> can still be updated by the app.</p>
+<div class="note namb">💡 Design implication: create channels granularly (e.g. separate "Messages" vs "Promotions" channels) from day one — you can't retroactively split a channel's users into finer-grained importance buckets.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--cyab);color:var(--cyal)">Q31</span><span class="qt">What's the difference between a plain deep link and a verified Android App Link?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>Both mechanisms let a URL open your app directly instead of a browser, but they differ in exactly how much the system trusts that your app is the right one to handle it, and that trust gap is a real security concern, not just a technicality. A plain deep link is just a claim — any app can declare an intent-filter for any scheme or host it wants, so if two apps both claim the same URL pattern the user gets a disambiguation dialog, and worse, a malicious app can deliberately claim your domain's URLs to intercept traffic meant for you. An Android App Link closes that gap by requiring cryptographic proof of domain ownership: you host a JSON file at a well-known path on your actual domain, signed against your app's certificate, and once the system verifies that it routes matching links straight to your app with no chooser and no way for another app to spoof it. This is exactly the kind of distinction interviewers probe to see if you understand deep linking as a security surface, not just a navigation convenience.</p>
+<ul>
+<li><strong>Standard deep link:</strong> any <span class="ic">&lt;intent-filter&gt;</span> with ACTION_VIEW + a matching scheme/host (custom scheme like <span class="ic">myapp://</span>, or an http/https URL without verification). Any app declaring a matching filter is a candidate — if more than one app matches, the user sees a disambiguation chooser, and the link can be silently hijacked by a malicious app claiming the same host.</li>
+<li><strong>Android App Link (verified):</strong> an https intent-filter with <span class="ic">android:autoVerify="true"</span>, backed by a <span class="ic">assetlinks.json</span> file hosted at <span class="ic">https://domain/.well-known/assetlinks.json</span> proving you control that domain (signed by your app's certificate fingerprint). Once verified, the system opens the link <strong>directly in your app with no chooser</strong>, and it can't be spoofed by another app since domain ownership was cryptographically checked.</li>
+</ul>
+<pre><code>&lt;intent-filter android:autoVerify=<span class="st">"true"</span>&gt;
+    &lt;action android:name=<span class="st">"android.intent.action.VIEW"</span>/&gt;
+    &lt;category android:name=<span class="st">"android.intent.category.DEFAULT"</span>/&gt;
+    &lt;category android:name=<span class="st">"android.intent.category.BROWSABLE"</span>/&gt;
+    &lt;data android:scheme=<span class="st">"https"</span> android:host=<span class="st">"example.com"</span>/&gt;
+&lt;/intent-filter&gt;</code></pre>
+<pre><code><span class="cm">// hosted at https://example.com/.well-known/assetlinks.json</span>
+[{
+  <span class="st">"relation"</span>: [<span class="st">"delegate_permission/common.handle_all_urls"</span>],
+  <span class="st">"target"</span>: {<span class="st">"namespace"</span>: <span class="st">"android_app"</span>, <span class="st">"package_name"</span>: <span class="st">"com.example.app"</span>, <span class="st">"sha256_cert_fingerprints"</span>: [<span class="st">"..."</span>]}
+}]</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--orab);color:var(--oral)">Q32</span><span class="qt">A notification or deep link opens a detail screen deep in your app's hierarchy — how do you make the system Back button behave correctly?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p>If you just <span class="ic">startActivity()</span> straight to a detail screen with <span class="ic">FLAG_ACTIVITY_NEW_TASK</span>, pressing Back exits the app entirely — there's no parent screen underneath because the task's back stack only ever contained that one Activity. <strong>TaskStackBuilder</strong> synthesizes a fake back stack so Back navigates up through the app's natural hierarchy instead of straight out.</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 440 150" style="width:100%;height:auto">
+<defs><marker id="arrow-core-12" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--grnl)"/></marker></defs>
+<rect x="15" y="55" width="110" height="40" rx="5" fill="var(--s2)" stroke="var(--b2)"/>
+<text x="70" y="79" text-anchor="middle" fill="var(--muted)" font-size="10">MainActivity</text>
+<rect x="140" y="55" width="130" height="40" rx="5" fill="var(--s2)" stroke="var(--b2)"/>
+<text x="205" y="79" text-anchor="middle" fill="var(--muted)" font-size="10">CategoryActivity</text>
+<rect x="285" y="55" width="140" height="40" rx="5" fill="var(--grnb)" stroke="var(--grnl)" stroke-width="2"/>
+<text x="355" y="73" text-anchor="middle" fill="var(--txt)" font-size="10" font-weight="700">DetailActivity</text>
+<text x="355" y="87" text-anchor="middle" fill="var(--grnl)" font-size="8">(from notification)</text>
+<line x1="125" y1="75" x2="138" y2="75" stroke="var(--grnl)" stroke-width="1.5" marker-end="url(#arrow-core-12)"/>
+<line x1="270" y1="75" x2="283" y2="75" stroke="var(--grnl)" stroke-width="1.5" marker-end="url(#arrow-core-12)"/>
+<text x="220" y="30" text-anchor="middle" fill="var(--grnl)" font-size="10" font-weight="600">synthetic back stack built by TaskStackBuilder</text>
+<text x="220" y="125" text-anchor="middle" fill="var(--muted)" font-size="9">Back from Detail → Category → Main → home (natural hierarchy, not straight to launcher)</text>
+</svg>
+</div>
+<pre><code><span class="ty">TaskStackBuilder</span>.<span class="fn">create</span>(context)
+    .<span class="fn">addNextIntentWithParentStack</span>(<span class="ty">Intent</span>(context, <span class="ty">DetailActivity</span>::<span class="kw">class</span>.java))
+    .<span class="fn">getPendingIntent</span>(<span class="cn">0</span>, <span class="ty">PendingIntent</span>.FLAG_IMMUTABLE)</code></pre>
+<p><span class="ic">addNextIntentWithParentStack()</span> reads the target Activity's declared <span class="ic">android:parentActivityName</span> chain (the same one used for the toolbar's Up button) from the manifest to know which ancestor screens to synthesize:</p>
+<pre><code>&lt;activity android:name=<span class="st">".DetailActivity"</span>
+    android:parentActivityName=<span class="st">".CategoryActivity"</span>/&gt;</code></pre>
+<div class="note ngrn">✓ This is the same mechanism behind the toolbar's "Up" button — Up and a synthesized Back both walk the parentActivityName chain, so setting it up once fixes both.</div>
+</div>
+</details>
+
+<h2>Storage Permissions & Scoped Storage</h2>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q33</span><span class="qt">What is Scoped Storage and why can't apps freely access other apps' files anymore?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p>Before API 29, any app holding <span class="ic">READ/WRITE_EXTERNAL_STORAGE</span> could read or write almost anywhere on shared external storage — a huge privacy leak (one app could snoop on every other app's downloads/photos). <strong>Scoped Storage</strong> (opt-in on API 29 via <span class="ic">requestLegacyExternalStorage="true"</span>, enforced for all apps targeting API 30+) confines each app to a sandbox instead:</p>
+<ul>
+<li><strong>App-private directory</strong> (<span class="ic">getExternalFilesDir()</span>, <span class="ic">getFilesDir()</span>): always fully accessible, no permission needed, wiped on uninstall.</li>
+<li><strong>Shared media collections</strong> (<span class="ic">MediaStore.Images/Video/Audio</span>): apps can insert their OWN media without any storage permission at all, and can read/query media <strong>they created</strong> without permission too; reading media created by OTHER apps needs <span class="ic">READ_MEDIA_IMAGES/VIDEO/AUDIO</span> (API 33+, replacing the old blanket READ_EXTERNAL_STORAGE).</li>
+<li><strong>Arbitrary user-chosen files</strong> (any other app's documents, Downloads, etc.): only via the <strong>Storage Access Framework</strong> — <span class="ic">ACTION_OPEN_DOCUMENT</span> / <span class="ic">ACTION_CREATE_DOCUMENT</span> — which hands your app a scoped, user-approved Uri, not a raw file path.</li>
+</ul>
+<pre><code><span class="kw">val</span> <span class="cn">values</span> = <span class="ty">ContentValues</span>().apply {
+    <span class="fn">put</span>(<span class="ty">MediaStore</span>.Images.Media.DISPLAY_NAME, <span class="st">"photo.jpg"</span>)
+    <span class="fn">put</span>(<span class="ty">MediaStore</span>.Images.Media.MIME_TYPE, <span class="st">"image/jpeg"</span>)
+}
+<span class="kw">val</span> <span class="cn">uri</span> = contentResolver.<span class="fn">insert</span>(<span class="ty">MediaStore</span>.Images.Media.EXTERNAL_CONTENT_URI, values)
+<span class="cm">// no WRITE_EXTERNAL_STORAGE needed — you own what you insert</span></code></pre>
+<div class="note nred">⚠ Raw <span class="ic">java.io.File</span> paths into other apps' storage (e.g. hardcoded <span class="ic">/storage/emulated/0/DCIM/...</span>) silently stop working under Scoped Storage — this is the single most common Android 10/11 migration bug.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q34</span><span class="qt">What is the Photo Picker API and how does it avoid needing storage permissions entirely?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>The <strong>Photo Picker</strong> (built into API 33+, and backported to API 21+ via an updatable Google Play services module) is a system-provided, privacy-friendly picker UI for images/video. It runs as a separate process/UI outside your app and hands back only the specific items the user selected as temporary read-only Uris — your app never needs <span class="ic">READ_MEDIA_IMAGES</span> or any storage permission at all to use it, since the user's selection IS the grant.</p>
+<pre><code><span class="kw">private val</span> <span class="cn">pickMedia</span> = registerForActivityResult(
+    <span class="ty">ActivityResultContracts</span>.PickVisualMedia()
+) { uri: <span class="ty">Uri</span>? ->
+    uri?.<span class="kw">let</span> { <span class="fn">loadImage</span>(it) }
+}
+
+pickMedia.<span class="fn">launch</span>(<span class="ty">PickVisualMediaRequest</span>(<span class="ty">ActivityResultContracts</span>.PickVisualMedia.ImageOnly))</code></pre>
+<div class="note ngrn">✓ Prefer the Photo Picker over MediaStore queries whenever you just need the user to pick a few images/videos — zero permission prompts means fewer users bouncing off a permission dialog.</div>
+</div>
+</details>
+
+<h2>Build Tooling & Optimization</h2>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q35</span><span class="qt">What do ProGuard/R8 actually do, and what's the most common way keep-rule mistakes surface?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p><strong>R8</strong> is the default compiler/optimizer since AGP 3.4 (it replaced ProGuard's separate optimization pass while staying compatible with ProGuard's <span class="ic">-keep</span> rule syntax) and performs three distinct jobs in one pass:</p>
+<ul>
+<li><strong>Shrinking:</strong> removes classes/methods/fields that static analysis proves are unreachable from your app's entry points — smaller APK/AAB.</li>
+<li><strong>Obfuscation:</strong> renames remaining classes/members to short meaningless names (a, b, c...) — smaller AND harder to reverse-engineer.</li>
+<li><strong>Optimization:</strong> inlines short methods, removes dead branches, merges classes where safe — faster bytecode.</li>
+</ul>
+<pre><code><span class="cm">// build.gradle</span>
+buildTypes {
+    release {
+        isMinifyEnabled = <span class="kw">true</span>
+        proguardFiles(getDefaultProguardFile(<span class="st">"proguard-android-optimize.txt"</span>), <span class="st">"proguard-rules.pro"</span>)
+    }
+}</code></pre>
+<pre><code><span class="cm">// proguard-rules.pro — keep anything reflection/serialization touches</span>
+-keep <span class="kw">class</span> com.example.model.** { *; }   <span class="cm">// e.g. Gson model classes</span>
+-keepclassmembers <span class="kw">class</span> * <span class="kw">implements</span> android.os.Parcelable {
+    <span class="kw">public static final</span> android.os.Parcelable$Creator *;
+}</code></pre>
+<div class="note nred">⚠ The classic gotcha: R8 strips/renames anything it can't prove is used, but <strong>reflection</strong> (Gson field access, Retrofit's dynamic proxy interfaces, Room, custom Parcelable CREATOR lookups) is invisible to static analysis. Debug builds don't minify by default, so everything "works" until the FIRST release build — where it crashes with ClassNotFoundException/NoSuchFieldException. Always test the actual release/minified build before shipping, and prefer <span class="ic">@Keep</span> annotations on specific classes over broad <span class="ic">-keep class ** { *; }</span> rules that defeat shrinking entirely.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--blub);color:var(--blul)">Q36</span><span class="qt">Explain build types vs product flavors and how they combine into build variants</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>Gradle gives you two independent axes for customizing a build, and conflating them is a common early mistake. Build types answer "how is this build compiled and packaged" — is it debuggable, is it minified, which keystore signs it — and every project needs at least a debug and a release type. Product flavors answer a completely different question, "what variant of the app am I building" — different branding, different backend environment, different feature set, different applicationId — and you can have as many as your product needs, organized into dimensions when there's more than one independent axis, like environment crossed with tier. Gradle then multiplies every flavor by every build type to produce the full matrix of build variants, which is exactly why interviewers ask this: it's the foundation for how real Android projects manage things like free/paid tiers or dev/staging/prod environments without duplicating code.</p>
+<ul>
+<li><strong>Build types</strong> (debug/release by default, you can add more like staging): control HOW the app is built — signing config, minification, debuggable flag, resource shrinking. Every project needs at least one.</li>
+<li><strong>Product flavors</strong> (e.g. free/paid, or dev/staging/prod as one dimension crossed with internal/external as another): control WHAT is built — different applicationId suffix, different feature sets, different backend URLs, different resources — grouped into <strong>flavor dimensions</strong> when you need more than one axis.</li>
+</ul>
+<p>Gradle computes the <strong>cross-product</strong>: every flavor × every build type = one build variant (e.g. <span class="ic">freeDebug</span>, <span class="ic">freeRelease</span>, <span class="ic">paidDebug</span>, <span class="ic">paidRelease</span>). Each flavor can have its own source set (<span class="ic">src/free/kotlin/...</span>, <span class="ic">src/free/res/...</span>) that overlays on top of <span class="ic">src/main</span>.</p>
+<pre><code>android {
+    flavorDimensions += <span class="st">"tier"</span>
+    productFlavors {
+        create(<span class="st">"free"</span>) { dimension = <span class="st">"tier"</span>; applicationIdSuffix = <span class="st">".free"</span>
+            buildConfigField(<span class="st">"boolean"</span>, <span class="st">"HAS_ADS"</span>, <span class="st">"true"</span>) }
+        create(<span class="st">"paid"</span>)  { dimension = <span class="st">"tier"</span>
+            buildConfigField(<span class="st">"boolean"</span>, <span class="st">"HAS_ADS"</span>, <span class="st">"false"</span>) }
+    }
+}</code></pre>
+<pre><code><span class="cm">// generated per-variant, usable at runtime</span>
+<span class="kw">if</span> (<span class="ty">BuildConfig</span>.HAS_ADS) { <span class="fn">showAdBanner</span>() }</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">Q37</span><span class="qt">What's the difference between an upload key and an app signing key, and what is Play App Signing?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>Every release APK/AAB must be cryptographically signed — the certificate proves update authenticity (Android refuses to install an update whose signature doesn't match the currently-installed app's). <strong>Play App Signing</strong> splits this into two keys:</p>
+<ul>
+<li><strong>Upload key:</strong> yours, used only to sign the AAB you upload to Play Console — if leaked, Google lets you revoke and rotate it.</li>
+<li><strong>App signing key:</strong> held securely by Google, used to actually sign the APKs Play generates and delivers to users. Google re-signs your uploaded bundle with this key after verifying your upload key's signature.</li>
+</ul>
+<p>This separation means a leaked upload key is recoverable (rotate it), whereas historically a leaked signing key was catastrophic (you could never publish a trusted update to existing installs again).</p>
+<pre><code><span class="cm">// build.gradle — separate signing config per build type</span>
+signingConfigs {
+    create(<span class="st">"release"</span>) {
+        storeFile = file(<span class="st">"upload-keystore.jks"</span>)
+        storePassword = System.getenv(<span class="st">"KEYSTORE_PASSWORD"</span>)
+        keyAlias = <span class="st">"upload"</span>
+        keyPassword = System.getenv(<span class="st">"KEY_PASSWORD"</span>)
+    }
+}
+buildTypes { release { signingConfig = signingConfigs.getByName(<span class="st">"release"</span>) } }</code></pre>
+<div class="note namb">💡 Never commit keystore files or passwords to source control — pull them from environment variables or a secrets manager in CI.</div>
+</div>
+</details>
+
+<h2>App Startup & Performance Diagnostics</h2>
+
+<details><summary><span class="qn" style="background:var(--cyab);color:var(--cyal)">Q38</span><span class="qt">Explain cold, warm, and hot app starts, and what the App Startup library optimizes</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>Not every app launch is equally expensive, and knowing which kind of start you're optimizing for is the first thing a performance-focused interviewer wants to hear, because the fix looks completely different depending on which one is slow. The three types differ in exactly how much the system has to rebuild from scratch: whether a fresh process needs to be created, whether the Activity needs to be recreated, or whether everything is already sitting in memory and just needs to come back to the foreground. Google explicitly measures and reports cold start time as a key vital in Play Console because it's the worst first impression a slow app can make, and it's the one type of start where your Application.onCreate() and any eager initialization work sit squarely on the critical path.</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 460 150" style="width:100%;height:auto">
+<rect x="10" y="15" width="140" height="115" rx="6" fill="var(--redb)" stroke="var(--redl)" stroke-width="1.5"/>
+<text x="80" y="35" text-anchor="middle" fill="var(--redl)" font-size="11" font-weight="700">COLD</text>
+<text x="80" y="55" text-anchor="middle" fill="var(--muted)" font-size="9">process doesn't exist</text>
+<text x="80" y="70" text-anchor="middle" fill="var(--muted)" font-size="9">→ fork process</text>
+<text x="80" y="85" text-anchor="middle" fill="var(--muted)" font-size="9">→ Application.onCreate()</text>
+<text x="80" y="100" text-anchor="middle" fill="var(--muted)" font-size="9">→ Activity onCreate/Start/Resume</text>
+<text x="80" y="118" fill="var(--redl)" font-size="9" font-weight="600">slowest</text>
+<rect x="160" y="15" width="140" height="115" rx="6" fill="var(--ambb)" stroke="var(--ambl)" stroke-width="1.5"/>
+<text x="230" y="35" text-anchor="middle" fill="var(--ambl)" font-size="11" font-weight="700">WARM</text>
+<text x="230" y="55" text-anchor="middle" fill="var(--muted)" font-size="9">process alive,</text>
+<text x="230" y="70" text-anchor="middle" fill="var(--muted)" font-size="9">Activity was destroyed</text>
+<text x="230" y="85" text-anchor="middle" fill="var(--muted)" font-size="9">→ skip Application init</text>
+<text x="230" y="100" text-anchor="middle" fill="var(--muted)" font-size="9">→ Activity onCreate/Start/Resume</text>
+<text x="230" y="118" fill="var(--ambl)" font-size="9" font-weight="600">medium</text>
+<rect x="310" y="15" width="140" height="115" rx="6" fill="var(--grnb)" stroke="var(--grnl)" stroke-width="1.5"/>
+<text x="380" y="35" text-anchor="middle" fill="var(--grnl)" font-size="11" font-weight="700">HOT</text>
+<text x="380" y="55" text-anchor="middle" fill="var(--muted)" font-size="9">process + Activity</text>
+<text x="380" y="70" text-anchor="middle" fill="var(--muted)" font-size="9">both still in memory</text>
+<text x="380" y="85" text-anchor="middle" fill="var(--muted)" font-size="9">→ just onRestart/</text>
+<text x="380" y="100" text-anchor="middle" fill="var(--muted)" font-size="9">onStart/onResume</text>
+<text x="380" y="118" fill="var(--grnl)" font-size="9" font-weight="600">fastest</text>
+</svg>
+</div>
+<p><strong>Cold start:</strong> the OS process doesn't exist — full chain of process fork, ART class loading, Application object + attachBaseContext + all manifest ContentProviders + Application.onCreate(), THEN the launching Activity's onCreate/onStart/onResume and first frame draw. <strong>Warm start:</strong> process is still alive (e.g. user backgrounded and returned, or the Activity was destroyed by the system but process survived) — Application init is skipped, but the Activity still needs full onCreate. <strong>Hot start:</strong> both process and Activity instance are still resident — just bringing it back to the foreground (onRestart→onStart→onResume), no inflation needed.</p>
+<p><strong>App Startup library</strong> (androidx.startup) replaces the old pattern of every library declaring its own manifest ContentProvider purely to get an early, guaranteed init call. Each ContentProvider adds fixed per-process overhead (its own onCreate() call, binder registration) — App Startup collapses ALL of them into a <strong>single</strong> ContentProvider that runs a dependency-ordered graph of your <span class="ic">Initializer</span>s, cutting cold-start cost when you have several libraries that each used to bootstrap this way.</p>
+<pre><code><span class="kw">class</span> <span class="ty">LoggerInitializer</span> : <span class="ty">Initializer</span>&lt;<span class="ty">Logger</span>&gt; {
+    <span class="kw">override fun</span> <span class="fn">create</span>(context: <span class="ty">Context</span>): <span class="ty">Logger</span> = <span class="ty">Logger</span>.<span class="fn">init</span>(context)
+    <span class="kw">override fun</span> <span class="fn">dependencies</span>(): <span class="ty">List</span>&lt;<span class="ty">Class</span>&lt;<span class="kw">out</span> <span class="ty">Initializer</span>&lt;*&gt;&gt;&gt; = emptyList()
+}</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--orab);color:var(--oral)">Q39</span><span class="qt">What does the Android 12+ SplashScreen API provide that a custom splash Activity didn't?</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<p>Before API 31, "splash screens" were a hack: a themed launcher Activity showing a static drawable as its window background, then transitioning to the real Activity — fragile, and every app reinvented it slightly differently. The <strong>SplashScreen API</strong> (native on API 31+, backported to API 21+ via <span class="ic">androidx.core.splashscreen</span>) makes it a real system feature: the OS itself draws a splash (app icon/branding + background color) immediately from the app's theme <strong>while your process is still cold-starting</strong>, then automatically hands off to your first frame — no extra Activity, no manual transition code.</p>
+<pre><code><span class="cm">&lt;!-- themes.xml --&gt;</span>
+&lt;style name=<span class="st">"Theme.App.Starting"</span> parent=<span class="st">"Theme.SplashScreen"</span>&gt;
+    &lt;item name=<span class="st">"windowSplashScreenBackground"</span>&gt;@color/brand&lt;/item&gt;
+    &lt;item name=<span class="st">"windowSplashScreenAnimatedIcon"</span>&gt;@drawable/ic_splash&lt;/item&gt;
+    &lt;item name=<span class="st">"postSplashScreenTheme"</span>&gt;@style/Theme.App&lt;/item&gt;
+&lt;/style&gt;</code></pre>
+<pre><code><span class="kw">override fun</span> <span class="fn">onCreate</span>(savedInstanceState: <span class="ty">Bundle</span>?) {
+    <span class="kw">val</span> <span class="cn">splashScreen</span> = installSplashScreen() <span class="cm">// must be called before super.onCreate()</span>
+    <span class="kw">super</span>.<span class="fn">onCreate</span>(savedInstanceState)
+    splashScreen.<span class="fn">setKeepOnScreenCondition</span> { viewModel.isLoading } <span class="cm">// hold splash until data ready</span>
+}</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q40</span><span class="qt">What exactly triggers an ANR — walk through the different timeout types — and how do you diagnose one from a trace?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p>ANR (Application Not Responding) isn't one single timeout — the system watches several distinct conditions on the main thread, each with its own budget:</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 440 150" style="width:100%;height:auto">
+<rect x="10" y="15" width="130" height="55" rx="5" fill="var(--redb)" stroke="var(--redl)"/>
+<text x="75" y="35" text-anchor="middle" fill="var(--txt)" font-size="10" font-weight="700">Input dispatch</text>
+<text x="75" y="52" text-anchor="middle" fill="var(--muted)" font-size="9">5s: key/touch event</text>
+<text x="75" y="64" text-anchor="middle" fill="var(--muted)" font-size="9">not handled</text>
+<rect x="155" y="15" width="130" height="55" rx="5" fill="var(--ambb)" stroke="var(--ambl)"/>
+<text x="220" y="35" text-anchor="middle" fill="var(--txt)" font-size="10" font-weight="700">BroadcastReceiver</text>
+<text x="220" y="52" text-anchor="middle" fill="var(--muted)" font-size="9">10s foreground /</text>
+<text x="220" y="64" text-anchor="middle" fill="var(--muted)" font-size="9">60s background onReceive()</text>
+<rect x="300" y="15" width="130" height="55" rx="5" fill="var(--purb)" stroke="var(--purl)"/>
+<text x="365" y="35" text-anchor="middle" fill="var(--txt)" font-size="10" font-weight="700">Service</text>
+<text x="365" y="52" text-anchor="middle" fill="var(--muted)" font-size="9">~20s foreground /</text>
+<text x="365" y="64" text-anchor="middle" fill="var(--muted)" font-size="9">~200s background lifecycle calls</text>
+<text x="220" y="100" text-anchor="middle" fill="var(--muted)" font-size="10">All are measured on the MAIN thread — any blocking work there eats the budget</text>
+<text x="220" y="120" text-anchor="middle" fill="var(--muted)" font-size="10">for whichever component is currently executing.</text>
+</svg>
+</div>
+<ul>
+<li><strong>Input dispatch timeout (5s):</strong> the most common — main thread hasn't responded to a key or touch event in time.</li>
+<li><strong>Broadcast timeout (10s foreground / 60s background):</strong> a BroadcastReceiver's <span class="ic">onReceive()</span> took too long — remember onReceive() itself must be fast; spin off real work to WorkManager/a service instead.</li>
+<li><strong>Service timeout (~20s foreground / ~200s background):</strong> <span class="ic">onCreate()</span>/<span class="ic">onStartCommand()</span>/<span class="ic">onBind()</span> blocking the main thread too long.</li>
+<li><strong>ContentProvider publish timeout:</strong> a provider's own <span class="ic">onCreate()</span> hanging during the app's startup phase.</li>
+</ul>
+<p><strong>Diagnosing:</strong> when an ANR fires, the system dumps a trace to <span class="ic">/data/anr/traces.txt</span> (or via <span class="ic">adb shell dumpsys activity processes</span>) containing the stack of EVERY thread at that instant — the main thread's stack shows exactly which call was blocking (waiting on a lock, doing I/O, in an infinite loop). <strong>Android Vitals</strong> in Play Console aggregates ANR rate across your real user base and lets you download traces for the worst offenders; <strong>StrictMode</strong> and Perfetto/systrace traces help catch the underlying blocking call in development before it ever reaches production.</p>
+<div class="note nred">⚠ A deadlock (main thread blocked waiting on a lock held by a background thread) shows up in the trace as the main thread "waiting to lock" a monitor owned by another named thread — always check the OTHER thread's stack too, not just the main thread's.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q41</span><span class="qt">What does StrictMode catch, and how do you enable it?</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<p>StrictMode is a developer tool (never enable its penalties in production release builds) that detects accidental violations of good practice at runtime, split into two policies:</p>
+<ul>
+<li><strong>ThreadPolicy:</strong> catches disk reads/writes, network calls, and custom slow calls made on the main thread — the exact class of bug that causes janky UI and ANRs.</li>
+<li><strong>VmPolicy:</strong> catches leaked <span class="ic">Closeable</span> objects (e.g. an unclosed Cursor/Stream finalized by the GC), leaked SQLite objects, leaked registration objects (an unregistered BroadcastReceiver/ServiceConnection), and non-SDK (hidden API) usage.</li>
+</ul>
+<pre><code><span class="kw">override fun</span> <span class="fn">onCreate</span>() {
+    <span class="kw">super</span>.<span class="fn">onCreate</span>()
+    <span class="kw">if</span> (<span class="ty">BuildConfig</span>.DEBUG) {
+        <span class="ty">StrictMode</span>.<span class="fn">setThreadPolicy</span>(
+            <span class="ty">StrictMode</span>.ThreadPolicy.<span class="ty">Builder</span>()
+                .<span class="fn">detectDiskReads</span>().<span class="fn">detectDiskWrites</span>().<span class="fn">detectNetwork</span>()
+                .<span class="fn">penaltyLog</span>() <span class="cm">// logs to Logcat — use penaltyDeath() to crash immediately and force a fix</span>
+                .<span class="fn">build</span>()
+        )
+        <span class="ty">StrictMode</span>.<span class="fn">setVmPolicy</span>(
+            <span class="ty">StrictMode</span>.VmPolicy.<span class="ty">Builder</span>().<span class="fn">detectLeakedClosableObjects</span>().<span class="fn">penaltyLog</span>().<span class="fn">build</span>()
+        )
+    }
+}</code></pre>
+<div class="note namb">💡 penaltyDeath() during development is a great forcing function — it turns a silent main-thread disk read into an immediate crash you can't ignore, instead of a subtle jank you'd only spot in profiling.</div>
+</div>
+</details>
+
+<h2>Views, Windows & Input</h2>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q42</span><span class="qt">Why does edge-to-edge matter and how do you handle WindowInsets correctly?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>"Edge-to-edge" means your app's content draws behind the system status bar and navigation bar rather than being letterboxed above/below them — Android has pushed this direction for years, and starting with apps targeting <strong>API 35 (Android 15)</strong> it's <strong>enforced</strong>: you can no longer opt out via the old <span class="ic">android:windowFullscreen</span>/<span class="ic">android:fitsSystemWindows</span> tricks. If you don't handle insets yourself, your toolbar, FAB, and bottom navigation end up drawn UNDER the status/nav bars, unreadable or unclickable.</p>
+<pre><code><span class="kw">override fun</span> <span class="fn">onCreate</span>(savedInstanceState: <span class="ty">Bundle</span>?) {
+    <span class="kw">super</span>.<span class="fn">onCreate</span>(savedInstanceState)
+    <span class="ty">WindowCompat</span>.<span class="fn">setDecorFitsSystemWindows</span>(window, <span class="kw">false</span>) <span class="cm">// opt into drawing behind system bars</span>
+    setContentView(R.layout.activity_main)
+
+    <span class="ty">ViewCompat</span>.<span class="fn">setOnApplyWindowInsetsListener</span>(toolbar) { view, insets ->
+        <span class="kw">val</span> <span class="cn">bars</span> = insets.<span class="fn">getInsets</span>(<span class="ty">WindowInsetsCompat</span>.Type.systemBars())
+        view.<span class="fn">updatePadding</span>(top = bars.top) <span class="cm">// push toolbar below the status bar</span>
+        insets <span class="cm">// return so children can also consume remaining insets</span>
+    }
+}</code></pre>
+<div class="note ngrn">✓ Rule of thumb: apply top inset padding to your topmost app-bar-like view, bottom inset padding to your bottom bar/FAB container, and let the actual scrolling content ignore insets (or use them for extra scroll padding) so it can still scroll edge-to-edge visually.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">Q43</span><span class="qt">Walk through Android's touch event dispatch chain — dispatchTouchEvent, onInterceptTouchEvent, onTouchEvent</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p>Every touch event in Android has to travel down through a tree of nested Views before anything actually responds to it, and the system gives each ViewGroup along the way a chance to grab the gesture for itself before letting a child handle it. This dispatch-then-intercept pattern is what makes it possible for a ViewGroup like a ViewPager or a swipeable RecyclerView to "steal" a gesture from a child View, and it's also the direct cause of one of the most common real-world bugs: nested scrollable views fighting over the same drag gesture. Interviewers ask this to see if you can reason about that conflict concretely — not just recite the method names, but explain why a horizontal swiper living inside a vertical scroller needs requestDisallowInterceptTouchEvent to work correctly.</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 440 220" style="width:100%;height:auto">
+<defs><marker id="arrow-core-13" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--blul)"/></marker></defs>
+<rect x="30" y="15" width="150" height="34" rx="5" fill="var(--blub)" stroke="var(--blul)"/>
+<text x="105" y="37" text-anchor="middle" fill="var(--txt)" font-size="10">Activity.dispatchTouchEvent</text>
+<line x1="105" y1="49" x2="105" y2="77" stroke="var(--blul)" stroke-width="1.5" marker-end="url(#arrow-core-13)"/>
+<rect x="30" y="80" width="150" height="34" rx="5" fill="var(--s2)" stroke="var(--b2)"/>
+<text x="105" y="102" text-anchor="middle" fill="var(--txt)" font-size="10">ViewGroup.dispatchTouchEvent</text>
+<line x1="105" y1="114" x2="105" y2="142" stroke="var(--ambl)" stroke-width="1.5" marker-end="url(#arrow-core-13)"/>
+<rect x="30" y="145" width="150" height="34" rx="5" fill="var(--ambb)" stroke="var(--ambl)"/>
+<text x="105" y="167" text-anchor="middle" fill="var(--txt)" font-size="10">onInterceptTouchEvent?</text>
+<rect x="250" y="80" width="160" height="34" rx="5" fill="var(--grnb)" stroke="var(--grnl)"/>
+<text x="330" y="102" text-anchor="middle" fill="var(--txt)" font-size="10">true → ViewGroup itself</text>
+<line x1="330" y1="114" x2="330" y2="142" stroke="var(--grnl)" stroke-width="1.5" marker-end="url(#arrow-core-13)"/>
+<rect x="250" y="145" width="160" height="34" rx="5" fill="var(--grnb)" stroke="var(--grnl)"/>
+<text x="330" y="167" text-anchor="middle" fill="var(--txt)" font-size="10">handles via onTouchEvent</text>
+<rect x="30" y="185" width="150" height="30" rx="5" fill="var(--redb)" stroke="var(--redl)"/>
+<text x="105" y="204" text-anchor="middle" fill="var(--txt)" font-size="9">false → forwards to child</text>
+<line x1="180" y1="97" x2="248" y2="97" stroke="var(--grnl)" stroke-width="1.5" marker-end="url(#arrow-core-13)"/>
+</svg>
+</div>
+<p>Touch dispatch flows down the view tree and can be intercepted on the way: <span class="ic">Activity.dispatchTouchEvent()</span> hands the event to the root <span class="ic">ViewGroup</span>, which first asks its own <span class="ic">onInterceptTouchEvent()</span> whether IT wants to steal the gesture (returning true means the ViewGroup handles it itself via its own <span class="ic">onTouchEvent()</span> and the child never sees it); returning false forwards the event down to the appropriate child, which repeats the same dispatch/intercept/handle process if it's also a ViewGroup, eventually reaching a leaf View's <span class="ic">onTouchEvent()</span>.</p>
+<p><strong>Critical rule:</strong> whichever view/ViewGroup consumes <span class="ic">ACTION_DOWN</span> becomes the target for the REST of that gesture (MOVE, UP) — intercept decisions for MOVE events are re-evaluated each time unless the child calls <span class="ic">requestDisallowInterceptTouchEvent(true)</span> to explicitly veto further interception (the classic fix for a horizontal ViewPager nested inside a vertically-scrolling parent, where both want to claim the same drag).</p>
+<pre><code><span class="cm">// Inside a horizontally-scrolling child living inside a vertical ScrollView</span>
+<span class="kw">override fun</span> <span class="fn">onTouchEvent</span>(event: <span class="ty">MotionEvent</span>): <span class="ty">Boolean</span> {
+    <span class="kw">when</span> (event.action) {
+        MotionEvent.ACTION_DOWN -> parent.<span class="fn">requestDisallowInterceptTouchEvent</span>(<span class="kw">true</span>)
+        MotionEvent.ACTION_UP -> parent.<span class="fn">requestDisallowInterceptTouchEvent</span>(<span class="kw">false</span>)
+    }
+    <span class="kw">return super</span>.<span class="fn">onTouchEvent</span>(event)
+}</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--cyab);color:var(--cyal)">Q44</span><span class="qt">Explain the RecyclerView ViewHolder pattern — why is onBindViewHolder cheap but onCreateViewHolder expensive?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p><span class="ic">onCreateViewHolder()</span> inflates a brand new item layout (XML parsing + View object graph construction) — genuinely expensive — but RecyclerView only calls it enough times to fill the screen plus a small buffer; once enough ViewHolders of a given <strong>view type</strong> exist, scrolled-off holders are recycled into a pool and reused instead of re-inflated. <span class="ic">onBindViewHolder()</span> just pushes new data into an already-inflated holder's views (setText, setImageResource...) — cheap, called on every scroll as items recycle.</p>
+<pre><code><span class="kw">class</span> <span class="ty">ItemAdapter</span>(<span class="kw">private val</span> <span class="cn">items</span>: <span class="ty">List</span>&lt;<span class="ty">Item</span>&gt;) : <span class="ty">RecyclerView</span>.Adapter&lt;<span class="ty">ItemAdapter</span>.<span class="ty">VH</span>&gt;() {
+    <span class="kw">class</span> <span class="ty">VH</span>(<span class="kw">val</span> <span class="cn">binding</span>: <span class="ty">ItemRowBinding</span>) : <span class="ty">RecyclerView</span>.ViewHolder(binding.root)
+
+    <span class="kw">override fun</span> <span class="fn">onCreateViewHolder</span>(parent: <span class="ty">ViewGroup</span>, viewType: <span class="ty">Int</span>): <span class="ty">VH</span> {
+        <span class="kw">val</span> <span class="cn">binding</span> = <span class="ty">ItemRowBinding</span>.<span class="fn">inflate</span>(<span class="ty">LayoutInflater</span>.<span class="fn">from</span>(parent.context), parent, <span class="kw">false</span>)
+        <span class="kw">return</span> <span class="ty">VH</span>(binding) <span class="cm">// expensive — called only when the recycled pool has nothing to reuse</span>
+    }
+    <span class="kw">override fun</span> <span class="fn">onBindViewHolder</span>(holder: <span class="ty">VH</span>, position: <span class="ty">Int</span>) {
+        holder.binding.title.text = items[position].name <span class="cm">// cheap — called on every scroll</span>
+    }
+}</code></pre>
+<p><strong>RecycledViewPool</strong> can be shared across multiple RecyclerViews (e.g. a horizontal RecyclerView nested inside each item of a vertical one) via <span class="ic">setRecycledViewPool()</span>, so identical inner-item view types are reused across all the outer rows instead of each maintaining its own pool. For updates, use <strong>DiffUtil</strong> (or <span class="ic">ListAdapter</span>) to compute a minimal set of insert/remove/change operations instead of calling <span class="ic">notifyDataSetChanged()</span>, which forces a full unnecessary rebind of every visible row and loses animations.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--orab);color:var(--oral)">Q45</span><span class="qt">What's the difference between invalidate(), requestLayout(), and postInvalidate()?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>These three methods all trigger some form of view refresh, but they operate at very different levels of the rendering pipeline, and reaching for the expensive one when the cheap one would do is a real performance smell interviewers watch for. invalidate() only asks the system to redraw what's already been measured and laid out — the right call when a view's appearance changed but its size and position didn't. requestLayout() is much heavier: it asks the system to re-measure and re-position the view, and potentially its parent and siblings too, which is only necessary when the view's dimensions themselves need to change. postInvalidate() exists purely to solve a threading problem — plain invalidate() must be called from the main thread, so postInvalidate() gives you a safe way to request a redraw from a background thread without touching the UI thread directly.</p>
+<ul>
+<li><strong>invalidate():</strong> schedules only a redraw (<span class="ic">onDraw()</span>) — use when a view's appearance changed but its size/position didn't (e.g. a background color or a custom-drawn progress value). Cheapest of the three.</li>
+<li><strong>requestLayout():</strong> schedules a full measure + layout pass (then draw) — use when the view's size or position needs to be recalculated (e.g. text content changed enough to need a different width). More expensive: it can cascade up to the parent and affect sibling layout.</li>
+<li><strong>postInvalidate():</strong> the thread-safe version of invalidate(), callable from a <strong>background thread</strong> — internally posts the invalidation request onto the main thread's Handler/Looper so it's safe even though you're not on the UI thread (calling plain <span class="ic">invalidate()</span> off the main thread throws).</li>
+</ul>
+<pre><code><span class="kw">class</span> <span class="ty">ProgressView</span>(context: <span class="ty">Context</span>) : <span class="ty">View</span>(context) {
+    <span class="kw">var</span> <span class="cn">progress</span> = <span class="cn">0f</span>
+        <span class="kw">set</span>(value) { field = value; <span class="fn">invalidate</span>() } <span class="cm">// same size, just redraw</span>
+
+    <span class="kw">fun</span> <span class="fn">updateFromBackgroundThread</span>(newProgress: <span class="ty">Float</span>) {
+        progress = newProgress
+        <span class="fn">postInvalidate</span>() <span class="cm">// safe to call off the main thread</span>
+    }
+}</code></pre>
+<div class="note nblu">💡 Calling requestLayout() when invalidate() would suffice is a common perf smell — it forces the whole view hierarchy to re-measure when only a repaint was needed.</div>
+</div>
+</details>
+
+<h2>WorkManager Fundamentals</h2>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q46</span><span class="qt">What's the difference between OneTimeWorkRequest and PeriodicWorkRequest, and how do constraints behave?</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<p><strong>OneTimeWorkRequest</strong> runs a single deferrable task once. <strong>PeriodicWorkRequest</strong> repeats on an interval — but the system enforces a <strong>minimum interval of 15 minutes</strong> (and the actual run time can drift within a flex window) specifically to protect battery life; you cannot schedule tighter recurring background work through WorkManager.</p>
+<pre><code><span class="kw">val</span> <span class="cn">constraints</span> = <span class="ty">Constraints</span>.<span class="ty">Builder</span>()
+    .<span class="fn">setRequiredNetworkType</span>(NetworkType.CONNECTED)
+    .<span class="fn">setRequiresCharging</span>(<span class="kw">true</span>)
+    .<span class="fn">setRequiresBatteryNotLow</span>(<span class="kw">true</span>)
+    .<span class="fn">build</span>()
+
+<span class="kw">val</span> <span class="cn">syncOnce</span> = <span class="ty">OneTimeWorkRequestBuilder</span>&lt;<span class="ty">SyncWorker</span>&gt;()
+    .<span class="fn">setConstraints</span>(constraints)
+    .<span class="fn">build</span>()
+
+<span class="kw">val</span> <span class="cn">syncPeriodic</span> = <span class="ty">PeriodicWorkRequestBuilder</span>&lt;<span class="ty">SyncWorker</span>&gt;(<span class="cn">15</span>, TimeUnit.MINUTES)
+    .<span class="fn">setConstraints</span>(constraints)
+    .<span class="fn">build</span>()</code></pre>
+<p>Constraints are <strong>continuously monitored</strong>, not just checked at enqueue time — if a running worker's required constraint stops being satisfied mid-execution (e.g. network drops for a network-required job), the system stops it and reschedules it for when the constraint is satisfied again.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q47</span><span class="qt">How do you chain WorkManager tasks and prevent duplicate scheduling of the same periodic work?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p><strong>Chaining:</strong> <span class="ic">beginWith().then().enqueue()</span> builds a dependency graph — each worker's output <span class="ic">Data</span> becomes an input to the next, and downstream workers only run after upstream ones succeed (a <span class="ic">Result.failure()</span> anywhere cancels the rest of that chain).</p>
+<pre><code><span class="ty">WorkManager</span>.<span class="fn">getInstance</span>(context)
+    .<span class="fn">beginWith</span>(compressRequest)
+    .<span class="fn">then</span>(uploadRequest)
+    .<span class="fn">then</span>(notifyRequest)
+    .<span class="fn">enqueue</span>()
+
+<span class="cm">// inside CompressWorker</span>
+<span class="kw">override fun</span> <span class="fn">doWork</span>(): <span class="ty">Result</span> {
+    <span class="kw">val</span> <span class="cn">path</span> = <span class="fn">compressFile</span>()
+    <span class="kw">return</span> <span class="ty">Result</span>.<span class="fn">success</span>(workDataOf(<span class="st">"path"</span> <span class="kw">to</span> path)) <span class="cm">// feeds into UploadWorker's input</span>
+}</code></pre>
+<p><strong>Unique work policies</strong> stop you from accidentally scheduling the same logical job twice (e.g. re-enqueuing a sync on every app launch):</p>
+<ul>
+<li><strong>KEEP:</strong> if work with this name is already pending/running, ignore the new request entirely.</li>
+<li><strong>REPLACE:</strong> cancel the existing one and enqueue the new definition.</li>
+<li><strong>APPEND:</strong> chain the new request after the existing one finishes.</li>
+<li><strong>APPEND_OR_REPLACE:</strong> like APPEND, but doesn't fail the whole chain if a prior link in it failed.</li>
+</ul>
+<pre><code><span class="ty">WorkManager</span>.<span class="fn">getInstance</span>(context).<span class="fn">enqueueUniquePeriodicWork</span>(
+    <span class="st">"daily-sync"</span>, ExistingPeriodicWorkPolicy.KEEP, syncPeriodic
+)</code></pre>
+<p>Failure handling uses <span class="ic">setBackoffCriteria()</span> (LINEAR or EXPONENTIAL) so retries don't hammer a struggling backend or dead network immediately.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q48</span><span class="qt">How does WorkManager guarantee execution even across process death and device reboot — what runs underneath it?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p>The promise WorkManager makes — "this work will run eventually, even across process death or a reboot" — sounds like magic unless you understand it's built by layering a persistence guarantee underneath a scheduling API, not by WorkManager itself doing anything while your process is dead. Interviewers ask this specifically to see if you understand WorkManager is really a coordination layer on top of existing OS primitives, JobScheduler or AlarmManager, plus a database, rather than some entirely new execution mechanism — that's the insight that explains both why it's so reliable and why it still can't run more often than the OS scheduler allows.</p>
+<div class="gc" style="overflow-x:auto;padding:14px">
+<svg viewBox="0 0 440 170" style="width:100%;height:auto">
+<rect x="30" y="15" width="380" height="40" rx="6" fill="var(--blub)" stroke="var(--blul)" stroke-width="1.5"/>
+<text x="220" y="40" text-anchor="middle" fill="var(--txt)" font-size="11">WorkManager API — enqueue(), WorkContinuation, LiveData&lt;WorkInfo&gt;</text>
+<rect x="30" y="70" width="380" height="40" rx="6" fill="var(--s2)" stroke="var(--b2)" stroke-width="1.5"/>
+<text x="220" y="95" text-anchor="middle" fill="var(--txt)" font-size="11">Room database — persists every WorkSpec to disk</text>
+<rect x="30" y="125" width="380" height="35" rx="6" fill="var(--grnb)" stroke="var(--grnl)" stroke-width="1.5"/>
+<text x="220" y="147" text-anchor="middle" fill="var(--txt)" font-size="10">Actual scheduler: JobScheduler (API23+) or AlarmManager+BroadcastReceiver (API14-22)</text>
+</svg>
+</div>
+<p>WorkManager is a persistence + scheduling layer, not the execution engine itself. Every request you enqueue is written as a <span class="ic">WorkSpec</span> row into an internal <strong>Room database</strong> — this is the key to durability: the work definition survives your app process dying, because it's on disk, not just in memory.</p>
+<p>The actual OS-level trigger delegates to whatever's available on the device: <strong>JobScheduler</strong> on API 23+ (native constraint-aware background job scheduling), or a combination of <strong>AlarmManager + a BroadcastReceiver</strong> on API 14-22 where JobScheduler doesn't exist. When the trigger fires, WorkManager's own component wakes up, reads the pending WorkSpecs back out of Room, and executes them.</p>
+<p><strong>Surviving reboot:</strong> WorkManager registers a <span class="ic">BOOT_COMPLETED</span> receiver itself (declared in its own manifest, merged into yours) so that on next boot it re-reads Room and re-schedules everything whose constraints still need to be met — you don't need to write any boot-handling code yourself, just make sure you haven't stripped that permission via manifest merging.</p>
+<div class="note ngrn">✓ Interview takeaway: WorkManager's durability guarantee comes specifically from persisting to Room before scheduling — it's the same reason it can safely promise "this will run eventually" even through a process kill, unlike a plain in-memory Handler.postDelayed() or coroutine job.</div>
+</div>
+</details>
+
+<h2>Home Screen Integration: Widgets & Shortcuts</h2>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q49</span><span class="qt">What are the three types of App Shortcuts and how do they differ?</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<p>App Shortcuts give users a fast path into specific actions or content in your app straight from the launcher, without having to open the app and navigate there manually, and the three types exist because they trade off flexibility against how much control you retain over them. Static shortcuts are the simplest — fixed at build time in XML — good for actions that never change, like composing a new message. Dynamic shortcuts are your escape hatch for anything that needs to reflect live app state, like recent contacts or recently viewed items, but the system caps how many you can have at once. Pinned shortcuts are different in kind rather than degree: once the user drags one onto their home screen it becomes independent of your app's shortcut list entirely, which is why interviewers like this question — it tests whether you understand shortcuts have a lifecycle partly outside your control once the user pins one.</p>
+<ul>
+<li><strong>Static shortcuts:</strong> declared entirely in an XML resource, fixed at build time (e.g. "Compose new email"). Shown on long-press of the launcher icon. Can't change at runtime beyond enabling/disabling.</li>
+<li><strong>Dynamic shortcuts:</strong> published/updated at runtime via <span class="ic">ShortcutManager</span>, so they can be context-sensitive (e.g. "Message [most recent contact]"). Limited to a device-defined max count (typically 4-5, check <span class="ic">getMaxShortcutCountPerActivity()</span>).</li>
+<li><strong>Pinned shortcuts:</strong> the user explicitly drags a shortcut onto the home screen. Once pinned, it persists as its own launcher icon <strong>independently</strong> — even if you later remove it from your dynamic shortcut list, the pinned copy stays until the user removes it (though you can still update its icon/label via <span class="ic">updateShortcuts()</span>).</li>
+</ul>
+<pre><code><span class="cm">&lt;!-- res/xml/shortcuts.xml — static shortcut --&gt;</span>
+&lt;shortcuts xmlns:android=<span class="st">"http://schemas.android.com/apk/res/android"</span>&gt;
+    &lt;shortcut android:shortcutId=<span class="st">"compose"</span> android:icon=<span class="st">"@drawable/ic_compose"</span>
+        android:shortcutShortLabel=<span class="st">"@string/compose_short"</span>&gt;
+        &lt;intent android:action=<span class="st">"android.intent.action.VIEW"</span>
+            android:targetPackage=<span class="st">"com.example.app"</span>
+            android:targetClass=<span class="st">"com.example.app.ComposeActivity"</span>/&gt;
+    &lt;/shortcut&gt;
+&lt;/shortcuts&gt;</code></pre>
+<pre><code><span class="cm">// dynamic shortcut — published/updated at runtime</span>
+<span class="kw">val</span> <span class="cn">shortcut</span> = <span class="ty">ShortcutInfoCompat</span>.<span class="ty">Builder</span>(context, <span class="st">"contact_42"</span>)
+    .<span class="fn">setShortLabel</span>(<span class="st">"Alex"</span>)
+    .<span class="fn">setIcon</span>(IconCompat.createWithResource(context, R.drawable.ic_person))
+    .<span class="fn">setIntent</span>(<span class="ty">Intent</span>(context, <span class="ty">ChatActivity</span>::<span class="kw">class</span>.java).<span class="fn">setAction</span>(<span class="ty">Intent</span>.ACTION_VIEW))
+    .<span class="fn">build</span>()
+<span class="ty">ShortcutManagerCompat</span>.<span class="fn">pushDynamicShortcut</span>(context, shortcut)</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q50</span><span class="qt">How do AppWidgets work under the hood — what is AppWidgetProvider and why is RemoteViews needed?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>An AppWidget's UI is drawn by the <strong>launcher/home-screen process</strong>, not your app's process — your app never gets direct access to widget Views, since they live across a process boundary. That's what <strong>RemoteViews</strong> solves: it's a serializable description of a view hierarchy (limited to a whitelisted subset of layouts/views: FrameLayout, LinearLayout, RelativeLayout, GridLayout, TextView, ImageView, Button, ProgressBar, etc. — no custom Views) that can be parceled across processes and inflated remotely by the host.</p>
+<p><span class="ic">AppWidgetProvider</span> is just a thin <span class="ic">BroadcastReceiver</span> subclass that the system calls with lifecycle-like broadcasts: <span class="ic">onUpdate()</span> (periodically, per <span class="ic">android:updatePeriodMillis</span> in the widget's metadata XML — minimum effectively ~30 minutes, you cannot refresh a widget faster than that through this mechanism), <span class="ic">onAppWidgetOptionsChanged()</span> (widget resized), <span class="ic">onDeleted()</span>, <span class="ic">onEnabled()</span>/<span class="ic">onDisabled()</span> (first instance added / last removed).</p>
+<pre><code><span class="kw">class</span> <span class="ty">MyWidgetProvider</span> : <span class="ty">AppWidgetProvider</span>() {
+    <span class="kw">override fun</span> <span class="fn">onUpdate</span>(context: <span class="ty">Context</span>, manager: <span class="ty">AppWidgetManager</span>, ids: <span class="ty">IntArray</span>) {
+        <span class="kw">for</span> (id <span class="kw">in</span> ids) {
+            <span class="kw">val</span> <span class="cn">views</span> = <span class="ty">RemoteViews</span>(context.packageName, R.layout.widget_layout).apply {
+                <span class="fn">setTextViewText</span>(R.id.widget_title, <span class="st">"Updated!"</span>)
+            }
+            manager.<span class="fn">updateAppWidget</span>(id, views) <span class="cm">// pushes the new RemoteViews to the host process</span>
+        }
+    }
+}</code></pre>
+<p>For refresh rates faster than the ~30-minute floor (e.g. a live score widget), schedule your own <strong>WorkManager</strong> periodic job (still subject to its own 15-minute floor, so combine with push-triggered updates via FCM for true near-real-time refresh) that calls <span class="ic">updateAppWidget()</span> directly instead of relying on onUpdate() alone.</p>
+<div class="note nblu">💡 Modern alternative: Jetpack Glance lets you describe widget UI declaratively (Compose-like syntax) while still compiling down to RemoteViews under the hood — the RemoteViews process-boundary constraint doesn't go away, Glance just hides the imperative builder code.</div>
+</div>
+</details>
+
 </main>
 </body>
 </html>

@@ -63,7 +63,7 @@ a{color:var(--grnl)}
 
 <details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q1</span><span class="qt">Explain the View drawing lifecycle: measure → layout → draw</span><span class="dif hard">Hard</span></summary>
 <div class="ans">
-<p>Every View goes through three phases before it appears on screen:</p>
+<p>Android splits rendering a View into three distinct passes because a parent and its children need to negotiate size before anyone can be positioned or painted: measure figures out how big a view wants to be given the constraints handed down by its parent, layout assigns each view its final position and size, and draw actually paints pixels onto the Canvas. This is why a ViewGroup's own measurement can't be finalized until it has measured all its children first — sizes resolve bottom-up before positions resolve top-down in layout. Interviewers ask this because it underpins almost every custom-view performance question: understanding that invalidate() only re-triggers draw while requestLayout() re-triggers all three phases is what separates "it works" from "it works and doesn't waste a full traversal on every frame." Here's a minimal custom view that implements all three phases explicitly:</p>
 <pre><code><span class="kw">class</span> <span class="ty">CustomProgressBar</span>(<span class="cn">context</span>: <span class="ty">Context</span>, <span class="cn">attrs</span>: <span class="ty">AttributeSet</span>? = <span class="kw">null</span>) : <span class="ty">View</span>(context, attrs) {
 
     <span class="kw">private var</span> <span class="cn">progress</span> = <span class="cn">0f</span>
@@ -114,6 +114,7 @@ a{color:var(--grnl)}
 
 <details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q2</span><span class="qt">What is the difference between invalidate() and requestLayout()?</span><span class="dif med">Medium</span></summary>
 <div class="ans">
+<p>invalidate() and requestLayout() are the two ways a custom view tells the framework something changed, and picking the wrong one is a classic source of either jank or invisible bugs. The distinction maps directly onto the three-phase pipeline from the previous question: invalidate() only schedules the draw phase, so it's cheap and correct when a view's appearance changes but its size and position don't. requestLayout() re-runs measure and layout for the affected subtree up to the root — necessary whenever the view's size could change, but wasteful if called defensively when invalidate() alone would have done the job. Interviewers ask this to check whether you reason about the cost of each call rather than just sprinkling both everywhere to be safe.</p>
 <ul>
 <li><strong>invalidate():</strong> Only triggers <strong>draw phase</strong>. Use when appearance changes but size doesn't (progress, color, text content in fixed-size view). Cheaper.</li>
 <li><strong>requestLayout():</strong> Triggers <strong>measure + layout + draw</strong>. Use when view's size or position changes (adding/removing children, text that changes view size). More expensive — triggers full traversal from root.</li>
@@ -131,6 +132,7 @@ a{color:var(--grnl)}
 
 <details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q3</span><span class="qt">How do you create a custom ViewGroup (e.g. a simple FlowLayout)?</span><span class="dif hard">Hard</span></summary>
 <div class="ans">
+<p>Building a custom ViewGroup means implementing onMeasure() and onLayout() yourself, because unlike a plain View, a ViewGroup is also responsible for measuring and positioning its children, not just painting itself. A FlowLayout is a good example because it needs genuine layout logic: children should wrap onto a new row once they no longer fit the available width, the same way text wraps. The pattern is always the same two-pass structure — walk the children once in onMeasure(), calling measureChild() on each to find out how much space they want and using that to compute the ViewGroup's own size, then walk them again in onLayout() calling child.layout() with the actual coordinates decided during that first pass. Interviewers are checking for exactly this separation: candidates who try to position children inside onMeasure() run into bugs because final positions aren't settled until layout.</p>
 <pre><code><span class="kw">class</span> <span class="ty">FlowLayout</span>(<span class="cn">context</span>: <span class="ty">Context</span>, <span class="cn">attrs</span>: <span class="ty">AttributeSet</span>? = <span class="kw">null</span>) : <span class="ty">ViewGroup</span>(context, attrs) {
 
     <span class="kw">override fun</span> <span class="fn">onMeasure</span>(widthSpec: <span class="ty">Int</span>, heightSpec: <span class="ty">Int</span>) {
@@ -168,7 +170,7 @@ a{color:var(--grnl)}
 
 <details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q4</span><span class="qt">How does RecyclerView recycling work internally? What are the different caches?</span><span class="dif hard">Hard — Google Favorite</span></summary>
 <div class="ans">
-<p>RecyclerView has a 4-level caching system for ViewHolders:</p>
+<p>RecyclerView's performance advantage over the old ListView comes almost entirely from how aggressively it avoids re-inflating and re-binding views, and that's implemented as a four-level cache that a ViewHolder falls through as it scrolls off-screen. The tiers are ordered from cheapest to most expensive to reuse: the earlier a ViewHolder is found, the less work is needed before it can be shown again, ranging from instant reuse with no rebind at all down to a full onBindViewHolder() call. This is a favorite Google interview question because it tests whether you see recycling as a real, tunable performance mechanism rather than a black box — knowing which tier a view lands in explains why scrolling back up feels instant while scrolling into genuinely new content always costs a bind.</p>
 <ul>
 <li><strong>Scrap cache (mAttachedScrap / mChangedScrap):</strong> ViewHolders currently in layout but temporarily detached during animation/relayout. Reused without rebinding. Instant reuse.</li>
 <li><strong>Cache (mCachedViews):</strong> Recently scrolled-off views. Default size = 2. Returned to exact same position — NO rebind needed. Like a "just in case" buffer for scroll-back.</li>
@@ -244,6 +246,7 @@ recyclerView.<span class="fn">setItemViewCacheSize</span>(<span class="cn">20</s
 
 <details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q5</span><span class="qt">What is ConcatAdapter and when would you use it over nested RecyclerViews?</span><span class="dif med">Medium</span></summary>
 <div class="ans">
+<p>ConcatAdapter solves a problem that used to be handled by nesting RecyclerViews inside each other or hacking multiple view types into one monolithic adapter: showing several logically distinct sections — a header, a horizontally-scrolling row, a main feed, a loading footer — in one scrollable list. Nesting RecyclerViews is an anti-pattern because the outer RecyclerView can't recycle across the inner ones, nested scrolling is janky, and you lose a single unified scroll position. ConcatAdapter instead lets each section keep its own independent Adapter — with its own DiffUtil, its own data updates, its own view types — and just concatenates them into one adapter that RecyclerView treats as a single flat list. That's the real reason to reach for it over nesting: updating the posts section doesn't touch the header adapter at all, and recycling still works correctly across every section boundary.</p>
 <pre><code><span class="cm">// ConcatAdapter: combine multiple adapters into one RecyclerView</span>
 <span class="cm">// NEVER nest RecyclerViews — ruins recycling, breaks scroll</span>
 
@@ -268,7 +271,7 @@ postsAdapter.<span class="fn">submitList</span>(newPosts)  <span class="cm">// h
 
 <details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q6</span><span class="qt">How do you diagnose and fix jank (dropped frames) in Android?</span><span class="dif hard">Hard</span></summary>
 <div class="ans">
-<p>Jank = frames that take longer than 16ms (60fps) or 8.3ms (120fps) to render.</p>
+<p>Jank is what the user actually perceives when a frame misses its deadline: the display refreshes on a fixed schedule (16.6ms per frame at 60fps, 8.3ms at 120fps), and if the app hasn't handed over a new frame in time, the previous frame is shown again, which reads as a visible stutter. Diagnosing it means figuring out which phase of the frame pipeline — input, animation, measure/layout, draw, sync, GPU rendering — is blowing the budget, because the fix is completely different depending on the answer; a slow onDraw() is fixed differently than a deep view hierarchy or a main-thread image decode. Interviewers ask this because it's one of the most common real debugging tasks on the job — knowing the tools (Profiler, Perfetto/Systrace, GPU rendering bars, StrictMode) and the usual culprits signals you've actually chased jank down in a real app rather than just memorized the frame-budget number.</p>
 <div class="gc" style="overflow-x:auto;padding:14px">
 <svg viewBox="0 0 950 250" style="width:100%;height:auto">
 <defs>
@@ -367,6 +370,7 @@ postsAdapter.<span class="fn">submitList</span>(newPosts)  <span class="cm">// h
 
 <details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q8</span><span class="qt">When to use WorkManager vs Coroutines vs Service? How does WorkManager work?</span><span class="dif hard">Hard</span></summary>
 <div class="ans">
+<p>The right tool here depends entirely on what guarantee you need about the work actually completing. A coroutine scoped to a ViewModel or Activity is the simplest option but is explicitly tied to that component's lifecycle — if the user leaves the screen or the process dies, the work is gone, which is fine for a network call feeding the current UI but wrong for anything that must finish regardless. WorkManager exists for the opposite case: it persists the work request to disk, survives process death and even device reboot, and can wait on constraints like being on WiFi or charging before running, which is why it's the right choice for sync, uploads, or cleanup that absolutely has to happen eventually. A plain foreground Service sits in between — useful when work must start immediately and stay visible via a notification, but without WorkManager's built-in persistence, retry, and constraint handling.</p>
 <div class="g2">
 <div class="gc" style="border-color:var(--grn)"><h4 style="color:var(--grnl)">Coroutines (viewModelScope)</h4><p>In-scope async work. Tied to ViewModel/Activity lifecycle. Cancelled when scope is cancelled. Best for: UI operations, network calls while user is in the screen.</p></div>
 <div class="gc" style="border-color:var(--blu)"><h4 style="color:var(--blul)">WorkManager</h4><p>Guaranteed execution even after app restart/kill. Survives device reboot. Supports constraints (WiFi, charging). Best for: sync, upload, cache cleanup — anything that MUST complete.</p></div>
@@ -403,6 +407,7 @@ postsAdapter.<span class="fn">submitList</span>(newPosts)  <span class="cm">// h
 
 <details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q9</span><span class="qt">What are the different animation APIs in Android?</span><span class="dif med">Medium</span></summary>
 <div class="ans">
+<p>Android has accumulated several animation APIs over the years, and knowing which one to reach for signals that you understand the tradeoffs rather than just copying whichever one you saw in a tutorial. ObjectAnimator and ValueAnimator are both built on the property animation system from API 11: ObjectAnimator directly mutates a named property on a target object (translationX, alpha, scaleX) frame by frame, while ValueAnimator just produces the interpolated values and leaves you to apply them yourself, which matters when you're not animating a simple object property at all. AnimatorSet composes multiple animators together — sequenced or in parallel — for coordinated multi-step effects, while the Transition API and MotionLayout work a level higher, animating between two declared states of a layout rather than individual properties. In Compose, the state-driven approach (animateFloatAsState and friends) replaces most of this entirely, since an animation there is just a function of state rather than an imperative object you start and stop.</p>
 <pre><code><span class="cm">// 1. Property Animator (API 11+) — animates actual object properties</span>
 <span class="ty">ObjectAnimator</span>.<span class="fn">ofFloat</span>(view, <span class="st">"translationX"</span>, <span class="cn">0f</span>, <span class="cn">200f</span>).<span class="fn">apply</span> {
     duration = <span class="cn">300</span>

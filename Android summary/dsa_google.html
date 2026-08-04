@@ -63,6 +63,7 @@ a{color:var(--grnl)}
 
 <details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">P1-1</span><span class="qt">Two Sum — Find pair that sums to target</span><span class="dif easy">Easy</span></summary>
 <div class="ans">
+<p>The brute-force way checks every pair of numbers, which costs O(n²) time since for each element you rescan the rest of the array looking for its complement. The key insight is that you don't need to search for the complement at all — you can remember every value you've already seen in a hash map as you go, so checking whether the current element's complement showed up earlier becomes an O(1) lookup instead of a scan. That turns the whole problem into a single pass: O(n) time and O(n) space for the map.</p>
 <pre><code><span class="cm">// O(n) time, O(n) space — HashMap solution</span>
 <span class="kw">fun</span> <span class="fn">twoSum</span>(nums: <span class="ty">IntArray</span>, target: <span class="ty">Int</span>): <span class="ty">IntArray</span> {
     <span class="kw">val</span> <span class="cn">seen</span> = <span class="ty">HashMap</span>&lt;<span class="ty">Int</span>, <span class="ty">Int</span>&gt;() <span class="cm">// value → index</span>
@@ -81,6 +82,7 @@ a{color:var(--grnl)}
 
 <details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">P1-2</span><span class="qt">Container With Most Water (Two Pointers)</span><span class="dif med">Medium</span></summary>
 <div class="ans">
+<p>Checking every pair of lines for the largest container is O(n²). The two-pointer trick instead starts with the widest possible container — one pointer at each end — and shrinks the window inward, always moving the pointer at the <strong>shorter</strong> line. That's safe because the shorter line is the bottleneck limiting the area; keeping it and narrowing the width can only ever produce an equal or smaller area, so there's never a reason to move the taller pointer instead. Since each pointer only ever moves inward, the whole scan touches each index once: O(n) time, O(1) space.</p>
 <pre><code><span class="cm">// Greedy two-pointer: move the shorter side inward</span>
 <span class="kw">fun</span> <span class="fn">maxArea</span>(height: <span class="ty">IntArray</span>): <span class="ty">Int</span> {
     <span class="kw">var</span> <span class="cn">left</span> = <span class="cn">0</span>; <span class="kw">var</span> <span class="cn">right</span> = height.size - <span class="cn">1</span>; <span class="kw">var</span> <span class="cn">maxWater</span> = <span class="cn">0</span>
@@ -100,6 +102,7 @@ a{color:var(--grnl)}
 
 <details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">P2-1</span><span class="qt">Longest Substring Without Repeating Characters</span><span class="dif med">Medium</span></summary>
 <div class="ans">
+<p>Checking every substring for duplicate characters is O(n³)-ish and wasteful. Instead, maintain a sliding window <span class="ic">[left, right]</span> that is always duplicate-free: as <span class="ic">right</span> expands one character at a time, a hash map remembers the last index each character was seen at, and the moment a repeat shows up, <span class="ic">left</span> jumps directly past that earlier occurrence instead of creeping forward one step at a time. Because both pointers only ever move forward across the string, the whole scan is O(n) time and O(min(n, charset size)) space for the map.</p>
 <pre><code><span class="kw">fun</span> <span class="fn">lengthOfLongestSubstring</span>(s: <span class="ty">String</span>): <span class="ty">Int</span> {
     <span class="kw">val</span> <span class="cn">lastSeen</span> = <span class="ty">HashMap</span>&lt;<span class="ty">Char</span>, <span class="ty">Int</span>&gt;() <span class="cm">// char → last index seen</span>
     <span class="kw">var</span> <span class="cn">left</span> = <span class="cn">0</span>; <span class="kw">var</span> <span class="cn">maxLen</span> = <span class="cn">0</span>
@@ -167,6 +170,7 @@ a{color:var(--grnl)}
 
 <details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">P2-2</span><span class="qt">Minimum Window Substring</span><span class="dif hard">Hard</span></summary>
 <div class="ans">
+<p>Trying every substring of s and checking whether it contains all of t's characters is far too slow. This is a variable-size sliding window instead: expand <span class="ic">right</span> to pull characters into the window, and track how many of t's required character counts are currently satisfied with a <span class="ic">formed</span> counter — once <span class="ic">formed == need.size</span>, the window is a valid candidate. From there, greedily shrink from <span class="ic">left</span> for as long as the window stays valid, recording the smallest valid window seen, since a smaller valid window is always at least as good as a larger one covering the same required characters. Each pointer only ever moves forward through the string, so despite the nested loops this runs in O(|s| + |t|) time and O(|s| + |t|) space for the two count maps.</p>
 <pre><code><span class="kw">fun</span> <span class="fn">minWindow</span>(s: <span class="ty">String</span>, t: <span class="ty">String</span>): <span class="ty">String</span> {
     <span class="kw">if</span> (s.<span class="fn">isEmpty</span>() || t.<span class="fn">isEmpty</span>()) <span class="kw">return</span> <span class="st">""</span>
     <span class="kw">val</span> <span class="cn">need</span> = <span class="ty">HashMap</span>&lt;<span class="ty">Char</span>, <span class="ty">Int</span>&gt;()
@@ -192,6 +196,7 @@ a{color:var(--grnl)}
 
 <details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">P3-1</span><span class="qt">Classic binary search template — know this cold</span><span class="dif easy">Easy</span></summary>
 <div class="ans">
+<p>Binary search works because comparing the target to the middle element of a sorted array eliminates half the remaining search space on every step — the target either equals the middle, or it must live entirely in the left half, or entirely in the right half. Repeating that halving means at most log₂(n) comparisons are ever needed, giving O(log n) time and O(1) space instead of the O(n) a linear scan would take. The exact-match template returns as soon as it finds the target, while the lower-bound template narrows the range down to the single leftmost index where the target could be inserted without breaking sort order — that variant is the pattern behind "first occurrence" and "insertion point" style questions.</p>
 <pre><code><span class="cm">// Template: find exact target</span>
 <span class="kw">fun</span> <span class="fn">binarySearch</span>(nums: <span class="ty">IntArray</span>, target: <span class="ty">Int</span>): <span class="ty">Int</span> {
     <span class="kw">var</span> <span class="cn">lo</span> = <span class="cn">0</span>; <span class="kw">var</span> <span class="cn">hi</span> = nums.size - <span class="cn">1</span>
@@ -220,6 +225,7 @@ a{color:var(--grnl)}
 
 <details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">P3-2</span><span class="qt">Search in Rotated Sorted Array</span><span class="dif med">Medium — Google Favorite</span></summary>
 <div class="ans">
+<p>A rotated sorted array isn't fully sorted end to end, so plain binary search doesn't directly apply — but the key insight is that at any midpoint, at least one of the two halves is still guaranteed to be normally sorted. So at each step, first figure out which half is sorted by comparing <span class="ic">nums[lo]</span> to <span class="ic">nums[mid]</span>, then check whether the target falls inside that sorted half's value range. If it does, recurse into that half; if not, the target must be in the other (rotated) half, so recurse there instead. This still halves the search space every iteration, preserving the O(log n) time and O(1) space of standard binary search despite the rotation.</p>
 <pre><code><span class="kw">fun</span> <span class="fn">search</span>(nums: <span class="ty">IntArray</span>, target: <span class="ty">Int</span>): <span class="ty">Int</span> {
     <span class="kw">var</span> <span class="cn">lo</span> = <span class="cn">0</span>; <span class="kw">var</span> <span class="cn">hi</span> = nums.size - <span class="cn">1</span>
     <span class="kw">while</span> (lo &lt;= hi) {
@@ -244,6 +250,7 @@ a{color:var(--grnl)}
 
 <details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">P4-1</span><span class="qt">BFS and DFS templates for trees</span><span class="dif easy">Easy</span></summary>
 <div class="ans">
+<p>DFS and BFS are the two fundamental ways to visit every node of a tree, and which one to reach for depends on what you need out of the traversal. DFS recurses depth-first — for inorder that means fully exploring the left subtree, visiting the root, then the right subtree — which is why inorder traversal of a BST naturally comes out in sorted order. BFS instead uses a queue to process the tree level by level, which is the only traversal that naturally groups nodes by depth (useful for "level order" or "minimum depth" style questions). Both visit every node exactly once, so each is O(n) time; DFS uses O(h) space for the recursion stack (h = tree height) while BFS uses O(w) space for the queue (w = the tree's maximum width).</p>
 <pre><code><span class="kw">class</span> <span class="ty">TreeNode</span>(<span class="kw">var</span> <span class="cn">value</span>: <span class="ty">Int</span>, <span class="kw">var</span> <span class="cn">left</span>: <span class="ty">TreeNode</span>? = <span class="kw">null</span>, <span class="kw">var</span> <span class="cn">right</span>: <span class="ty">TreeNode</span>? = <span class="kw">null</span>)
 
 <span class="cm">// DFS: inorder (left-root-right) — gives sorted order for BST</span>
@@ -316,6 +323,7 @@ a{color:var(--grnl)}
 
 <details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">P4-2</span><span class="qt">Lowest Common Ancestor of Binary Tree</span><span class="dif med">Medium — Google Favorite</span></summary>
 <div class="ans">
+<p>The recursive approach searches both subtrees for p and q at the same time: at each node, recurse into the left and right children looking for either target. If both the left and right recursive calls come back non-null, that means p and q were found in different subtrees — which means the current node is exactly where their paths to the root diverge, making it the lowest common ancestor. If only one side is non-null, that result is simply passed up unchanged, since the LCA (or one of the targets itself) must live entirely within that subtree. Each node is visited once, so this is O(n) time and O(h) space for the recursion stack.</p>
 <pre><code><span class="kw">fun</span> <span class="fn">lowestCommonAncestor</span>(root: <span class="ty">TreeNode</span>?, p: <span class="ty">TreeNode</span>?, q: <span class="ty">TreeNode</span>?): <span class="ty">TreeNode</span>? {
     <span class="kw">if</span> (root == <span class="kw">null</span> || root == p || root == q) <span class="kw">return</span> root
     <span class="kw">val</span> <span class="cn">left</span> = <span class="fn">lowestCommonAncestor</span>(root.left, p, q)
@@ -332,6 +340,7 @@ a{color:var(--grnl)}
 
 <details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">P5-1</span><span class="qt">Climbing Stairs — DP foundation</span><span class="dif easy">Easy</span></summary>
 <div class="ans">
+<p>Climbing Stairs is really Fibonacci in disguise: to reach step n, the last move taken was either a single step from step n-1 or a double step from step n-2, so the total number of ways to reach n is simply the sum of the ways to reach those two prior steps. A naive recursive implementation of that recurrence would recompute the same subproblems exponentially many times, so instead the solution builds up from the base cases iteratively, keeping only the last two computed values. That reduces it to a single forward pass: O(n) time and O(1) space, since only two rolling variables are needed instead of a full DP array.</p>
 <pre><code><span class="cm">// Recurrence: ways(n) = ways(n-1) + ways(n-2)</span>
 <span class="cm">// O(n) time, O(1) space — rolling variables</span>
 <span class="kw">fun</span> <span class="fn">climbStairs</span>(n: <span class="ty">Int</span>): <span class="ty">Int</span> {
@@ -348,6 +357,7 @@ a{color:var(--grnl)}
 
 <details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">P5-2</span><span class="qt">Longest Common Subsequence</span><span class="dif med">Medium</span></summary>
 <div class="ans">
+<p>Trying every subsequence of one string against every subsequence of the other is exponential and completely impractical. Instead, build a 2D table where <span class="ic">dp[i][j]</span> represents the LCS length of the first i characters of text1 and the first j characters of text2: if those two characters match, they extend the best subsequence found without them by one; if they don't match, the best is whichever of dropping the last character of text1 or of text2 leaves the longer subsequence. Filling this table bottom-up reuses previously solved subproblems instead of recomputing them — the whole point of dynamic programming — giving O(m·n) time and O(m·n) space for the table.</p>
 <pre><code><span class="kw">fun</span> <span class="fn">longestCommonSubsequence</span>(text1: <span class="ty">String</span>, text2: <span class="ty">String</span>): <span class="ty">Int</span> {
     <span class="kw">val</span> <span class="cn">m</span> = text1.length; <span class="kw">val</span> <span class="cn">n</span> = text2.length
     <span class="kw">val</span> <span class="cn">dp</span> = <span class="ty">Array</span>(m + <span class="cn">1</span>) { <span class="ty">IntArray</span>(n + <span class="cn">1</span>) } <span class="cm">// dp[i][j] = LCS of text1[0..i-1] and text2[0..j-1]</span>
@@ -367,6 +377,7 @@ a{color:var(--grnl)}
 
 <details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">P6-1</span><span class="qt">Number of Islands — DFS on grid</span><span class="dif med">Medium — Must Know</span></summary>
 <div class="ans">
+<p>Every time the scan hits an unvisited land cell ('1'), it must be the start of a brand-new island — so the island count is incremented and a DFS floods outward from that cell, marking every connected land cell as visited (by flipping it to '0') so it's never counted again. This is the standard "flood fill" pattern for counting connected components on a grid. Each cell is visited a constant number of times overall, so the scan plus all the flood fills together run in O(rows × cols) time, and mutating the grid in place to mark visited cells avoids the O(rows × cols) space a separate visited set would cost.</p>
 <pre><code><span class="kw">fun</span> <span class="fn">numIslands</span>(grid: <span class="ty">Array</span>&lt;<span class="ty">CharArray</span>&gt;): <span class="ty">Int</span> {
     <span class="kw">var</span> <span class="cn">count</span> = <span class="cn">0</span>
     <span class="kw">for</span> (r <span class="kw">in</span> grid.<span class="fn">indices</span>) {
@@ -392,6 +403,7 @@ a{color:var(--grnl)}
 
 <details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">P6-2</span><span class="qt">Word Ladder — BFS shortest path</span><span class="dif hard">Hard</span></summary>
 <div class="ans">
+<p>This is a shortest-path problem on an implicit graph where each word is a node and an edge connects two words that differ by exactly one letter — and BFS is the right tool precisely because it explores that graph level by level, so the first time the end word is reached is guaranteed to be via the shortest possible sequence of transformations. At each step, every possible one-letter substitution of the current word is generated and checked against the dictionary; removing a word from the set the moment it's used doubles as marking it visited, which prevents revisits and keeps the search from looping. Generating variations costs O(L · 26) per word of length L, so the overall complexity is O(n · L · 26) time with O(n) space for the queue and word set.</p>
 <pre><code><span class="kw">fun</span> <span class="fn">ladderLength</span>(beginWord: <span class="ty">String</span>, endWord: <span class="ty">String</span>, wordList: <span class="ty">List</span>&lt;<span class="ty">String</span>&gt;): <span class="ty">Int</span> {
     <span class="kw">val</span> <span class="cn">wordSet</span> = wordList.<span class="fn">toHashSet</span>()
     <span class="kw">if</span> (!wordSet.<span class="fn">contains</span>(endWord)) <span class="kw">return</span> <span class="cn">0</span>

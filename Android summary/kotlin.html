@@ -63,6 +63,7 @@ a{color:var(--grnl)}
 
 <details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q1</span><span class="qt">Explain all scope functions: let, run, with, apply, also — when to use each</span><span class="dif hard">Hard</span></summary>
 <div class="ans">
+<p>Kotlin doesn't have one general-purpose way to reach into an object — it has five scope functions, and the trick to keeping them straight is two independent questions: what do you call the receiver inside the block, and what does the whole expression return? <span class="ic">let</span>, <span class="ic">run</span>, and <span class="ic">with</span> return whatever the lambda's last line evaluates to, which makes them a good fit for computing a derived value or chaining a null check straight into a transform. <span class="ic">apply</span> and <span class="ic">also</span> instead hand back the original receiver itself, which is why they're the right choice for configuring an object in place or peeling off a side effect — like a log line — mid-chain without breaking the chain. <span class="ic">with</span> is the odd one out because it isn't an extension function at all — it takes the receiver as a plain argument — so it's mainly used to group several calls on an already non-null object rather than to chain safely off a nullable one.</p>
 <div class="gc" style="overflow-x:auto;padding:14px;margin:10px 0">
 <svg viewBox="0 0 940 460" style="width:100%;height:auto">
 <defs>
@@ -155,7 +156,7 @@ a{color:var(--grnl)}
 
 <details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q2</span><span class="qt">What is the difference between inline, noinline, and crossinline?</span><span class="dif hard">Hard</span></summary>
 <div class="ans">
-<p><strong>inline:</strong> The compiler copies the function body at the call site (no lambda object created, no virtual dispatch). Reduces overhead for higher-order functions used in performance-critical code.</p>
+<p>These four modifiers all deal with how the compiler treats a lambda parameter, and interviewers ask this to see if you understand what "inline" actually buys you. Marking a function <span class="ic">inline</span> tells the compiler to paste its body — and the bodies of any lambda parameters passed to it — directly into every call site, so no <span class="ic">Function</span> object gets allocated and no virtual call happens; that's why higher-order functions like <span class="ic">map</span> and <span class="ic">filter</span> can be used pervasively in Kotlin without a real performance tax. Once a function is inline, every lambda parameter is inlined by default, but that's not always desirable: <span class="ic">noinline</span> opts one specific lambda back out, typically because you need to store it in a variable or hand it to a non-inline function, both of which require it to exist as a real object. <span class="ic">crossinline</span> solves a different problem — it doesn't stop inlining, it forbids that particular lambda from using a non-local <span class="ic">return</span>, because the lambda is about to be invoked from another execution context (inside another function object, or later via a callback) where jumping back out of the original caller no longer makes sense. <span class="ic">reified</span> is only legal on an inline function because inlining is exactly what preserves the real type argument at each call site, letting you write <span class="ic">T::class</span> or <span class="ic">is T</span> checks that the JVM would otherwise erase at runtime.</p>
 <pre><code><span class="cm">// WITHOUT inline: creates a lambda object on heap, indirect call</span>
 <span class="kw">fun</span> &lt;T&gt; <span class="fn">myWith</span>(receiver: T, block: T.() -> <span class="ty">Unit</span>) { receiver.<span class="fn">block</span>() }
 
@@ -185,6 +186,7 @@ a{color:var(--grnl)}
 
 <details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q3</span><span class="qt">Explain sealed classes vs enums vs abstract classes</span><span class="dif med">Medium</span></summary>
 <div class="ans">
+<p>Enums, sealed classes, and abstract classes all model "this thing is one of a fixed set of options," just at different levels of flexibility. An enum is the most restrictive: every constant is the same type with the same shape, just different values — perfect for something like a <span class="ic">Direction</span> with four interchangeable variants. A sealed class raises the ceiling: it fixes the set of subtypes at compile time, but each subtype can carry completely different data and shape, which is exactly what you need to model something like a network <span class="ic">Result</span> that's <span class="ic">Success</span> with a payload, <span class="ic">Error</span> with an exception, or <span class="ic">Loading</span> with nothing at all. A plain abstract class doesn't fix anything — arbitrary subclasses can be defined anywhere, even in another module — so the compiler has no way to help you catch a missing case. The real payoff of sealed classes is that a <span class="ic">when</span> over them is exhaustive: the compiler forces you to handle every subtype, and adding a new one later breaks the build everywhere it isn't handled — a safety net neither plain enums nor abstract classes give you for free.</p>
 <pre><code><span class="cm">// Enum: fixed set of constants, same type, no state variation</span>
 <span class="kw">enum class</span> <span class="ty">Direction</span> { NORTH, SOUTH, EAST, WEST }
 
@@ -213,6 +215,7 @@ a{color:var(--grnl)}
 
 <details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q4</span><span class="qt">Explain Kotlin generics: variance, in/out, and when to use each</span><span class="dif hard">Hard</span></summary>
 <div class="ans">
+<p>Generic variance answers one question: if <span class="ic">Dog</span> is a subtype of <span class="ic">Animal</span>, is <span class="ic">Box&lt;Dog&gt;</span> a subtype of <span class="ic">Box&lt;Animal&gt;</span>? By default, Kotlin generics are invariant, so the answer is no — the two are unrelated types even though <span class="ic">Dog</span> and <span class="ic">Animal</span> aren't. Marking a type parameter <span class="ic">out</span> makes the class covariant: it can only ever produce or return that type, never accept it as an input, and that restriction is exactly what lets the compiler safely treat a <span class="ic">Cage&lt;Dog&gt;</span> as a <span class="ic">Cage&lt;Animal&gt;</span>. Marking a type parameter <span class="ic">in</span> makes it contravariant — the opposite trade: the class can only consume that type as a parameter and never hand it back out, which is why a <span class="ic">Feeder&lt;Animal&gt;</span> can safely stand in for a <span class="ic">Feeder&lt;Dog&gt;</span> — anything that can feed any animal can certainly feed a dog. The mnemonic PECS — Producer Extends, Consumer Super — captures this, and it's exactly why the built-in <span class="ic">List&lt;out T&gt;</span> is covariant and read-only, while <span class="ic">MutableList&lt;T&gt;</span> stays invariant since it both produces and consumes <span class="ic">T</span>.</p>
 <pre><code><span class="cm">// Invariant: default. Box&lt;Dog&gt; is NOT a subtype of Box&lt;Animal&gt;</span>
 <span class="kw">class</span> <span class="ty">Box</span>&lt;T&gt;(var item: T)
 
@@ -239,6 +242,7 @@ a{color:var(--grnl)}
 
 <details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q5</span><span class="qt">What is delegation in Kotlin? lazy, observable, and interface delegation</span><span class="dif med">Medium</span></summary>
 <div class="ans">
+<p>Kotlin's <span class="ic">by</span> keyword covers three distinct but related ideas, all under the umbrella of delegation — handing off responsibility for a property or an interface to another object instead of implementing it yourself. <span class="ic">by lazy</span> defers a <span class="ic">val</span>'s initialization until the first time it's actually read, then caches the result, which is ideal for something expensive like opening a database that you don't want to pay for unless it's needed; it's thread-safe by default, though you can relax that with a <span class="ic">LazyThreadSafetyMode</span> when you know only one thread will ever touch it. <span class="ic">Delegates.observable</span> and <span class="ic">vetoable</span> let a <span class="ic">var</span> run a callback on every change — <span class="ic">observable</span> purely for notification, <span class="ic">vetoable</span> to actually reject a write by returning <span class="ic">false</span>. Interface delegation is different again: <span class="ic">class Foo : List&lt;T&gt; by inner</span> tells the compiler to implement every method of <span class="ic">List</span> by forwarding to <span class="ic">inner</span> automatically, so you only write the one or two methods you actually want to customize. Under the hood, all three are backed by the same mechanism — a class exposing <span class="ic">operator fun getValue()</span>/<span class="ic">setValue()</span> that the compiler wires up for you — which is also how you'd build a fully custom property delegate, like a SharedPreferences-backed property.</p>
 <pre><code><span class="cm">// by lazy: computed once on first access, thread-safe by default</span>
 <span class="kw">val</span> <span class="cn">database</span>: <span class="ty">RoomDatabase</span> <span class="kw">by lazy</span> {
     <span class="ty">Room</span>.<span class="fn">databaseBuilder</span>(context, <span class="ty">AppDb</span>::<span class="kw">class</span>.java, <span class="st">"app.db"</span>).<span class="fn">build</span>()
@@ -275,6 +279,7 @@ a{color:var(--grnl)}
 
 <details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q6</span><span class="qt">What is the difference between data class, regular class, and object?</span><span class="dif easy">Easy</span></summary>
 <div class="ans">
+<p>These three keywords solve different problems even though they all define a "class" in the loose sense. A regular class is the general-purpose tool — you write whatever state and behavior you need, and equality defaults to reference identity unless you override <span class="ic">equals()</span> yourself. A data class is specifically for classes whose whole purpose is holding a bundle of values: the compiler generates <span class="ic">equals()</span>, <span class="ic">hashCode()</span>, <span class="ic">toString()</span>, <span class="ic">copy()</span>, and <span class="ic">componentN()</span> functions from the primary constructor properties, so two instances with the same field values compare as equal and you get a readable <span class="ic">toString()</span> for free. <span class="ic">object</span> is a completely different axis — it's not about what the class holds, it's about how many instances exist: declaring <span class="ic">object Foo</span> gives you a single, lazily-initialized, thread-safe singleton, and a companion object is the same idea scoped to live inside a class, so it can attach static-like factory methods or constants to it.</p>
 <pre><code><span class="cm">// data class: auto-generates equals(), hashCode(), toString(), copy(), componentN()</span>
 <span class="kw">data class</span> <span class="ty">User</span>(<span class="kw">val</span> id: <span class="ty">Int</span>, <span class="kw">val</span> name: <span class="ty">String</span>)
 
@@ -306,6 +311,7 @@ u1 == <span class="ty">User</span>(<span class="cn">1</span>, <span class="st">"
 
 <details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q7</span><span class="qt">What is the difference between == and === in Kotlin? What about equals()?</span><span class="dif easy">Easy</span></summary>
 <div class="ans">
+<p>Kotlin splits what Java conflates into two separate operators. <span class="ic">==</span> is structural equality — it calls <span class="ic">equals()</span> under the hood, so for a data class it's comparing field values, and it's null-safe by construction: <span class="ic">a == b</span> compiles to a check that never throws even if either side is null, unlike Java's raw <span class="ic">a.equals(b)</span>, which NPEs if <span class="ic">a</span> is null. <span class="ic">===</span> is referential equality — it asks whether both sides point to the exact same object in memory, the thing Java's <span class="ic">==</span> does for objects. So two separately-constructed <span class="ic">String</span> objects with identical characters are <span class="ic">==</span> (same content) but not <span class="ic">===</span> (different objects), and two data class instances with equal fields are <span class="ic">==</span> but not <span class="ic">===</span> for the same reason. Calling <span class="ic">.equals()</span> directly is essentially the same as <span class="ic">==</span>, just without the null-safety wrapper Kotlin adds around the operator.</p>
 <pre><code><span class="kw">val</span> <span class="cn">a</span> = <span class="ty">String</span>(<span class="st">"hello"</span>.<span class="fn">toCharArray</span>())
 <span class="kw">val</span> <span class="cn">b</span> = <span class="ty">String</span>(<span class="st">"hello"</span>.<span class="fn">toCharArray</span>())
 
@@ -589,6 +595,896 @@ outer@ <span class="kw">for</span> (i <span class="kw">in</span> <span class="cn
 <text x="720" y="196" text-anchor="middle" font-size="9" fill="var(--muted)">constant stack space, any depth</text>
 </svg>
 </div>
+</div>
+</details>
+
+<h2>Kotlin Basics: Types, Null Safety &amp; Strings</h2>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q14</span><span class="qt">What makes Kotlin's null safety different from Java? Nullable types and platform types</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<p>Kotlin bakes nullability into the type system itself: a plain <span class="ic">String</span> can never hold <span class="ic">null</span>, and the compiler enforces it at every assignment and function call. To allow <span class="ic">null</span>, you opt in explicitly with <span class="ic">String?</span>. This turns most NPEs into compile-time errors instead of runtime crashes — the one gap is Java interop, where an unannotated method exposes a <strong>platform type</strong> (shown as <span class="ic">String!</span> in tooltips) that the compiler can't verify either way.</p>
+<pre><code><span class="kw">val</span> <span class="cn">name</span>: <span class="ty">String</span> = <span class="st">"Alice"</span>       <span class="cm">// non-null by default — compiler guarantees this</span>
+<span class="cm">// name = null                       // compile error</span>
+
+<span class="kw">var</span> <span class="cn">nickname</span>: <span class="ty">String</span>? = <span class="kw">null</span>     <span class="cm">// nullable — must opt in with '?'</span>
+<span class="cm">// nickname.length                   // ERROR: must check or use ?.</span>
+nickname?.length                        <span class="cm">// OK — safe call</span>
+
+<span class="cm">// Platform type from Java — compiler can't verify nullability either way,</span>
+<span class="cm">// so it trusts your declared type and won't force a check</span>
+<span class="kw">val</span> <span class="cn">header</span>: <span class="ty">String</span> = javaClient.<span class="fn">getHeader</span>()   <span class="cm">// may NPE at runtime if Java actually returns null</span>
+<span class="kw">val</span> <span class="cn">safeHeader</span>: <span class="ty">String</span>? = javaClient.<span class="fn">getHeader</span>() <span class="cm">// safer default when unsure</span></code></pre>
+<div class="note namb"><strong>Rule of thumb:</strong> when consuming unannotated Java (no <span class="ic">@Nullable</span>/<span class="ic">@NonNull</span>), assume it can return <span class="ic">null</span> and assign to a nullable type first — promote to non-null only after checking.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q15</span><span class="qt">What are Kotlin's basic types, and what do Any, Unit, and Nothing mean?</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<p>Kotlin's basic types are the usual primitives you'd expect — <span class="ic">Int</span>, <span class="ic">Long</span>, <span class="ic">Double</span>, <span class="ic">Float</span>, <span class="ic">Char</span>, <span class="ic">Boolean</span> — but they're represented as real objects in the type system, even though the compiler optimizes them down to JVM primitives whenever possible to avoid boxing. Three special types are what interviewers actually care about here. <span class="ic">Any</span> is the root of the entire type hierarchy, playing the role Java's <span class="ic">Object</span> does, except <span class="ic">Any</span> by itself is non-nullable — you need <span class="ic">Any?</span> to also allow null. <span class="ic">Unit</span> is Kotlin's equivalent of <span class="ic">void</span>, but unlike <span class="ic">void</span> it's a genuine type with exactly one instance, which is what lets a function returning <span class="ic">Unit</span> still be treated as a value wherever a function type is expected. <span class="ic">Nothing</span> is the type of an expression that never successfully produces a value — a thrown exception, an infinite loop, a <span class="ic">TODO()</span> — and because it's defined as a subtype of every other type, the compiler can still type-check an <span class="ic">if</span>/<span class="ic">else</span> or a <span class="ic">when</span> where one branch produces <span class="ic">Nothing</span>, letting the rest of the expression through cleanly.</p>
+<pre><code><span class="kw">val</span> <span class="cn">i</span>: <span class="ty">Int</span> = <span class="cn">42</span>          <span class="cm">// inferred as Int from the literal</span>
+<span class="kw">val</span> <span class="cn">l</span> = <span class="cn">42L</span>              <span class="cm">// Long literal</span>
+<span class="kw">val</span> <span class="cn">d</span> = <span class="cn">3.14</span>             <span class="cm">// Double</span>
+<span class="kw">val</span> <span class="cn">f</span> = <span class="cn">3.14f</span>            <span class="cm">// Float</span>
+<span class="kw">val</span> <span class="cn">c</span>: <span class="ty">Char</span> = <span class="st">'K'</span>
+<span class="kw">val</span> <span class="cn">ok</span>: <span class="ty">Boolean</span> = <span class="kw">true</span>
+
+<span class="cm">// Any is the root of the type hierarchy — like Object, but non-null</span>
+<span class="kw">fun</span> <span class="fn">printAny</span>(x: <span class="ty">Any</span>) = <span class="fn">println</span>(x)   <span class="cm">// Any, not Any? — null isn't allowed here</span>
+
+<span class="cm">// Unit is Kotlin's "void" — but it's a REAL type with exactly one instance</span>
+<span class="kw">fun</span> <span class="fn">logMessage</span>(msg: <span class="ty">String</span>): <span class="ty">Unit</span> { <span class="fn">println</span>(msg) }  <span class="cm">// return type can be omitted</span>
+
+<span class="cm">// Nothing — the type of an expression that never completes normally</span>
+<span class="kw">fun</span> <span class="fn">fail</span>(msg: <span class="ty">String</span>): <span class="ty">Nothing</span> = <span class="kw">throw</span> <span class="ty">IllegalStateException</span>(msg)
+
+<span class="cm">// Nothing is a subtype of every type, so mismatched branches still type-check:</span>
+<span class="kw">val</span> <span class="cn">value</span>: <span class="ty">Int</span> = <span class="kw">if</span> (ready) <span class="cn">5</span> <span class="kw">else</span> <span class="fn">fail</span>(<span class="st">"no value"</span>)
+
+<span class="cm">// List&lt;Nothing&gt; is the type of emptyList() — safely assignable to any List&lt;T&gt;</span>
+<span class="kw">val</span> <span class="cn">empty</span>: <span class="ty">List</span>&lt;<span class="ty">String</span>&gt; = <span class="fn">emptyList</span>()</code></pre>
+<div class="note nblu"><strong>Nothing</strong> shows up whenever a branch can't produce a value — <span class="ic">TODO()</span>, a <span class="ic">throw</span> expression, an infinite loop — letting the rest of the surrounding expression still type-check cleanly.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q16</span><span class="qt">String templates, raw strings, and the string functions you'll actually use</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<p>Kotlin string templates let you embed a variable or an arbitrary expression directly inside a string literal with <span class="ic">$</span> or <span class="ic">${...}</span>, which eliminates the string-concatenation-with-<span class="ic">+</span> style you'd write in Java and reads far closer to the final output. Triple-quoted raw strings are the other big string feature: they don't process escape sequences at all, so something like a regex or a JSON blob with lots of backslashes and quotes can be written literally instead of escaped, and they can span multiple lines — <span class="ic">trimIndent()</span> and <span class="ic">trimMargin()</span> exist specifically to strip the leading whitespace that naturally shows up when you indent a multi-line raw string inside a function body. On top of that, the standard library ships a large set of convenience string functions — <span class="ic">trim</span>, <span class="ic">split</span>, <span class="ic">toIntOrNull</span>, <span class="ic">padStart</span>, <span class="ic">repeat</span>, and more — that cover the everyday string manipulation you'd otherwise reach for regex or manual loops to do.</p>
+<pre><code><span class="kw">val</span> <span class="cn">name</span> = <span class="st">"Kotlin"</span>
+<span class="kw">val</span> <span class="cn">version</span> = <span class="cn">2.0</span>
+<span class="fn">println</span>(<span class="st">"Hello, </span><span class="cn">$name</span><span class="st">! Version: </span><span class="cn">${version}</span><span class="st">"</span>)   <span class="cm">// template — no + concatenation needed</span>
+<span class="fn">println</span>(<span class="st">"Sum: </span><span class="cn">${1 + 2}</span><span class="st">"</span>)                        <span class="cm">// any expression is allowed inside ${}</span>
+
+<span class="cm">// Raw string — triple-quoted, no escaping needed, spans multiple lines</span>
+<span class="kw">val</span> <span class="cn">json</span> = <span class="st">"""
+    {
+        "name": "</span><span class="cn">$name</span><span class="st">",
+        "ok": true
+    }
+"""</span>.<span class="fn">trimIndent</span>()   <span class="cm">// strips the common leading whitespace from every line</span>
+
+<span class="kw">val</span> <span class="cn">sql</span> = <span class="st">"""
+    |SELECT *
+    |FROM users
+"""</span>.<span class="fn">trimMargin</span>()    <span class="cm">// strips everything up to and including the '|' marker</span>
+
+<span class="cm">// Common stdlib string functions</span>
+<span class="st">"  hi  "</span>.<span class="fn">trim</span>()                 <span class="cm">// "hi"</span>
+<span class="st">"a,b,,c"</span>.<span class="fn">split</span>(<span class="st">","</span>)             <span class="cm">// ["a", "b", "", "c"]</span>
+<span class="st">"42"</span>.<span class="fn">toIntOrNull</span>()               <span class="cm">// 42 (null instead of throwing on bad input)</span>
+<span class="st">"id"</span>.<span class="fn">padStart</span>(<span class="cn">5</span>, <span class="st">'0'</span>)            <span class="cm">// "000id"</span>
+<span class="st">"ab"</span>.<span class="fn">repeat</span>(<span class="cn">3</span>)                   <span class="cm">// "ababab"</span></code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--blub);color:var(--blul)">Q17</span><span class="qt">when expression: exhaustiveness, and expression vs statement</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p><span class="ic">when</span> can be used two ways in Kotlin, and the difference matters because it changes what the compiler requires from you. Used as a statement — where you're just running side effects per branch and nothing consumes a return value — the branches don't need to cover every possible case, and you can leave off <span class="ic">else</span> entirely. Used as an expression — where the result is assigned to a variable or returned — Kotlin needs a value out of every possible path, so the compiler forces exhaustiveness and refuses to compile without an <span class="ic">else</span> branch, unless the subject's type is a sealed class or an enum whose cases the compiler can already enumerate completely. That last exception is the real payoff: once you're switching over a sealed hierarchy or an enum, the compiler already knows every case exists, so <span class="ic">else</span> becomes optional, and adding a new subtype or constant later will break every exhaustive <span class="ic">when</span> that doesn't handle it — turning what would be a runtime bug in Java into a compile-time error in Kotlin.</p>
+<pre><code><span class="cm">// As a STATEMENT — branches don't need to cover every case</span>
+<span class="kw">when</span> (httpCode) {
+    <span class="cn">200</span> -> <span class="fn">println</span>(<span class="st">"OK"</span>)
+    <span class="cn">404</span> -> <span class="fn">println</span>(<span class="st">"Not found"</span>)
+    <span class="kw">else</span> -> <span class="fn">println</span>(<span class="st">"Unhandled"</span>) <span class="cm">// optional here, but good practice</span>
+}
+
+<span class="cm">// As an EXPRESSION — a value must come out of every path, so the compiler</span>
+<span class="cm">// forces exhaustiveness</span>
+<span class="kw">val</span> <span class="cn">message</span>: <span class="ty">String</span> = <span class="kw">when</span> (httpCode) {
+    <span class="cn">200</span> -> <span class="st">"OK"</span>
+    <span class="cn">404</span> -> <span class="st">"Not found"</span>
+    <span class="kw">else</span> -> <span class="st">"Unhandled"</span>          <span class="cm">// REQUIRED — compile error without it</span>
+}
+
+<span class="cm">// Exception: when the subject is a sealed type or an enum, the compiler</span>
+<span class="cm">// already knows every case, so 'else' becomes optional</span>
+<span class="kw">enum class</span> <span class="ty">Status</span> { LOADING, SUCCESS, ERROR }
+<span class="kw">fun</span> <span class="fn">describe</span>(s: <span class="ty">Status</span>) = <span class="kw">when</span> (s) {           <span class="cm">// no else needed — exhaustive</span>
+    <span class="ty">Status</span>.LOADING -> <span class="st">"Loading"</span>
+    <span class="ty">Status</span>.SUCCESS -> <span class="st">"Done"</span>
+    <span class="ty">Status</span>.ERROR -> <span class="st">"Failed"</span>
+}
+<span class="cm">// Adding a new enum constant later breaks the build here until it's handled —</span>
+<span class="cm">// a safety net a Java switch doesn't give you for free</span></code></pre>
+<div class="note namb">Add a new subclass to a sealed hierarchy, or a new enum constant, and every exhaustive <span class="ic">when</span> referencing it stops compiling until you handle it — this is intentional and one of the biggest real-world wins of sealed types.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">Q18</span><span class="qt">Ranges and progressions: 1..10, downTo, step, until</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<p>Ranges give Kotlin a clean, allocation-free way to express "a sequence of values between two bounds" without writing a manual counting loop. <span class="ic">1..10</span> is an inclusive <span class="ic">IntRange</span>, <span class="ic">1 until 10</span> is the exclusive equivalent that stops one short, <span class="ic">downTo</span> walks backwards, and <span class="ic">step</span> changes the increment — all four read almost like English once you're used to them. Under the hood, ranges are more than syntax sugar for a <span class="ic">for</span> loop: they're real objects backed by the <span class="ic">rangeTo()</span> operator function, which is also what makes the <span class="ic">in</span>/<span class="ic">!in</span> membership checks work, and any type — not just numbers — can support its own range by implementing <span class="ic">operator fun rangeTo()</span> itself. The performance detail worth knowing is that when a range like <span class="ic">1..n</span> is used directly as the subject of a <span class="ic">for</span> loop, the compiler compiles it down to a plain counting loop with no intermediate collection or boxing at all.</p>
+<pre><code><span class="kw">for</span> (i <span class="kw">in</span> <span class="cn">1</span>..<span class="cn">5</span>) <span class="fn">print</span>(i)          <span class="cm">// 1 2 3 4 5   — inclusive range</span>
+<span class="kw">for</span> (i <span class="kw">in</span> <span class="cn">1</span> <span class="kw">until</span> <span class="cn">5</span>) <span class="fn">print</span>(i)     <span class="cm">// 1 2 3 4     — exclusive of the end</span>
+<span class="kw">for</span> (i <span class="kw">in</span> <span class="cn">5</span> downTo <span class="cn">1</span>) <span class="fn">print</span>(i)    <span class="cm">// 5 4 3 2 1   — descending</span>
+<span class="kw">for</span> (i <span class="kw">in</span> <span class="cn">1</span>..<span class="cn">10</span> step <span class="cn">2</span>) <span class="fn">print</span>(i)  <span class="cm">// 1 3 5 7 9   — custom step</span>
+
+<span class="kw">val</span> <span class="cn">r</span> = <span class="cn">1</span>..<span class="cn">10</span>
+<span class="cn">5</span> <span class="kw">in</span> r      <span class="cm">// true — 'in' checks range membership</span>
+<span class="cn">15</span> !<span class="kw">in</span> r    <span class="cm">// true</span>
+
+<span class="cm">// '..' is just an operator — rangeTo() — so custom types can support it too</span>
+<span class="kw">data class</span> <span class="ty">Point</span>(<span class="kw">val</span> x: <span class="ty">Int</span>)
+<span class="kw">operator fun</span> <span class="ty">Point</span>.<span class="fn">rangeTo</span>(other: <span class="ty">Point</span>) = (x..other.x)</code></pre>
+<div class="note nblu"><span class="ic">IntRange</span>/<span class="ic">LongRange</span>/<span class="ic">CharRange</span> compile to a plain counting loop with no boxing when used directly in a <span class="ic">for</span> — no intermediate list is ever created.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--cyab);color:var(--cyal)">Q19</span><span class="qt">Named arguments, default parameter values, and vararg with the spread operator</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<p>Named arguments and default parameter values work together to cut down on the constructor and function overloading you'd need in Java. A parameter with a default value can simply be omitted at the call site, and named arguments let a caller skip earlier parameters and specify only the ones after — in any order — which avoids the classic mistake of miscounting positional booleans or ints. <span class="ic">vararg</span> lets a function accept a variable number of arguments of the same type, exposed inside the function as a plain array, and Kotlin only allows one vararg parameter per function, conventionally placed last; if a parameter has to follow it, callers are required to pass that one by name. The spread operator, <span class="ic">*array</span>, is how you forward an existing array into a vararg parameter instead of passing its elements one at a time.</p>
+<pre><code><span class="kw">fun</span> <span class="fn">createUser</span>(name: <span class="ty">String</span>, age: <span class="ty">Int</span> = <span class="cn">18</span>, isAdmin: <span class="ty">Boolean</span> = <span class="kw">false</span>) { /* ... */ }
+
+<span class="fn">createUser</span>(<span class="st">"Alice"</span>)                       <span class="cm">// uses both defaults</span>
+<span class="fn">createUser</span>(<span class="st">"Bob"</span>, isAdmin = <span class="kw">true</span>)         <span class="cm">// named arg — skip 'age', keep its default</span>
+<span class="fn">createUser</span>(name = <span class="st">"Eve"</span>, age = <span class="cn">30</span>)        <span class="cm">// order doesn't matter with named args</span>
+
+<span class="cm">// vararg — zero or more arguments, exposed as an Array inside the function</span>
+<span class="kw">fun</span> <span class="fn">sum</span>(<span class="kw">vararg</span> numbers: <span class="ty">Int</span>): <span class="ty">Int</span> = numbers.<span class="fn">sum</span>()
+<span class="fn">sum</span>(<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">3</span>)                              <span class="cm">// 6</span>
+<span class="fn">sum</span>()                                     <span class="cm">// 0</span>
+
+<span class="cm">// spread operator '*' — unpacks an existing array into vararg positions</span>
+<span class="kw">val</span> <span class="cn">nums</span> = intArrayOf(<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">3</span>)
+<span class="fn">sum</span>(*nums)                                <span class="cm">// spreads the array as individual args</span>
+
+<span class="cm">// only ONE parameter may be vararg, conventionally placed last; if a param</span>
+<span class="cm">// must follow it, callers must pass that one by name</span>
+<span class="kw">fun</span> <span class="fn">log</span>(<span class="kw">vararg</span> tags: <span class="ty">String</span>, message: <span class="ty">String</span>) { /* ... */ }
+<span class="fn">log</span>(<span class="st">"net"</span>, <span class="st">"debug"</span>, message = <span class="st">"started"</span>)</code></pre>
+</div>
+</details>
+
+<h2>Functions &amp; Lambdas</h2>
+
+<details><summary><span class="qn" style="background:var(--orab);color:var(--oral)">Q20</span><span class="qt">Higher-order functions and lambda syntax — it, multiple params, destructuring</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<p>A higher-order function is simply a function that takes another function as a parameter or returns one — <span class="ic">map</span>, <span class="ic">filter</span>, and <span class="ic">forEach</span> on collections are all higher-order functions under the hood, each taking a lambda that describes what to do with an element. When a lambda has exactly one parameter, Kotlin lets you skip naming it and refer to it as the implicit <span class="ic">it</span>, which is why <span class="ic">{ it * it }</span> reads so tersely; multi-parameter lambdas need explicit names like <span class="ic">{ x, y -> x + y }</span>. Lambda parameters can also be destructured inline — handy when iterating over a <span class="ic">Map</span>'s entries or a list of <span class="ic">Pair</span>s, since <span class="ic">(key, value) -> ...</span> is more readable than reaching into <span class="ic">entry.key</span> and <span class="ic">entry.value</span> manually. And because function types are just regular types in Kotlin, a function can return another function — building simple factories or curried-style behavior, like a <span class="ic">multiplier(factor)</span> that returns a fresh <span class="ic">(Int) -> Int</span> for each factor.</p>
+<pre><code><span class="cm">// A higher-order function: takes a function as a parameter</span>
+<span class="kw">fun</span> <span class="fn">calculate</span>(a: <span class="ty">Int</span>, b: <span class="ty">Int</span>, op: (<span class="ty">Int</span>, <span class="ty">Int</span>) -> <span class="ty">Int</span>): <span class="ty">Int</span> = <span class="fn">op</span>(a, b)
+<span class="fn">calculate</span>(<span class="cn">4</span>, <span class="cn">2</span>) { x, y -> x + y }     <span class="cm">// named lambda params</span>
+
+<span class="cm">// single-parameter lambdas can use the implicit name 'it'</span>
+listOf(<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">3</span>).<span class="fn">map</span> { it * it }        <span class="cm">// [1, 4, 9]</span>
+
+<span class="cm">// destructuring directly in a lambda parameter — handy for Pair/Map entries</span>
+<span class="kw">val</span> <span class="cn">pairs</span> = listOf(<span class="cn">1</span> to <span class="st">"a"</span>, <span class="cn">2</span> to <span class="st">"b"</span>)
+pairs.<span class="fn">forEach</span> { (number, letter) -> <span class="fn">println</span>(<span class="st">"</span><span class="cn">$number</span><span class="st">=</span><span class="cn">$letter</span><span class="st">"</span>) }
+
+mapOf(<span class="cn">1</span> to <span class="st">"one"</span>, <span class="cn">2</span> to <span class="st">"two"</span>).<span class="fn">forEach</span> { (key, value) -> <span class="fn">println</span>(<span class="st">"</span><span class="cn">$key</span><span class="st"> -> </span><span class="cn">$value</span><span class="st">"</span>) }
+
+<span class="cm">// a function can also RETURN a function (currying-style)</span>
+<span class="kw">fun</span> <span class="fn">multiplier</span>(factor: <span class="ty">Int</span>): (<span class="ty">Int</span>) -> <span class="ty">Int</span> = { n -> n * factor }
+<span class="kw">val</span> <span class="cn">triple</span> = <span class="fn">multiplier</span>(<span class="cn">3</span>)
+<span class="fn">triple</span>(<span class="cn">5</span>)   <span class="cm">// 15</span></code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q21</span><span class="qt">Local functions and closures — what does a lambda actually capture?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>A local function is just a function nested inside another — it can see and use everything in its enclosing scope. A lambda closes over the same way: it captures the <em>variables</em> it references, not just their current values. Unlike Java's "effectively final" restriction, Kotlin lets a lambda capture a <span class="ic">var</span> and both read and mutate it — the capture is by reference.</p>
+<pre><code><span class="kw">fun</span> <span class="fn">createGreeter</span>(greeting: <span class="ty">String</span>): () -> <span class="ty">Unit</span> {
+    <span class="kw">fun</span> <span class="fn">greet</span>() {                  <span class="cm">// local function — sees 'greeting' from the outer scope</span>
+        <span class="fn">println</span>(<span class="st">"</span><span class="cn">$greeting</span><span class="st">!"</span>)
+    }
+    <span class="kw">return</span> ::greet
+}
+
+<span class="cm">// closures capture VARIABLES, not just values — a captured 'var' can be</span>
+<span class="cm">// read AND mutated from inside the lambda</span>
+<span class="kw">fun</span> <span class="fn">makeCounter</span>(): () -> <span class="ty">Int</span> {
+    <span class="kw">var</span> <span class="cn">count</span> = <span class="cn">0</span>
+    <span class="kw">return</span> { count++ }              <span class="cm">// each call mutates the SAME captured 'count'</span>
+}
+<span class="kw">val</span> <span class="cn">counter</span> = <span class="fn">makeCounter</span>()
+<span class="fn">counter</span>() <span class="cm">// 0</span>
+<span class="fn">counter</span>() <span class="cm">// 1</span>
+
+<span class="cm">// Kotlin's for-in loop binds a FRESH read-only variable each iteration, so —</span>
+<span class="cm">// unlike classic Java/JS loop-closure bugs — this behaves as expected:</span>
+<span class="kw">val</span> <span class="cn">actions</span> = mutableListOf&lt;() -> <span class="ty">Unit</span>&gt;()
+<span class="kw">for</span> (i <span class="kw">in</span> <span class="cn">1</span>..<span class="cn">3</span>) {
+    actions.<span class="fn">add</span> { <span class="fn">println</span>(i) }      <span class="cm">// each lambda captures its OWN 'i'</span>
+}
+actions.<span class="fn">forEach</span> { it() }            <span class="cm">// prints 1, 2, 3 — not 3, 3, 3</span></code></pre>
+<div class="note namb">Capturing a mutable <span class="ic">var</span> that outlives the enclosing function — e.g. inside a callback stored for later — is a common source of subtle bugs once multiple threads are involved: the capture is by reference, so concurrent mutation is a genuine race condition.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q22</span><span class="qt">Infix functions — the rules, and when to reach for one</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<p>An infix function lets you call a function without the dot and parentheses, so <span class="ic">a op b</span> reads like natural language instead of <span class="ic">a.op(b)</span> — that's exactly how <span class="ic">1 to "one"</span>, <span class="ic">1 until 10</span>, and <span class="ic">true xor false</span> all work; they're ordinary infix functions from the standard library, not built-in syntax. To declare one yourself, three rules apply: it has to be a member or extension function, it has to take exactly one parameter, and that parameter can't have a default value or be a vararg — the compiler needs the call to stay unambiguous with nothing left implicit. In practice, <span class="ic">infix</span> is worth reaching for when the call genuinely reads as a sentence — a small assertion or configuration DSL is the classic case — but forcing it onto something like <span class="ic">list.contains(x)</span> just obscures a normal method call without adding any readability.</p>
+<pre><code><span class="kw">infix fun</span> <span class="ty">Int</span>.<span class="fn">times</span>(str: <span class="ty">String</span>) = str.<span class="fn">repeat</span>(<span class="kw">this</span>)
+<span class="fn">println</span>(<span class="cn">2</span> times <span class="st">"Go"</span>)     <span class="cm">// "GoGo" — reads like natural language</span>
+
+<span class="cm">// stdlib examples you already use every day:</span>
+<span class="cn">1</span> to <span class="st">"one"</span>          <span class="cm">// Pair(1, "one") — 'to' is an infix function</span>
+<span class="cn">1</span> <span class="kw">until</span> <span class="cn">10</span>           <span class="cm">// IntRange</span>
+<span class="kw">true</span> xor <span class="kw">false</span>        <span class="cm">// Boolean</span>
+
+<span class="cm">// Rules — an infix function must:</span>
+<span class="cm">// 1) be a member or extension function</span>
+<span class="cm">// 2) take EXACTLY one parameter</span>
+<span class="cm">// 3) have no default value, and not be vararg</span>
+<span class="kw">infix fun</span> <span class="ty">String</span>.<span class="fn">padTo</span>(length: <span class="ty">Int</span>) = <span class="kw">this</span>.<span class="fn">padStart</span>(length)   <span class="cm">// OK</span>
+<span class="cm">// infix fun String.padTo(length: Int, char: Char = ' ') ...  // ERROR: default not allowed</span></code></pre>
+<div class="note nblu">Reach for <span class="ic">infix</span> mainly when the call reads naturally as a sentence — <span class="ic">1 to 2</span> or a custom assertion DSL benefit; a plain <span class="ic">list.contains(x)</span>-style call gains nothing from it.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q23</span><span class="qt">Extension properties vs extension functions — why can't extension properties have backing fields?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>An extension property looks like a stored property but must always be computed, because Kotlin never actually adds storage to the receiver's class — it's compiled the same static-dispatch way as an extension function, just accessed without parentheses.</p>
+<pre><code><span class="cm">// Extension function</span>
+<span class="kw">fun</span> <span class="ty">String</span>.<span class="fn">isPalindrome</span>(): <span class="ty">Boolean</span> = <span class="kw">this</span> == <span class="kw">this</span>.<span class="fn">reversed</span>()
+
+<span class="cm">// Extension property — MUST be computed, no initializer allowed</span>
+<span class="kw">val</span> <span class="ty">String</span>.lastChar: <span class="ty">Char</span>
+    <span class="kw">get</span>() = <span class="kw">this</span>[length - <span class="cn">1</span>]        <span class="cm">// required — no backing field exists</span>
+
+<span class="cm">// a 'var' extension property needs both accessors, still with no storage</span>
+<span class="kw">var</span> <span class="ty">StringBuilder</span>.lastChar: <span class="ty">Char</span>
+    <span class="kw">get</span>() = <span class="kw">this</span>[length - <span class="cn">1</span>]
+    <span class="kw">set</span>(value) { <span class="kw">this</span>.<span class="fn">setCharAt</span>(length - <span class="cn">1</span>, value) }
+
+<span class="cm">// This does NOT compile — no initializer, and 'field' is unresolved here:</span>
+<span class="cm">// val String.extra: Int = 0          // ERROR</span>
+<span class="cm">// val String.extra: Int</span>
+<span class="cm">//     get() = field                  // ERROR: 'field' is unresolved</span></code></pre>
+<div class="note nred">If you need real per-instance state, extension properties can't provide it — use an external map keyed by identity, or add a genuine member property to the class instead.</div>
+</div>
+</details>
+
+<h2>Classes &amp; Object-Oriented Kotlin</h2>
+
+<details><summary><span class="qn" style="background:var(--blub);color:var(--blul)">Q24</span><span class="qt">Primary vs secondary constructors, and the order of initialization</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>Kotlin separates the idea of "constructor" from "what happens during construction" more explicitly than Java does. The primary constructor lives right in the class header and mainly just declares and binds parameters — any real setup logic goes into one or more <span class="ic">init {}</span> blocks, and Kotlin's rule is that init blocks and property initializers run strictly in the order they're written in the source file, interleaved with each other, not all-properties-then-all-inits or vice versa. A secondary constructor, declared with the <span class="ic">constructor</span> keyword, is required to delegate to the primary constructor — directly with <span class="ic">this(...)</span> or through another secondary constructor — so the primary constructor's parameter binding and every <span class="ic">init</span> block always run first, no matter which constructor the caller actually used, and only then does the secondary constructor's own body execute. This ordering matters most when one property's initializer depends on another one already being set.</p>
+<pre><code><span class="kw">class</span> <span class="ty">User</span>(<span class="kw">val</span> name: <span class="ty">String</span>, age: <span class="ty">Int</span>) {   <span class="cm">// 'age' is just a ctor param — no val/var → not a property</span>
+    <span class="kw">val</span> <span class="cn">ageGroup</span>: <span class="ty">String</span>
+
+    init {                                  <span class="cm">// init blocks run in the order they appear,</span>
+        <span class="fn">println</span>(<span class="st">"Creating user: </span><span class="cn">$name</span><span class="st">"</span>)     <span class="cm">// interleaved with property initializers</span>
+        ageGroup = <span class="kw">if</span> (age >= <span class="cn">18</span>) <span class="st">"adult"</span> <span class="kw">else</span> <span class="st">"minor"</span>
+    }
+
+    <span class="cm">// A secondary constructor MUST delegate to the primary, directly or transitively</span>
+    <span class="kw">constructor</span>(name: <span class="ty">String</span>) : <span class="kw">this</span>(name, age = <span class="cn">0</span>) {
+        <span class="fn">println</span>(<span class="st">"Secondary constructor finished"</span>)
+    }
+}
+<span class="cm">// Execution order for User("Bob", 20):</span>
+<span class="cm">// 1. primary constructor params are bound</span>
+<span class="cm">// 2. property initializers &amp; init blocks run, top to bottom, in source order</span>
+<span class="cm">// 3. the secondary constructor's own body (if that's the one called)</span></code></pre>
+<div class="note namb">A class with only a primary constructor and simple assignments doesn't need <span class="ic">init {}</span> at all — property initializers alone cover most cases. Reach for <span class="ic">init</span> when initialization needs statements, not just a single expression.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">Q25</span><span class="qt">Custom getters/setters and the `field` backing identifier</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>Every <span class="ic">var</span> property in Kotlin gets a default getter and setter generated automatically, and <span class="ic">field</span> is the compiler's name for the backing storage those default accessors read from and write to. When you write a custom setter and reference <span class="ic">field</span> inside it, you're intercepting the assignment — running your own logic, like validation or a side-effect log — while still routing the actual value through the same storage slot the class already had. The important subtlety is that a backing field only gets generated at all if some accessor in the property actually references <span class="ic">field</span>; a property that's fully computed from other properties, like a <span class="ic">fahrenheit</span> value derived from <span class="ic">celsius</span>, needs no storage of its own and none is allocated. This is also the basis of the "backing property" pattern common in ViewModels: keep a private mutable property internally, expose a public read-only property whose getter just returns the private one, and callers get a safe view without any copying.</p>
+<pre><code><span class="kw">class</span> <span class="ty">Temperature</span> {
+    <span class="kw">var</span> <span class="cn">celsius</span>: <span class="ty">Double</span> = <span class="cn">0.0</span>
+        <span class="kw">set</span>(value) {
+            field = value                 <span class="cm">// 'field' — the compiler-generated backing field</span>
+            <span class="fn">println</span>(<span class="st">"Set to </span><span class="cn">$value</span><span class="st">°C"</span>)
+        }
+
+    <span class="kw">val</span> <span class="cn">fahrenheit</span>: <span class="ty">Double</span>                 <span class="cm">// computed — NO backing field generated at all</span>
+        <span class="kw">get</span>() = celsius * <span class="cn">9</span> / <span class="cn">5</span> + <span class="cn">32</span>
+}
+
+<span class="cm">// Backing property pattern — a read-only public view over mutable private state</span>
+<span class="kw">class</span> <span class="ty">ViewModel</span> {
+    <span class="kw">private val</span> <span class="cn">_items</span> = mutableListOf&lt;<span class="ty">String</span>&gt;()   <span class="cm">// internal, mutable</span>
+    <span class="kw">val</span> <span class="cn">items</span>: <span class="ty">List</span>&lt;<span class="ty">String</span>&gt; <span class="kw">get</span>() = _items         <span class="cm">// public, read-only — cheap, no copy</span>
+
+    <span class="kw">fun</span> <span class="fn">addItem</span>(item: <span class="ty">String</span>) { _items.<span class="fn">add</span>(item) }
+}</code></pre>
+<div class="note nblu">A backing field only exists if you reference <span class="ic">field</span> inside a custom accessor (or use the default accessor). A property whose getter never touches <span class="ic">field</span> allocates no storage at all.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--cyab);color:var(--cyal)">Q26</span><span class="qt">Nested classes vs inner classes — what does `inner` actually change?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>By default, a class declared inside another class in Kotlin behaves like a Java static nested class — it has no connection to any particular instance of the outer class and can't see the outer class's members at all, which is why it can be constructed as <span class="ic">Outer.Nested()</span> without ever having an <span class="ic">Outer</span> instance around. Adding the <span class="ic">inner</span> keyword changes that completely: an inner class instance is only ever created from an outer instance (<span class="ic">outer.Inner()</span>), and it holds an implicit reference back to that specific outer instance, which is what lets it read the outer class's properties directly and use the qualified <span class="ic">this@Outer</span> syntax when it needs to disambiguate. The trade-off worth knowing for an interview is that this implicit reference is a real, retained object reference — if an inner class instance is stored somewhere long-lived, like a static field or a listener registered with the OS, it can keep the entire outer instance alive longer than intended, which is a classic memory leak pattern on Android. The safe default is to reach for a plain nested class unless you specifically need access to the outer instance.</p>
+<pre><code><span class="kw">class</span> <span class="ty">Outer</span>(<span class="kw">val</span> name: <span class="ty">String</span>) {
+    <span class="kw">val</span> <span class="cn">nested</span> = Nested()          <span class="cm">// fine — Nested doesn't need an Outer instance</span>
+
+    <span class="kw">class</span> <span class="ty">Nested</span> {                  <span class="cm">// like a Java 'static' nested class — NO link to Outer</span>
+        <span class="kw">fun</span> <span class="fn">greet</span>() = <span class="st">"Nested"</span>      <span class="cm">// cannot see 'name' — no implicit outer reference</span>
+    }
+
+    <span class="kw">inner class</span> <span class="ty">Inner</span> {             <span class="cm">// holds an implicit reference to the enclosing Outer instance</span>
+        <span class="kw">fun</span> <span class="fn">greet</span>() = <span class="st">"Inner in </span><span class="cn">${name}</span><span class="st">"</span>       <span class="cm">// CAN access Outer's members directly</span>
+        <span class="kw">fun</span> <span class="fn">outerRef</span>() = <span class="kw">this</span>@Outer.name        <span class="cm">// explicit qualified 'this' when needed</span>
+    }
+}
+
+<span class="kw">val</span> <span class="cn">outer</span> = <span class="ty">Outer</span>(<span class="st">"A"</span>)
+<span class="kw">val</span> <span class="cn">nested</span> = <span class="ty">Outer</span>.Nested()          <span class="cm">// no outer instance needed — like a static class</span>
+<span class="kw">val</span> <span class="cn">inner</span> = outer.Inner()            <span class="cm">// requires an outer instance to construct</span></code></pre>
+<div class="note namb">Default to a plain nested class unless you specifically need the enclosing instance — an <span class="ic">inner class</span> instance holds a hidden reference to its outer object, which can leak memory if the inner instance outlives the outer one (e.g. stored in a static field or long-lived listener).</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--orab);color:var(--oral)">Q27</span><span class="qt">Interfaces with default implementations and properties — resolving the diamond problem</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>Kotlin interfaces can carry both default method implementations and abstract properties, closer to Java 8's default methods than to classic interfaces — but that power reintroduces the diamond problem when a class implements two interfaces that both provide a default for the same method signature. Kotlin refuses to silently pick one for you: the implementing class is forced to override the conflicting method itself, and inside that override it can explicitly choose which supertype's implementation to fall back on using the qualified syntax <span class="ic">super&lt;InterfaceName&gt;.method()</span>, even calling both if that's the right behavior. Interface properties work similarly but with one restriction: an interface property can declare a custom getter, but it can never hold actual backing state, since there's no instance storage at the interface level — any real state has to live in the implementing class, either as a constructor property or an overridden accessor.</p>
+<pre><code><span class="kw">interface</span> <span class="ty">Clickable</span> {
+    <span class="kw">fun</span> <span class="fn">click</span>() = <span class="fn">println</span>(<span class="st">"Clickable clicked"</span>)   <span class="cm">// default implementation</span>
+    <span class="kw">val</span> <span class="cn">id</span>: <span class="ty">String</span>                                <span class="cm">// abstract property — no state, no default value</span>
+}
+
+<span class="kw">interface</span> <span class="ty">Focusable</span> {
+    <span class="kw">fun</span> <span class="fn">click</span>() = <span class="fn">println</span>(<span class="st">"Focusable clicked"</span>)    <span class="cm">// same signature — a conflict!</span>
+}
+
+<span class="kw">class</span> <span class="ty">Button</span>(<span class="kw">override val</span> id: <span class="ty">String</span>) : <span class="ty">Clickable</span>, <span class="ty">Focusable</span> {
+    <span class="cm">// MUST override — the compiler can't silently pick one default for you</span>
+    <span class="kw">override fun</span> <span class="fn">click</span>() {
+        super&lt;<span class="ty">Clickable</span>&gt;.<span class="fn">click</span>()    <span class="cm">// explicitly call ONE specific supertype's implementation</span>
+        super&lt;<span class="ty">Focusable</span>&gt;.<span class="fn">click</span>()
+        <span class="fn">println</span>(<span class="st">"Button clicked"</span>)
+    }
+}</code></pre>
+<div class="note nred">An interface property can declare a getter (<span class="ic">val x: Int get() = ...</span>) but never holds real state — implementing classes must supply the actual storage, either as a constructor property or their own custom accessor.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q28</span><span class="qt">What does a companion object compile to? @JvmStatic and the factory pattern</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>A companion object isn't just Kotlin's version of "static" — it's a genuine singleton the compiler generates as a nested class (named <span class="ic">Companion</span> by default) with a single static instance field on the outer class, which is why calling <span class="ic">ApiClient.create()</span> from Kotlin looks static but from Java actually compiles to <span class="ic">ApiClient.Companion.create()</span> unless you help it along. <span class="ic">@JvmStatic</span> on a companion function tells the compiler to also generate a real static method on the outer class itself, so Java callers get the clean <span class="ic">ApiClient.createDefault()</span> syntax instead of going through <span class="ic">.Companion</span>. The common idiom of pairing a private constructor with a companion factory function exists because a companion object, unlike a constructor, can validate input, return a cached instance, or hide multiple construction paths behind one clean, appropriately-named entry point — none of which a raw public constructor can do.</p>
+<pre><code><span class="kw">class</span> <span class="ty">ApiClient</span> <span class="kw">private constructor</span>(<span class="kw">private val</span> baseUrl: <span class="ty">String</span>) {
+
+    <span class="kw">companion object</span> {                       <span class="cm">// exactly one per class; compiles to a nested</span>
+        <span class="kw">private const val</span> <span class="cn">DEFAULT_URL</span> = <span class="st">"https://api.example.com"</span>  <span class="cm">// 'ApiClient$Companion' singleton</span>
+
+        <span class="kw">fun</span> <span class="fn">create</span>(url: <span class="ty">String</span> = DEFAULT_URL): <span class="ty">ApiClient</span> = <span class="ty">ApiClient</span>(url)   <span class="cm">// factory function</span>
+
+        <span class="an">@JvmStatic</span>
+        <span class="kw">fun</span> <span class="fn">createDefault</span>(): <span class="ty">ApiClient</span> = <span class="ty">ApiClient</span>(DEFAULT_URL)
+    }
+}
+
+<span class="kw">val</span> <span class="cn">client</span> = <span class="ty">ApiClient</span>.<span class="fn">create</span>()      <span class="cm">// Kotlin call — looks static either way</span>
+<span class="cm">// Java call without @JvmStatic:  ApiClient.Companion.create();</span>
+<span class="cm">// Java call WITH @JvmStatic:     ApiClient.createDefault();   // real static method, cleaner interop</span></code></pre>
+<div class="note nblu">The private-constructor-plus-companion-factory combo is idiomatic when you want to validate input, cache instances, or hide multiple construction paths behind one clean entry point.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q29</span><span class="qt">The three uses of `object`: declaration, expression, and companion</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<p><span class="ic">object</span> shows up in three different roles in Kotlin, and they're easy to mix up because they share a keyword but have very different lifetimes. An object declaration — <span class="ic">object Foo { }</span> — creates a genuine singleton: exactly one instance exists, created lazily and thread-safely the first time it's referenced, which is the idiomatic replacement for the classic Java singleton-with-double-checked-locking pattern. An object expression — <span class="ic">object : SomeInterface { }</span> — is the opposite in one important way: every time that expression executes, it creates a brand-new anonymous instance, similar to an anonymous inner class in Java, and it's free to capture variables from its surrounding scope the way a lambda would. A companion object is really just an object declaration nested inside and tied to a specific class, giving that class one shared holder for factory functions or constants. The distinction worth remembering is that only the first and third are singletons — the object expression is not, and creating one inside a loop or a frequently-called function produces a fresh instance every single time.</p>
+<pre><code><span class="cm">// 1) Object DECLARATION — a singleton, created lazily and thread-safely on first access</span>
+<span class="kw">object</span> <span class="ty">AnalyticsTracker</span> {
+    <span class="kw">fun</span> <span class="fn">track</span>(event: <span class="ty">String</span>) = <span class="fn">println</span>(<span class="st">"Tracked: </span><span class="cn">$event</span><span class="st">"</span>)
+}
+<span class="ty">AnalyticsTracker</span>.<span class="fn">track</span>(<span class="st">"app_open"</span>)
+
+<span class="cm">// 2) Object EXPRESSION — an anonymous, one-off instance (like a Java anonymous class)</span>
+<span class="kw">val</span> <span class="cn">listener</span> = <span class="kw">object</span> : <span class="ty">View</span>.OnClickListener {
+    <span class="kw">override fun</span> <span class="fn">onClick</span>(v: <span class="ty">View</span>?) { <span class="fn">println</span>(<span class="st">"Clicked"</span>) }
+}
+<span class="cm">// unlike a singleton, a NEW instance is created every time this expression runs,</span>
+<span class="cm">// and it can freely capture variables from the surrounding scope</span>
+
+<span class="cm">// 3) Companion object — one per class, tied to that class (see previous question)</span>
+<span class="kw">class</span> <span class="ty">Config</span> { <span class="kw">companion object</span> { <span class="kw">const val</span> <span class="cn">VERSION</span> = <span class="cn">1</span> } }</code></pre>
+<div class="note namb">Only object declarations and companion objects are singletons; an object <em>expression</em> creates a fresh instance every time that code runs — a subtle but common source of confusion.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q30</span><span class="qt">Visibility modifiers — how does Kotlin's `internal` differ from Java's package-private?</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<p>Kotlin's visibility modifiers mostly map onto Java's, with one meaningful difference and one gap. <span class="ic">public</span> is the default (writing it explicitly is redundant), top-level <span class="ic">private</span> scopes to the containing file rather than the containing class, and <span class="ic">protected</span> is only usable on class members — Kotlin has no top-level <span class="ic">protected</span> since there's no enclosing class to protect access on. The interesting one is <span class="ic">internal</span>: it makes a declaration visible everywhere inside the same compiled module — the same Gradle module or published artifact — regardless of which package that code lives in. That's a coarser and more deliberate boundary than Java's package-private, which scopes to a single package folder and can be worked around simply by adding a new class to that package from anywhere; <span class="ic">internal</span> is enforced at the module boundary the build system actually creates, so it more reliably hides implementation details from other modules or consumers of a published library.</p>
+<pre><code><span class="kw">public class</span> <span class="ty">Api</span>            <span class="cm">// default — visible everywhere (writing 'public' is redundant)</span>
+<span class="kw">internal class</span> <span class="ty">Impl</span>         <span class="cm">// visible anywhere in the SAME MODULE, regardless of package</span>
+<span class="kw">private class</span> <span class="ty">Helper</span>        <span class="cm">// top-level 'private' = visible only within this FILE</span>
+
+<span class="kw">class</span> <span class="ty">Base</span> {
+    <span class="kw">protected val</span> <span class="cn">secret</span> = <span class="cn">42</span>     <span class="cm">// visible to Base and subclasses only — no top-level 'protected'</span>
+    <span class="kw">private fun</span> <span class="fn">helper</span>() {}       <span class="cm">// visible only inside Base</span>
+}
+
+<span class="kw">class</span> <span class="ty">Derived</span> : <span class="ty">Base</span>() {
+    <span class="kw">fun</span> <span class="fn">useSecret</span>() = secret      <span class="cm">// OK — protected is visible to subclasses</span>
+}</code></pre>
+<div class="note nblu">Java's package-private (no modifier) scopes to a folder; Kotlin's <span class="ic">internal</span> scopes to an entire compiled module — everything inside one Gradle module or published artifact — which is a coarser, more deliberate boundary than "same package."</div>
+</div>
+</details>
+
+<h2>Constants, Initialization &amp; Immutability</h2>
+
+<details><summary><span class="qn" style="background:var(--blub);color:var(--blul)">Q31</span><span class="qt">const val vs val — what qualifies as a compile-time constant?</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<p><span class="ic">const val</span> and <span class="ic">val</span> both create read-only bindings, but they operate at completely different times. A regular <span class="ic">val</span> is evaluated at runtime — once per instance if it's a property, or once when the line executes if it's local — so it can call functions, read other values, or do anything else a normal expression can do. <span class="ic">const val</span> is evaluated at compile time: the compiler literally inlines the value into every call site that uses it, which restricts it to <span class="ic">String</span> and primitive types initialized directly from literal values, and it can only be declared at the top level or inside an object/companion object — never inside a regular class body, since there'd be no single value shared across differently-constructed instances. The gotcha worth mentioning is a binary-compatibility one: because the value is copied into every consumer at compile time, changing a <span class="ic">const val</span> inside a library requires every consumer to recompile to pick up the new value, whereas a function or a regular <span class="ic">val</span> doesn't carry that constraint.</p>
+<pre><code><span class="kw">const val</span> <span class="cn">MAX_RETRIES</span> = <span class="cn">3</span>                 <span class="cm">// OK — top-level, primitive, literal value</span>
+<span class="kw">const val</span> <span class="cn">APP_NAME</span> = <span class="st">"MyApp"</span>               <span class="cm">// OK — String literal</span>
+
+<span class="kw">object</span> <span class="ty">Config</span> {
+    <span class="kw">const val</span> <span class="cn">VERSION</span> = <span class="cn">2</span>                  <span class="cm">// OK inside an object/companion</span>
+}
+
+<span class="kw">class</span> <span class="ty">Request</span> {
+    <span class="kw">val</span> <span class="cn">timestamp</span> = System.<span class="fn">currentTimeMillis</span>()   <span class="cm">// OK as val — computed at runtime, once per instance</span>
+    <span class="cm">// const val timestamp = System.currentTimeMillis()  // ERROR: not a compile-time constant</span>
+    <span class="cm">// const val id = computeId()                        // ERROR: function calls aren't allowed</span>
+}
+<span class="cm">// const val must ALSO be a top-level/object member — never inside a regular</span>
+<span class="cm">// class body, since there'd be no single "compile time" value shared by all instances</span></code></pre>
+<div class="note namb">Because <span class="ic">const val</span> values are inlined into every call site at compile time, changing one inside a library requires recompiling every consumer — a plain <span class="ic">val</span> (or a function) doesn't carry that binary-compatibility gotcha.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">Q32</span><span class="qt">lateinit var vs by lazy — differences, and lazy's thread-safety modes</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p><span class="ic">lateinit var</span> and <span class="ic">by lazy</span> solve the same basic problem — a property you can't give a real value to immediately — but for different situations. <span class="ic">lateinit</span> lets you declare a non-null <span class="ic">var</span> without initializing it right away, on the promise that you'll assign it before anything reads it; break that promise and accessing it throws <span class="ic">UninitializedPropertyAccessException</span>, though you can defensively check <span class="ic">::property.isInitialized</span> first. It only works on <span class="ic">var</span>, and only on non-null, non-primitive types, since there's no sentinel value for a primitive that could represent "not yet set." <span class="ic">by lazy</span> is different in kind: it only applies to <span class="ic">val</span>, it computes the value itself the first time it's accessed via the lambda you supply, and it caches that result forever afterward — you never assign to it directly. The thread-safety mode you pass to <span class="ic">lazy()</span> matters in concurrent code: <strong>SYNCHRONIZED</strong> (the default) locks so only one thread ever runs the initializer, <strong>PUBLICATION</strong> allows multiple threads to race to compute it but guarantees they all end up seeing the same result, and <strong>NONE</strong> skips locking entirely and is safe only when access is guaranteed single-threaded.</p>
+<pre><code><span class="kw">class</span> <span class="ty">MainActivity</span> : AppCompatActivity() {
+    <span class="kw">lateinit var</span> <span class="cn">binding</span>: <span class="ty">ActivityMainBinding</span>   <span class="cm">// must be var, non-null, non-primitive</span>
+
+    <span class="kw">override fun</span> <span class="fn">onCreate</span>(savedInstanceState: <span class="ty">Bundle</span>?) {
+        binding = <span class="ty">ActivityMainBinding</span>.<span class="fn">inflate</span>(layoutInflater)   <span class="cm">// must assign before use</span>
+    }
+
+    <span class="kw">fun</span> <span class="fn">useBinding</span>() {
+        <span class="kw">if</span> (::binding.isInitialized) { /* safe check */ }
+        binding.root   <span class="cm">// throws UninitializedPropertyAccessException if accessed too early</span>
+    }
+}
+
+<span class="cm">// by lazy — val only, computed once, thread-safety is configurable</span>
+<span class="kw">val</span> <span class="cn">heavy</span>: <span class="ty">Bitmap</span> <span class="kw">by lazy</span> { <span class="fn">decodeLargeBitmap</span>() }                        <span class="cm">// SYNCHRONIZED (default)</span>
+<span class="kw">val</span> <span class="cn">cache</span>: <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Int</span>&gt; <span class="kw">by lazy</span>(LazyThreadSafetyMode.PUBLICATION) { <span class="fn">buildCache</span>() }
+<span class="kw">val</span> <span class="cn">fast</span>: <span class="ty">Int</span> <span class="kw">by lazy</span>(LazyThreadSafetyMode.NONE) { <span class="fn">compute</span>() }           <span class="cm">// no locking at all</span></code></pre>
+<div class="note nred"><strong>SYNCHRONIZED</strong> locks so only one thread ever runs the initializer; <strong>PUBLICATION</strong> lets multiple threads race to compute it but guarantees only one result is kept; <strong>NONE</strong> has no protection at all — safe only when access is guaranteed single-threaded.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--cyab);color:var(--cyal)">Q33</span><span class="qt">require, check, assert, and error — Kotlin's precondition functions</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<p>These four functions are Kotlin's idiomatic way to fail fast with a clear message instead of letting a bug produce garbage output silently, and the distinction between them is really about whose fault the failure is. <span class="ic">require()</span> is for bad input — it throws <span class="ic">IllegalArgumentException</span>, so it belongs at the top of a function validating what the caller passed in. <span class="ic">check()</span> is for bad internal state — it throws <span class="ic">IllegalStateException</span>, so it belongs wherever you're asserting an invariant about the object itself, like having enough balance before a withdrawal. <span class="ic">error()</span> unconditionally throws <span class="ic">IllegalStateException</span> with your message and has a return type of <span class="ic">Nothing</span>, which makes it a natural fit for the <span class="ic">else</span> branch of an exhaustive <span class="ic">when</span> where you want an "impossible" case to fail loudly instead of being silently ignored. <span class="ic">assert()</span> is the odd one out — it's only active when the JVM runs with the <span class="ic">-ea</span> flag, off by default in production, so it should never be relied on for anything that actually matters; <span class="ic">requireNotNull</span> and <span class="ic">checkNotNull</span> are the null-checking variants of the first two, and both also smart-cast their result to a non-null type on success.</p>
+<pre><code><span class="kw">fun</span> <span class="fn">withdraw</span>(amount: <span class="ty">Int</span>, balance: <span class="ty">Int</span>) {
+    <span class="fn">require</span>(amount > <span class="cn">0</span>) { <span class="st">"Amount must be positive, was </span><span class="cn">$amount</span><span class="st">"</span> }     <span class="cm">// IllegalArgumentException</span>
+    <span class="fn">check</span>(balance >= amount) { <span class="st">"Insufficient balance"</span> }                 <span class="cm">// IllegalStateException</span>
+}
+
+<span class="kw">fun</span> <span class="fn">process</span>(state: <span class="ty">State</span>) = <span class="kw">when</span> (state) {
+    <span class="ty">State</span>.Ready -> <span class="st">"ready"</span>
+    <span class="ty">State</span>.Done -> <span class="st">"done"</span>
+    <span class="kw">else</span> -> <span class="fn">error</span>(<span class="st">"Unexpected state: </span><span class="cn">$state</span><span class="st">"</span>)     <span class="cm">// throws IllegalStateException, return type Nothing</span>
+}
+
+<span class="cm">// requireNotNull / checkNotNull also smart-cast the result to non-null</span>
+<span class="kw">fun</span> <span class="fn">greet</span>(name: <span class="ty">String</span>?) {
+    <span class="kw">val</span> <span class="cn">safeName</span> = <span class="fn">requireNotNull</span>(name) { <span class="st">"name must not be null"</span> }   <span class="cm">// safeName: String</span>
+    <span class="fn">println</span>(safeName.length)
+}
+
+<span class="fn">assert</span>(<span class="cn">1</span> + <span class="cn">1</span> == <span class="cn">2</span>)   <span class="cm">// only active with the JVM's -ea flag — disabled by default, don't rely on it in production</span></code></pre>
+<div class="note namb">Use <span class="ic">require</span> for bad arguments (caller's fault), <span class="ic">check</span> for bad internal state (your own invariant broke), and <span class="ic">error</span> inside an exhaustive <span class="ic">when</span>'s <span class="ic">else</span> branch to make "this can't happen" cases fail loudly instead of silently returning garbage.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--orab);color:var(--oral)">Q34</span><span class="qt">Immutability idioms: copy(), preferring val, and defensive copying</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>Kotlin encourages immutability through a handful of idioms rather than one hard guarantee. <span class="ic">copy()</span> on a data class is the main one: instead of mutating an existing instance, you produce a new instance with just the fields you specify changed, leaving the original completely untouched — which avoids a whole class of bugs where some other part of the code was still holding a reference to the "old" state. Preferring <span class="ic">val</span> over <span class="ic">var</span> is the other half of the idiom, but it's only half the story: a <span class="ic">val</span> holding a <span class="ic">MutableList</span> still lets you mutate the list's contents even though you can't reassign the variable itself, so real immutability requires both a <span class="ic">val</span> and a read-only collection type. The defensive-copying pattern — exposing a private <span class="ic">MutableList</span> as a public <span class="ic">List</span> by returning <span class="ic">toList()</span> from a getter — closes a related gap: Kotlin's "read-only" collection interfaces are just a compile-time view with no mutating methods exposed, not a genuinely immutable object, so a caller who casts a <span class="ic">List</span> back to a <span class="ic">MutableList</span> can still mutate the underlying data unless you've actually handed them a separate copy.</p>
+<pre><code><span class="kw">data class</span> <span class="ty">Settings</span>(<span class="kw">val</span> theme: <span class="ty">String</span>, <span class="kw">val</span> fontSize: <span class="ty">Int</span>)
+
+<span class="kw">val</span> <span class="cn">original</span> = <span class="ty">Settings</span>(<span class="st">"dark"</span>, <span class="cn">14</span>)
+<span class="kw">val</span> <span class="cn">updated</span> = original.<span class="fn">copy</span>(fontSize = <span class="cn">16</span>)   <span class="cm">// original untouched; only fontSize changes</span>
+
+<span class="cm">// Prefer val + read-only collection TYPES — 'val list' still lets you mutate</span>
+<span class="cm">// the CONTENTS if the declared type is MutableList, so both matter:</span>
+<span class="kw">class</span> <span class="ty">Cart</span> {
+    <span class="kw">private val</span> <span class="cn">_items</span> = mutableListOf&lt;<span class="ty">String</span>&gt;()
+    <span class="kw">val</span> <span class="cn">items</span>: <span class="ty">List</span>&lt;<span class="ty">String</span>&gt;
+        <span class="kw">get</span>() = _items.<span class="fn">toList</span>()      <span class="cm">// defensive copy — caller can't cast back and mutate it</span>
+}
+
+<span class="cm">// Without the copy, this would compile and silently corrupt internal state:</span>
+<span class="cm">// (cart.items as MutableList).add("hacked")   // works if items just returns the same instance!</span></code></pre>
+<div class="note nred">Exposing <span class="ic">_items</span> typed as <span class="ic">List&lt;String&gt;</span> doesn't stop a caller from casting it back to <span class="ic">MutableList&lt;String&gt;</span> at runtime — read-only Kotlin collection types are a compile-time view, not real immutability. Only a genuinely separate copy (or a real immutable collection library) is safe against that.</div>
+</div>
+</details>
+
+<h2>Collections &amp; Functional Operations</h2>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q35</span><span class="qt">List/Set/Map basics: mutable vs read-only, and listOf vs mutableListOf vs arrayListOf</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<p>Kotlin's collection interfaces are split into read-only and mutable pairs — <span class="ic">List</span>/<span class="ic">MutableList</span>, <span class="ic">Set</span>/<span class="ic">MutableSet</span>, <span class="ic">Map</span>/<span class="ic">MutableMap</span> — and <span class="ic">listOf()</span>, <span class="ic">setOf()</span>, and <span class="ic">mapOf()</span> all return the read-only version, meaning the compile-time type simply has no <span class="ic">add()</span> or <span class="ic">remove()</span> exposed on it. <span class="ic">mutableListOf()</span> and friends return the mutable interface with those methods available, and <span class="ic">arrayListOf()</span> specifically returns a concrete <span class="ic">java.util.ArrayList</span>, typed as Kotlin's <span class="ic">ArrayList</span>, for cases where you need that exact Java type for interop. The detail that trips people up is that "read-only" describes the interface, not the object underneath it: if a mutable list is assigned to a variable typed as the read-only <span class="ic">List</span>, that variable has no way to mutate the list, but the same underlying object can still be changed through whatever reference is actually typed as mutable, and those changes show up through the read-only view too, since both point at the same list in memory.</p>
+<pre><code><span class="kw">val</span> <span class="cn">readOnly</span>: <span class="ty">List</span>&lt;<span class="ty">Int</span>&gt; = listOf(<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">3</span>)         <span class="cm">// no add()/remove() in the type</span>
+<span class="kw">val</span> <span class="cn">mutable</span>: <span class="ty">MutableList</span>&lt;<span class="ty">Int</span>&gt; = mutableListOf(<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">3</span>)
+mutable.<span class="fn">add</span>(<span class="cn">4</span>)
+
+<span class="kw">val</span> <span class="cn">set</span>: <span class="ty">Set</span>&lt;<span class="ty">Int</span>&gt; = setOf(<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">2</span>, <span class="cn">3</span>)              <span class="cm">// duplicates removed -> {1, 2, 3}</span>
+<span class="kw">val</span> <span class="cn">map</span>: <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Int</span>&gt; = mapOf(<span class="st">"a"</span> to <span class="cn">1</span>, <span class="st">"b"</span> to <span class="cn">2</span>)
+
+<span class="kw">val</span> <span class="cn">arrayList</span>: <span class="ty">ArrayList</span>&lt;<span class="ty">Int</span>&gt; = arrayListOf(<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">3</span>)   <span class="cm">// concrete java.util.ArrayList, exposed as ArrayList</span>
+
+<span class="cm">// "read-only" is a VIEW, not a guarantee of immutability:</span>
+<span class="kw">val</span> <span class="cn">backing</span> = mutableListOf(<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">3</span>)
+<span class="kw">val</span> <span class="cn">view</span>: <span class="ty">List</span>&lt;<span class="ty">Int</span>&gt; = backing         <span class="cm">// 'view' has no mutating methods...</span>
+backing.<span class="fn">add</span>(<span class="cn">4</span>)                        <span class="cm">// ...but changes through 'backing' still show up in 'view'</span>
+<span class="fn">println</span>(view)                          <span class="cm">// [1, 2, 3, 4]</span></code></pre>
+<div class="note namb"><span class="ic">listOf()</span>/<span class="ic">mapOf()</span>/<span class="ic">setOf()</span> give you read-only <em>interfaces</em>, not truly immutable collections like Java's <span class="ic">List.of()</span> or Guava's <span class="ic">ImmutableList</span> — the underlying object can still be mutated through a differently-typed reference to the same instance.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q36</span><span class="qt">map/filter/reduce/fold — how they differ, and fold's initial value vs reduce</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p><span class="ic">map</span>, <span class="ic">filter</span>, <span class="ic">reduce</span>, and <span class="ic">fold</span> are core building blocks of Kotlin's functional collection API, and they differ in what they do to the collection's shape. <span class="ic">map</span> transforms every element into something else, one-to-one, so the result is always the same size as the input. <span class="ic">filter</span> keeps the type but shrinks the collection down to only the elements matching a predicate. <span class="ic">reduce</span> and <span class="ic">fold</span> both combine every element down into a single accumulated result, but they differ in where the accumulator starts: <span class="ic">reduce</span> seeds it with the collection's first element, which means it throws on an empty collection since there's nothing to seed it with, while <span class="ic">fold</span> takes an explicit initial value as its first argument, so it works safely on an empty collection — and because the seed is explicit, its result type doesn't even have to match the element type, letting you fold a list of numbers into a <span class="ic">String</span>, for example.</p>
+<pre><code><span class="kw">val</span> <span class="cn">nums</span> = listOf(<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">3</span>, <span class="cn">4</span>)
+
+nums.<span class="fn">map</span> { it * it }              <span class="cm">// [1, 4, 9, 16] — same size, transformed elements</span>
+nums.<span class="fn">filter</span> { it % <span class="cn">2</span> == <span class="cn">0</span> }       <span class="cm">// [2, 4] — same type, a subset</span>
+
+nums.<span class="fn">reduce</span> { acc, n -> acc + n } <span class="cm">// 10 — seed = first element (1); throws on an EMPTY list</span>
+nums.<span class="fn">fold</span>(<span class="cn">100</span>) { acc, n -> acc + n }  <span class="cm">// 110 — seed is explicit; works fine on an empty list</span>
+
+<span class="cm">// fold's result type can differ from the element type — reduce's can't</span>
+<span class="kw">val</span> <span class="cn">joined</span>: <span class="ty">String</span> = nums.<span class="fn">fold</span>(<span class="st">""</span>) { acc, n -> acc + n }   <span class="cm">// "1234"</span>
+
+emptyList&lt;<span class="ty">Int</span>&gt;().<span class="fn">fold</span>(<span class="cn">0</span>) { acc, n -> acc + n }   <span class="cm">// 0 — safe</span>
+<span class="cm">// emptyList&lt;Int&gt;().reduce { acc, n -> acc + n } // throws UnsupportedOperationException</span>
+
+nums.<span class="fn">reduceOrNull</span> { acc, n -> acc + n }   <span class="cm">// null instead of throwing, on an empty list</span></code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q37</span><span class="qt">groupBy, associateBy, partition, chunked, and windowed</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>These five functions cover the most common ways you need to reorganize a collection instead of just filtering or mapping it element-by-element. <span class="ic">groupBy</span> buckets elements by a computed key into a <span class="ic">Map&lt;Key, List&lt;T&gt;&gt;</span>, keeping every element that shares a key. <span class="ic">associateBy</span> is similar but assumes uniqueness — it produces a <span class="ic">Map&lt;Key, T&gt;</span> with one value per key, so if two elements share a key the later one silently overwrites the earlier one. <span class="ic">partition</span> splits a collection into exactly two lists based on a boolean predicate, returned as a <span class="ic">Pair</span> of matching and non-matching elements, cleaner than calling <span class="ic">filter</span> twice with opposite conditions. <span class="ic">chunked</span> breaks a collection into fixed-size sublists, with the final chunk possibly shorter if the size doesn't divide evenly, while <span class="ic">windowed</span> produces overlapping sliding windows of a given size — its optional <span class="ic">step</span> parameter controls how far the window moves each time, letting you do non-overlapping batches or overlapping time-series-style windows with the same function.</p>
+<pre><code><span class="kw">data class</span> <span class="ty">User</span>(<span class="kw">val</span> name: <span class="ty">String</span>, <span class="kw">val</span> country: <span class="ty">String</span>)
+<span class="kw">val</span> <span class="cn">users</span> = listOf(<span class="ty">User</span>(<span class="st">"A"</span>, <span class="st">"US"</span>), <span class="ty">User</span>(<span class="st">"B"</span>, <span class="st">"US"</span>), <span class="ty">User</span>(<span class="st">"C"</span>, <span class="st">"IN"</span>))
+
+users.<span class="fn">groupBy</span> { it.country }
+<span class="cm">// {US=[User(A,US), User(B,US)], IN=[User(C,IN)]}  — Map&lt;Key, List&lt;T&gt;&gt;</span>
+
+users.<span class="fn">associateBy</span> { it.name }
+<span class="cm">// {A=User(A,US), B=User(B,US), C=User(C,IN)}      — Map&lt;Key, T&gt;, last duplicate wins</span>
+
+<span class="kw">val</span> (adults, minors) = listOf(<span class="cn">20</span>, <span class="cn">15</span>, <span class="cn">30</span>, <span class="cn">10</span>).<span class="fn">partition</span> { it >= <span class="cn">18</span> }
+<span class="cm">// adults = [20, 30], minors = [15, 10]  — Pair&lt;List&lt;T&gt;, List&lt;T&gt;&gt;</span>
+
+listOf(<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">3</span>, <span class="cn">4</span>, <span class="cn">5</span>).<span class="fn">chunked</span>(<span class="cn">2</span>)          <span class="cm">// [[1,2], [3,4], [5]] — fixed-size chunks, last may be short</span>
+listOf(<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">3</span>, <span class="cn">4</span>, <span class="cn">5</span>).<span class="fn">windowed</span>(<span class="cn">3</span>)          <span class="cm">// [[1,2,3], [2,3,4], [3,4,5]] — sliding window</span>
+listOf(<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">3</span>, <span class="cn">4</span>, <span class="cn">5</span>).<span class="fn">windowed</span>(<span class="cn">3</span>, step = <span class="cn">2</span>) <span class="cm">// [[1,2,3], [3,4,5]]</span></code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--blub);color:var(--blul)">Q38</span><span class="qt">Array vs List in Kotlin — why arrays are less idiomatic, and primitive arrays</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p><span class="ic">Array</span> in Kotlin maps directly onto the JVM's array type, and that has real consequences that make it less idiomatic than <span class="ic">List</span> for everyday code. <span class="ic">arrayOf()</span> for a type like <span class="ic">Int</span> actually boxes every element into an <span class="ic">Integer</span> object, since <span class="ic">Array&lt;T&gt;</span> is generic and generics can't hold primitives directly — getting a genuinely unboxed array of primitives requires the dedicated <span class="ic">IntArray</span>, <span class="ic">DoubleArray</span>, and similar types, which compile straight to a real <span class="ic">int[]</span> under the hood. <span class="ic">Array&lt;T&gt;</span> is also invariant, unlike <span class="ic">List&lt;out T&gt;</span>, so an <span class="ic">Array&lt;Int&gt;</span> can't be used where an <span class="ic">Array&lt;Any&gt;</span> is expected even though the equivalent is fine for <span class="ic">List</span> — a direct consequence of arrays being mutable by index while <span class="ic">List</span> is read-only by default. The footgun most worth knowing is that arrays don't override <span class="ic">equals()</span> or <span class="ic">toString()</span>, so <span class="ic">==</span> between two arrays is reference comparison even when their contents are identical — <span class="ic">contentEquals()</span> and <span class="ic">contentToString()</span> are the structural equivalents you actually want. In practice, <span class="ic">Array</span> is mainly reached for when interoperating with Java, implementing vararg parameters, or specifically avoiding boxing overhead with a primitive array type in performance-sensitive numeric code.</p>
+<pre><code><span class="kw">val</span> <span class="cn">arr</span> = arrayOf(<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">3</span>)          <span class="cm">// Array&lt;Int&gt; — boxes each Int into an Integer object!</span>
+<span class="kw">val</span> <span class="cn">intArr</span> = intArrayOf(<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">3</span>)    <span class="cm">// IntArray — a real unboxed int[] under the hood, no boxing</span>
+
+arr[<span class="cn">0</span>] = <span class="cn">10</span>                          <span class="cm">// mutable by index — but SIZE is fixed, no add()/remove()</span>
+
+<span class="cm">// Array&lt;T&gt; is invariant, unlike List&lt;out T&gt;:</span>
+<span class="cm">// val objs: Array&lt;Any&gt; = arr        // ERROR — Array&lt;Int&gt; is not a subtype of Array&lt;Any&gt;</span>
+<span class="kw">val</span> <span class="cn">objs</span>: <span class="ty">List</span>&lt;<span class="ty">Any</span>&gt; = listOf(<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">3</span>)  <span class="cm">// OK — List is declared 'out T'</span>
+
+<span class="cm">// == on arrays is REFERENCE equality (arrays don't override equals())</span>
+intArrayOf(<span class="cn">1</span>, <span class="cn">2</span>) == intArrayOf(<span class="cn">1</span>, <span class="cn">2</span>)             <span class="cm">// false!</span>
+intArrayOf(<span class="cn">1</span>, <span class="cn">2</span>).<span class="fn">contentEquals</span>(intArrayOf(<span class="cn">1</span>, <span class="cn">2</span>)) <span class="cm">// true — structural comparison</span>
+
+<span class="cm">// Prefer List/MutableList for everyday code; reach for Array mainly for</span>
+<span class="cm">// Java interop, vararg parameters, or IntArray/DoubleArray/... to avoid</span>
+<span class="cm">// boxing overhead in performance-sensitive numeric code</span></code></pre>
+<div class="note nred">Forgetting <span class="ic">contentEquals</span> (or <span class="ic">contentToString()</span> for printing) is one of the most common Kotlin footguns — arrays silently fall back to identity comparison and the default <span class="ic">toString()</span>.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">Q39</span><span class="qt">Comparable vs Comparator — compareBy and thenBy</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p><span class="ic">Comparable</span> and <span class="ic">Comparator</span> both define an ordering, but they answer different questions about where that ordering should live. A class implements <span class="ic">Comparable&lt;T&gt;</span> itself when there's one obvious, intrinsic "natural" order for it — implementing <span class="ic">compareTo()</span> bakes that ordering into the type, so calling <span class="ic">sorted()</span> on a list of that type just works with no extra arguments. A <span class="ic">Comparator</span> is an external, swappable strategy object instead — useful when there either isn't one natural order, or when you need a different one in some particular context without touching the class's own code. Kotlin's <span class="ic">compareBy</span> and <span class="ic">thenBy</span> make building one read almost like a sentence: <span class="ic">compareBy { it.name }.thenBy { it.age }</span> sorts primarily by name and breaks ties by age, and <span class="ic">sortedWith()</span> is the function that applies a <span class="ic">Comparator</span> instead of the type's own <span class="ic">compareTo()</span>. The rule of thumb is: implement <span class="ic">Comparable</span> for the one "default" ordering a type should have, and build a <span class="ic">Comparator</span> for every situational ordering beyond that.</p>
+<pre><code><span class="kw">data class</span> <span class="ty">Person</span>(<span class="kw">val</span> name: <span class="ty">String</span>, <span class="kw">val</span> age: <span class="ty">Int</span>) : <span class="ty">Comparable</span>&lt;<span class="ty">Person</span>&gt; {
+    <span class="kw">override fun</span> <span class="fn">compareTo</span>(other: <span class="ty">Person</span>): <span class="ty">Int</span> = age.<span class="fn">compareTo</span>(other.age)   <span class="cm">// natural order = by age</span>
+}
+
+<span class="kw">val</span> <span class="cn">people</span> = listOf(<span class="ty">Person</span>(<span class="st">"Bob"</span>, <span class="cn">30</span>), <span class="ty">Person</span>(<span class="st">"Ana"</span>, <span class="cn">25</span>))
+people.<span class="fn">sorted</span>()                    <span class="cm">// uses Comparable.compareTo — sorted by age</span>
+
+<span class="cm">// Comparator — an external, swappable ordering strategy, no need to touch the class</span>
+<span class="kw">val</span> <span class="cn">byNameThenAge</span> = compareBy&lt;<span class="ty">Person</span>&gt; { it.name }.<span class="fn">thenBy</span> { it.age }
+people.<span class="fn">sortedWith</span>(byNameThenAge)    <span class="cm">// Ana(25) before Bob(30) — sorted by name, ties broken by age</span>
+
+<span class="kw">val</span> <span class="cn">byAgeDesc</span> = compareByDescending&lt;<span class="ty">Person</span>&gt; { it.age }
+people.<span class="fn">sortedWith</span>(byAgeDesc)</code></pre>
+<div class="note nblu">Implement <span class="ic">Comparable</span> when there's one obvious "natural" ordering for the type; reach for a <span class="ic">Comparator</span> (often built with <span class="ic">compareBy</span>/<span class="ic">thenBy</span>) whenever you need a different or situational ordering without touching the class itself.</div>
+</div>
+</details>
+
+<h2>Generics &amp; Type System Deep Dive</h2>
+
+<details><summary><span class="qn" style="background:var(--cyab);color:var(--cyal)">Q40</span><span class="qt">Type erasure and reified generics — why does `reified` require `inline`?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p>The JVM erases generic type parameters at runtime — <span class="ic">List&lt;String&gt;</span> and <span class="ic">List&lt;Int&gt;</span> are the exact same class once compiled, so a normal function has no way to check <span class="ic">value is T</span> or call <span class="ic">T::class</span>. An <span class="ic">inline</span> function sidesteps this by physically pasting its body — and the real type argument used at each call site — directly into the caller, so the compiler can substitute the concrete type in place of <span class="ic">T</span> before erasure even happens. That's why <span class="ic">reified</span> is only legal on an <span class="ic">inline</span> function: without inlining, the compiled bytecode has already erased <span class="ic">T</span> by the time it runs, and there's nothing left to substitute.</p>
+<pre><code><span class="cm">// Normal generics: erased at runtime — this does NOT compile</span>
+<span class="kw">fun</span> &lt;T&gt; <span class="fn">isOfType</span>(value: <span class="ty">Any</span>): <span class="ty">Boolean</span> = value <span class="kw">is</span> T   <span class="cm">// ERROR: cannot check for instance of erased type T</span>
+
+<span class="cm">// Reified — only allowed on an inline function, since the compiler substitutes</span>
+<span class="cm">// the ACTUAL type argument at each call site during inlining</span>
+<span class="kw">inline fun</span> &lt;<span class="an">reified</span> T&gt; <span class="fn">isOfType</span>(value: <span class="ty">Any</span>): <span class="ty">Boolean</span> = value <span class="kw">is</span> T
+<span class="fn">isOfType</span>&lt;<span class="ty">String</span>&gt;(<span class="st">"hi"</span>)   <span class="cm">// true — 'T' literally becomes 'String' at this call site</span>
+
+<span class="kw">inline fun</span> &lt;<span class="an">reified</span> T&gt; <span class="ty">Gson</span>.<span class="fn">fromJson</span>(json: <span class="ty">String</span>): T = <span class="kw">this</span>.<span class="fn">fromJson</span>(json, T::<span class="kw">class</span>.java)
+<span class="kw">val</span> <span class="cn">user</span>: <span class="ty">User</span> = gson.<span class="fn">fromJson</span>(jsonString)   <span class="cm">// clean API, no TypeToken/Class parameter needed</span>
+
+<span class="cm">// Real stdlib use: filterIsInstance relies on reified + inline</span>
+<span class="kw">val</span> <span class="cn">mixed</span>: <span class="ty">List</span>&lt;<span class="ty">Any</span>&gt; = listOf(<span class="cn">1</span>, <span class="st">"a"</span>, <span class="cn">2</span>, <span class="st">"b"</span>)
+<span class="kw">val</span> <span class="cn">strings</span>: <span class="ty">List</span>&lt;<span class="ty">String</span>&gt; = mixed.<span class="fn">filterIsInstance</span>&lt;<span class="ty">String</span>&gt;()   <span class="cm">// ["a", "b"]</span></code></pre>
+<div class="note namb">Without <span class="ic">inline</span>, the compiled function only ever sees the erased <span class="ic">T</span> — there's nothing left at runtime for <span class="ic">reified</span> to substitute. That's why it's a compile error, not just bad style.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q41</span><span class="qt">Star projection (*) vs Any? in generics</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>Star projection and <span class="ic">Any?</span> look similar but answer genuinely different questions about a generic type. <span class="ic">List&lt;*&gt;</span> means "a list of some specific type, I just don't know which one at compile time" — the compiler still knows there is one real, consistent element type, it just can't name it, so it lets you safely read elements out (each one is at least <span class="ic">Any?</span>) but refuses to let you write anything in, since it can't verify a new value matches whatever that hidden type turns out to be; even <span class="ic">list.add(null)</span> is rejected because the "in" position for a star-projected type becomes <span class="ic">Nothing</span>, which nothing except <span class="ic">Nothing</span> itself can satisfy. <span class="ic">List&lt;Any?&gt;</span>, by contrast, is a genuine declaration that the list holds a real mix of any type, by design — so both reading and writing are fully allowed, because <span class="ic">Any?</span> really is the declared, agreed-upon element type rather than a stand-in for an unknown one. The interview-relevant distinction is that <span class="ic">MutableList&lt;*&gt;</span> is read-mostly by necessity, while <span class="ic">MutableList&lt;Any?&gt;</span> is fully read-write by design — they look like they mean the same thing but they don't.</p>
+<pre><code><span class="kw">fun</span> <span class="fn">printAll</span>(list: <span class="ty">List</span>&lt;*&gt;) {                 <span class="cm">// "a List of SOME type, I don't know which"</span>
+    <span class="kw">for</span> (item <span class="kw">in</span> list) <span class="fn">println</span>(item)          <span class="cm">// safe to read — every item is at least Any?</span>
+}
+<span class="fn">printAll</span>(listOf(<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">3</span>))
+<span class="fn">printAll</span>(listOf(<span class="st">"a"</span>, <span class="st">"b"</span>))
+
+<span class="kw">fun</span> <span class="fn">addItem</span>(list: <span class="ty">MutableList</span>&lt;*&gt;) {
+    <span class="cm">// list.add("x")     // ERROR — compiler can't prove "x" matches the list's real, unknown type</span>
+    <span class="cm">// list.add(null)    // ERROR too — not even null is allowed; the 'in' position becomes Nothing</span>
+    <span class="kw">val</span> <span class="cn">first</span> = list[<span class="cn">0</span>]  <span class="cm">// OK to read — comes out typed as Any?</span>
+}
+
+<span class="cm">// List&lt;Any?&gt; is a DIFFERENT thing — a list DECLARED to genuinely hold any</span>
+<span class="cm">// mix of types, so both read and write are allowed:</span>
+<span class="kw">fun</span> <span class="fn">addAnything</span>(list: <span class="ty">MutableList</span>&lt;<span class="ty">Any</span>?&gt;) {
+    list.<span class="fn">add</span>(<span class="st">"x"</span>)    <span class="cm">// OK — Any? really is the declared element type</span>
+    list.<span class="fn">add</span>(<span class="cn">42</span>)
+    list.<span class="fn">add</span>(<span class="kw">null</span>)
+}</code></pre>
+<div class="note nblu"><span class="ic">List&lt;*&gt;</span> means "a specific-but-unknown type" (read-safe only); <span class="ic">List&lt;Any?&gt;</span> means "genuinely any type, mixed together, by design" (fully read-write). They look similar but answer different questions.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--blub);color:var(--blul)">Q42</span><span class="qt">Type aliases — what they are (and aren't)</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<p>A <span class="ic">typealias</span> is purely a compile-time renaming — it gives an existing type a different name to make signatures more readable, but it introduces zero new type safety, since the alias and the underlying type are completely interchangeable everywhere. That makes it a great tool for shortening a deeply nested generic type like <span class="ic">Map&lt;String, List&lt;Order&gt;&gt;</span>, or naming a function type like <span class="ic">(View) -> Unit</span> so a parameter list reads clearly, but it does nothing to stop a plain <span class="ic">String</span> from being passed wherever a <span class="ic">UserId</span> typealias is expected, because to the compiler they're literally the same type. That's the key contrast with <span class="ic">@JvmInline value class</span> (see the value-class question): a value class introduces a real, distinct type that the compiler will reject a mismatched <span class="ic">String</span> for, at the cost of it being an actual class declaration rather than free — so the choice comes down to whether you want readability alone (<span class="ic">typealias</span>) or genuine compile-time protection against mixing up two conceptually different values that happen to share an underlying type (<span class="ic">value class</span>).</p>
+<pre><code><span class="kw">typealias</span> UserId = <span class="ty">String</span>                       <span class="cm">// just another name for String</span>
+<span class="kw">typealias</span> ClickHandler = (<span class="ty">View</span>) -> <span class="ty">Unit</span>         <span class="cm">// shortens a function type signature</span>
+<span class="kw">typealias</span> UserMap = <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">List</span>&lt;<span class="ty">Order</span>&gt;&gt;    <span class="cm">// shortens a deeply nested generic type</span>
+
+<span class="kw">fun</span> <span class="fn">onClick</span>(handler: ClickHandler) { /* ... */ }
+<span class="kw">fun</span> <span class="fn">findUser</span>(id: UserId): <span class="ty">User</span>? = /* ... */
+
+<span class="cm">// NO extra type safety — a UserId and a plain String are 100% interchangeable</span>
+<span class="kw">val</span> <span class="cn">id</span>: UserId = <span class="st">"abc123"</span>
+<span class="kw">val</span> <span class="cn">raw</span>: <span class="ty">String</span> = id              <span class="cm">// compiles fine — they're literally the same type</span>
+<span class="fn">findUser</span>(<span class="st">"just a raw string"</span>)     <span class="cm">// compiles fine too — the alias doesn't stop this</span>
+
+<span class="cm">// Compare to @JvmInline value class, which DOES introduce a real, distinct type:</span>
+<span class="cm">// findUser(rawString) would be a compile ERROR if UserId were a value class instead</span></code></pre>
+<div class="note namb">Reach for a <span class="ic">typealias</span> purely for readability or shortening signatures. Reach for a <span class="ic">@JvmInline value class</span> (see Q11) when you actually want the compiler to stop two different concepts — like <span class="ic">AccountId</span> and <span class="ic">OrderId</span>, both Strings — from being swapped by mistake.</div>
+</div>
+</details>
+
+<h2>Kotlin Idioms, DSLs &amp; Java Interop</h2>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">Q43</span><span class="qt">How do Kotlin DSL builders work? Lambda with receiver</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p>A lambda-with-receiver — a function type written as <span class="ic">T.() -> Unit</span> — executes its body as if it were an extension function on <span class="ic">T</span>: inside the block, <span class="ic">this</span> is the receiver, so its members are callable without a qualifier. Nesting these is exactly how type-safe HTML/Gradle-style builders scope which functions are callable at each level.</p>
+<pre><code><span class="kw">class</span> <span class="ty">Html</span> {
+    <span class="kw">private val</span> <span class="cn">children</span> = mutableListOf&lt;<span class="ty">String</span>&gt;()
+    <span class="kw">fun</span> <span class="fn">body</span>(block: <span class="ty">Body</span>.() -> <span class="ty">Unit</span>) {           <span class="cm">// parameter is a lambda WITH RECEIVER Body</span>
+        <span class="kw">val</span> <span class="cn">body</span> = <span class="ty">Body</span>()
+        body.<span class="fn">block</span>()                              <span class="cm">// invoked as an extension — 'this' inside block() is Body</span>
+        children.<span class="fn">add</span>(body.<span class="fn">render</span>())
+    }
+}
+<span class="kw">class</span> <span class="ty">Body</span> {
+    <span class="kw">private val</span> <span class="cn">tags</span> = mutableListOf&lt;<span class="ty">String</span>&gt;()
+    <span class="kw">fun</span> <span class="fn">p</span>(text: <span class="ty">String</span>) { tags.<span class="fn">add</span>(<span class="st">"&lt;p&gt;</span><span class="cn">$text</span><span class="st">&lt;/p&gt;"</span>) }
+    <span class="kw">fun</span> <span class="fn">render</span>() = tags.<span class="fn">joinToString</span>(<span class="st">""</span>)
+}
+
+<span class="kw">fun</span> <span class="fn">html</span>(block: <span class="ty">Html</span>.() -> <span class="ty">Unit</span>): <span class="ty">Html</span> = <span class="ty">Html</span>().<span class="fn">apply</span>(block)
+
+<span class="kw">val</span> <span class="cn">page</span> = <span class="fn">html</span> {
+    <span class="fn">body</span> {              <span class="cm">// 'this' here is Html — body() is called without a receiver prefix</span>
+        <span class="fn">p</span>(<span class="st">"Hello"</span>)       <span class="cm">// 'this' here is Body — p() resolves against Body, not Html</span>
+        <span class="fn">p</span>(<span class="st">"World"</span>)
+    }
+}
+
+<span class="cm">// apply() itself is just a tiny lambda-with-receiver function:</span>
+<span class="kw">inline fun</span> &lt;T&gt; T.<span class="fn">apply</span>(block: T.() -> <span class="ty">Unit</span>): T { <span class="fn">block</span>(); <span class="kw">return</span> <span class="kw">this</span> }</code></pre>
+<div class="note nblu">The type-safety comes from scoping: inside the <span class="ic">body { }</span> block, only <span class="ic">Body</span>'s members are callable directly, so the compiler catches a misplaced call at the wrong level — the whole trick behind Kotlin's <span class="ic">@DslMarker</span>-guarded builders.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q44</span><span class="qt">operator fun invoke — making an instance callable like a function</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p><span class="ic">operator fun invoke</span> lets an instance of a class be called directly with parentheses, as if it were a function itself — <span class="ic">greet("Alice")</span> on a <span class="ic">Greeter</span> instance desugars to <span class="ic">greet.invoke("Alice")</span> the same way <span class="ic">a + b</span> desugars to <span class="ic">a.plus(b)</span> for any other operator function. It supports overloading just like any operator, so a single class can expose <span class="ic">invoke()</span> with different parameter lists, as with an <span class="ic">Adder</span> that supports both a two-argument and a three-argument call. The reason this is worth knowing beyond being a neat trick is that it's exactly how Kotlin's function types work under the hood — a lambda of type <span class="ic">(Int) -> Int</span> is really compiled to an instance of the <span class="ic">FunctionN</span> interface, and calling it as <span class="ic">fn(5)</span> is nothing more than the compiler calling <span class="ic">fn.invoke(5)</span> for you; understanding <span class="ic">invoke()</span> demystifies what a "function value" actually is at the bytecode level.</p>
+<pre><code><span class="kw">class</span> <span class="ty">Greeter</span>(<span class="kw">private val</span> greeting: <span class="ty">String</span>) {
+    <span class="kw">operator fun</span> <span class="fn">invoke</span>(name: <span class="ty">String</span>) = <span class="st">"</span><span class="cn">$greeting</span><span class="st">, </span><span class="cn">$name</span><span class="st">!"</span>
+}
+
+<span class="kw">val</span> <span class="cn">greet</span> = <span class="ty">Greeter</span>(<span class="st">"Hello"</span>)
+<span class="fn">greet</span>(<span class="st">"Alice"</span>)          <span class="cm">// desugars to greet.invoke("Alice") -> "Hello, Alice!"</span>
+
+<span class="cm">// Multiple overloads of invoke() are allowed, just like any operator</span>
+<span class="kw">class</span> <span class="ty">Adder</span> {
+    <span class="kw">operator fun</span> <span class="fn">invoke</span>(a: <span class="ty">Int</span>, b: <span class="ty">Int</span>) = a + b
+    <span class="kw">operator fun</span> <span class="fn">invoke</span>(a: <span class="ty">Int</span>, b: <span class="ty">Int</span>, c: <span class="ty">Int</span>) = a + b + c
+}
+<span class="ty">Adder</span>()(<span class="cn">1</span>, <span class="cn">2</span>)       <span class="cm">// 3</span>
+<span class="ty">Adder</span>()(<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">3</span>)    <span class="cm">// 6</span>
+
+<span class="cm">// This is exactly how function types work under the hood — a lambda of</span>
+<span class="cm">// type (Int) -> Int is really an instance of the Function1&lt;Int, Int&gt;</span>
+<span class="cm">// interface, and calling it as fn(5) is just fn.invoke(5)</span></code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q45</span><span class="qt">Enum classes with abstract members and interfaces</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>An enum class in Kotlin can declare an abstract member and have each constant supply its own implementation in a per-constant body, which turns the enum itself into a small polymorphic dispatch table instead of something you'd normally pair with an external <span class="ic">when</span> block. Each constant like <span class="ic">ADD</span> or <span class="ic">MULTIPLY</span> effectively becomes its own anonymous subclass of the enum, so calling <span class="ic">apply()</span> on <span class="ic">Calculator.ADD</span> dispatches straight to that constant's own override with no branching logic anywhere else in the codebase — and because the compiler requires every constant to implement the abstract member, adding a new operation later forces you to fill in its behavior right there, rather than risk forgetting to update a <span class="ic">when</span> statement scattered somewhere else. Enums still carry their usual built-in members too — <span class="ic">ordinal</span> for declaration order, <span class="ic">name</span> for the constant's identifier, and <span class="ic">valueOf()</span> to look one up by string, throwing if it isn't found — and since Kotlin 1.9, <span class="ic">entries</span> is the preferred way to iterate all constants, since it's a cached <span class="ic">List</span> rather than <span class="ic">values()</span>, which allocates a brand-new array on every single call.</p>
+<pre><code><span class="kw">interface</span> <span class="ty">Operation</span> { <span class="kw">fun</span> <span class="fn">apply</span>(a: <span class="ty">Int</span>, b: <span class="ty">Int</span>): <span class="ty">Int</span> }
+
+<span class="kw">enum class</span> <span class="ty">Calculator</span>(<span class="kw">private val</span> symbol: <span class="ty">String</span>) : <span class="ty">Operation</span> {
+    ADD(<span class="st">"+"</span>) { <span class="kw">override fun</span> <span class="fn">apply</span>(a: <span class="ty">Int</span>, b: <span class="ty">Int</span>) = a + b },
+    SUBTRACT(<span class="st">"-"</span>) { <span class="kw">override fun</span> <span class="fn">apply</span>(a: <span class="ty">Int</span>, b: <span class="ty">Int</span>) = a - b },
+    MULTIPLY(<span class="st">"*"</span>) { <span class="kw">override fun</span> <span class="fn">apply</span>(a: <span class="ty">Int</span>, b: <span class="ty">Int</span>) = a * b };   <span class="cm">// ';' required after the last constant</span>
+
+    <span class="kw">override fun</span> <span class="fn">toString</span>() = symbol
+}
+
+<span class="ty">Calculator</span>.ADD.<span class="fn">apply</span>(<span class="cn">2</span>, <span class="cn">3</span>)        <span class="cm">// 5 — no when/if needed, dispatch is per-constant</span>
+<span class="fn">println</span>(<span class="ty">Calculator</span>.MULTIPLY)      <span class="cm">// "*"</span>
+
+<span class="ty">Calculator</span>.ADD.ordinal    <span class="cm">// 0 — declaration order</span>
+<span class="ty">Calculator</span>.ADD.name       <span class="cm">// "ADD"</span>
+<span class="ty">Calculator</span>.<span class="fn">valueOf</span>(<span class="st">"ADD"</span>) <span class="cm">// Calculator.ADD — throws IllegalArgumentException if not found</span>
+
+<span class="cm">// Kotlin 1.9+: prefer 'entries' over 'values()' — entries is a cached List,</span>
+<span class="cm">// values() allocates a brand-new array on every single call</span>
+<span class="kw">for</span> (op <span class="kw">in</span> <span class="ty">Calculator</span>.entries) <span class="fn">println</span>(op)</code></pre>
+<div class="note namb">Per-constant bodies are the idiomatic replacement for a <span class="ic">when(type) { ... }</span> dispatch table scattered across the codebase — adding a new enum constant forces you to implement the abstract member right there, so nothing is silently missed.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--blub);color:var(--blul)">Q46</span><span class="qt">Java interop annotations: @JvmOverloads, @JvmStatic, @JvmField, @Throws</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>These four annotations exist purely to smooth over places where a Kotlin feature has no direct Java equivalent. <span class="ic">@JvmOverloads</span> is for default parameter values: Kotlin itself compiles a function with defaults down to a single method requiring every argument, so without the annotation, Java callers — who have no concept of default arguments — would be forced to pass all of them; the annotation makes the compiler generate one overload per suffix of default parameters, restoring the convenience Kotlin callers already had. <span class="ic">@JvmStatic</span>, applied inside a companion object, generates a genuinely static method on the outer class so Java callers get <span class="ic">Api.create()</span> instead of having to go through <span class="ic">Api.Companion.create()</span>. <span class="ic">@JvmField</span> exposes a property as a plain public field rather than through a generated getter/setter pair, which matters for frameworks that expect direct field access. <span class="ic">@Throws</span> is there because Kotlin has no checked exceptions at all — nothing forces you to declare or catch anything — but adding <span class="ic">@Throws(IOException::class)</span> tells the Kotlin compiler to still emit the Java <span class="ic">throws</span> declaration in the bytecode, so Java callers are properly required to handle it the way Java's checked-exception system expects.</p>
+<pre><code><span class="kw">class</span> <span class="ty">Api</span> {
+    <span class="an">@JvmOverloads</span>
+    <span class="kw">fun</span> <span class="fn">request</span>(url: <span class="ty">String</span>, timeout: <span class="ty">Int</span> = <span class="cn">30</span>, retries: <span class="ty">Int</span> = <span class="cn">3</span>) { /* ... */ }
+    <span class="cm">// generates 3 Java overloads: request(url), request(url,timeout), request(url,timeout,retries)</span>
+
+    <span class="kw">companion object</span> {
+        <span class="an">@JvmStatic</span> <span class="kw">fun</span> <span class="fn">create</span>(): <span class="ty">Api</span> = <span class="ty">Api</span>()      <span class="cm">// real static method for Java</span>
+    }
+}
+
+<span class="kw">class</span> <span class="ty">Config</span> {
+    <span class="an">@JvmField</span> <span class="kw">val</span> <span class="cn">maxSize</span> = <span class="cn">100</span>    <span class="cm">// exposed as a plain public field in Java — no getMaxSize() generated</span>
+}
+
+<span class="kw">class</span> <span class="ty">FileReaderKt</span> {
+    <span class="an">@Throws</span>(IOException::<span class="kw">class</span>)     <span class="cm">// Kotlin has no checked exceptions, but this annotation still</span>
+    <span class="kw">fun</span> <span class="fn">readFile</span>(path: <span class="ty">String</span>) {    <span class="cm">// forces Java callers to catch/declare IOException</span>
+        <span class="ty">File</span>(path).<span class="fn">readText</span>()
+    }
+}</code></pre>
+<div class="note nred">Without <span class="ic">@JvmOverloads</span>, a Kotlin function with default parameter values compiles to exactly ONE method requiring every parameter — Java has no concept of default arguments, so callers from Java must pass all of them unless you add the annotation.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">Q47</span><span class="qt">try-catch-finally as an expression, and why Kotlin has no checked exceptions</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<p>In Kotlin, <span class="ic">try</span>/<span class="ic">catch</span>/<span class="ic">finally</span> is an expression, not just a statement — the value of the whole construct is whatever the last line of the branch that actually ran evaluates to, which lets you write <span class="ic">val number = try { input.toInt() } catch (e: NumberFormatException) { -1 }</span> and assign the result directly instead of declaring a <span class="ic">var</span> above the block and mutating it inside each branch. The <span class="ic">finally</span> block runs regardless of which path was taken, but purely for side effects — its own value never becomes the result of the expression. Separately, Kotlin deliberately has no checked exceptions at all: nothing forces a function to declare what it might throw, and nothing forces a caller to catch or re-declare it. That was a deliberate design choice by the Kotlin team, based on the observation that in real Java codebases checked exceptions mostly produced empty <span class="ic">catch (Exception e) {}</span> blocks or a blanket <span class="ic">throws Exception</span> rather than genuinely safer code — <span class="ic">@Throws</span> exists only as an escape hatch for when Java callers specifically still need that declaration.</p>
+<pre><code><span class="kw">val</span> <span class="cn">number</span>: <span class="ty">Int</span> = <span class="kw">try</span> {
+    input.<span class="fn">toInt</span>()                 <span class="cm">// value of the try block, if no exception is thrown</span>
+} <span class="kw">catch</span> (e: <span class="ty">NumberFormatException</span>) {
+    -<span class="cn">1</span>                             <span class="cm">// value of the catch block, if this exception hits</span>
+} <span class="kw">finally</span> {
+    <span class="fn">println</span>(<span class="st">"done parsing"</span>)       <span class="cm">// runs either way — contributes nothing to the result</span>
+}
+
+<span class="cm">// Kotlin has NO checked exceptions — nothing forces you to declare or catch</span>
+<span class="kw">fun</span> <span class="fn">risky</span>() {
+    <span class="kw">throw</span> <span class="ty">IOException</span>(<span class="st">"boom"</span>)     <span class="cm">// compiles fine with no 'throws' clause required</span>
+}
+<span class="kw">fun</span> <span class="fn">caller</span>() {
+    <span class="fn">risky</span>()                        <span class="cm">// compiles fine too, even without a try/catch</span>
+}</code></pre>
+<div class="note namb">Kotlin's designers dropped checked exceptions on purpose — in practice they mostly produced <span class="ic">catch (e: Exception) {}</span> boilerplate or a blanket <span class="ic">throws Exception</span> escape hatch rather than genuinely safer code. Use <span class="ic">@Throws</span> (previous question) only when Java callers specifically need the declaration.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--cyab);color:var(--cyal)">Q48</span><span class="qt">The sequence { } builder — generating lazy sequences with yield</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>The <span class="ic">sequence { }</span> builder is Kotlin's tool for generating a lazy, potentially infinite stream of values using ordinary imperative code — a <span class="ic">while</span> loop and a <span class="ic">yield()</span> call — instead of building an eager collection up front. <span class="ic">yield()</span> suspends the generator at that point and hands control back to whatever is consuming the sequence, so a <span class="ic">naturalNumbers</span> sequence built around <span class="ic">while(true) { yield(n); n++ }</span> never actually runs forever in practice, because functions like <span class="ic">take(5)</span> or <span class="ic">first { ... }</span> only pull as many values out as they need and the generator body simply never advances past that point. <span class="ic">yieldAll()</span> lets you splice an existing list, range, or another sequence into the middle of the generation logic, useful for building a combined sequence out of several sources without eagerly concatenating them first. The simpler <span class="ic">generateSequence { }</span> function covers the common case where each next value depends only on the previous one, and often reads more clearly than a full <span class="ic">sequence { }</span> builder for that specific pattern.</p>
+<pre><code><span class="cm">// Generates values lazily, on demand — nothing is computed until consumed</span>
+<span class="kw">val</span> <span class="cn">naturalNumbers</span> = sequence {
+    <span class="kw">var</span> <span class="cn">n</span> = <span class="cn">1</span>
+    <span class="kw">while</span> (<span class="kw">true</span>) {
+        <span class="fn">yield</span>(n)          <span class="cm">// suspends generation here until the next value is requested</span>
+        n++
+    }
+}
+
+naturalNumbers.<span class="fn">take</span>(<span class="cn">5</span>).<span class="fn">toList</span>()          <span class="cm">// [1, 2, 3, 4, 5] — only 5 values ever computed</span>
+naturalNumbers.<span class="fn">first</span> { it % <span class="cn">7</span> == <span class="cn">0</span> }     <span class="cm">// 7 — stops generating as soon as it's found</span>
+
+<span class="cm">// yieldAll can flatten in nested sequences/iterables</span>
+<span class="kw">val</span> <span class="cn">combined</span> = sequence {
+    <span class="fn">yieldAll</span>(listOf(<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">3</span>))
+    <span class="fn">yield</span>(<span class="cn">4</span>)
+    <span class="fn">yieldAll</span>(<span class="cn">5</span>..<span class="cn">7</span>)
+}
+combined.<span class="fn">toList</span>()   <span class="cm">// [1, 2, 3, 4, 5, 6, 7]</span></code></pre>
+<div class="note nblu">This is the tool for a genuinely infinite or expensive-to-fully-materialize source. When each next value depends only on the previous one, the simpler <span class="ic">generateSequence { }</span> often reads more clearly.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q49</span><span class="qt">buildString, buildList, buildMap — builder functions for efficient construction</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// buildString — wraps a single StringBuilder, avoids String += in a loop</span>
+<span class="cm">// (which reallocates a new String every single iteration)</span>
+<span class="kw">val</span> <span class="cn">csv</span> = buildString {
+    <span class="fn">append</span>(<span class="st">"id,name\n"</span>)
+    <span class="kw">for</span> (i <span class="kw">in</span> <span class="cn">1</span>..<span class="cn">3</span>) <span class="fn">append</span>(<span class="st">"</span><span class="cn">$i</span><span class="st">,item</span><span class="cn">$i</span><span class="st">\n"</span>)
+}
+
+<span class="cm">// buildList — builds with a MutableList internally, returns a read-only List</span>
+<span class="kw">val</span> <span class="cn">squares</span> = buildList {
+    <span class="kw">for</span> (i <span class="kw">in</span> <span class="cn">1</span>..<span class="cn">5</span>) <span class="fn">add</span>(i * i)
+}
+
+<span class="cm">// buildMap — same idea for maps</span>
+<span class="kw">val</span> <span class="cn">lookup</span> = buildMap {
+    <span class="fn">put</span>(<span class="st">"a"</span>, <span class="cn">1</span>)
+    <span class="fn">put</span>(<span class="st">"b"</span>, <span class="cn">2</span>)
+}</code></pre>
+<div class="note namb">String concatenation with <span class="ic">+=</span> inside a loop allocates a brand-new String object every iteration — <span class="ic">buildString</span> (backed by one mutable StringBuilder) is the idiomatic fix, the same idea as using StringBuilder manually in Java but with cleaner syntax.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q50</span><span class="qt">String formatting and performance: String.format, toString(), and avoiding + in loops</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<pre><code><span class="kw">val</span> <span class="cn">formatted</span> = <span class="ty">String</span>.<span class="fn">format</span>(<span class="st">"Price: $%.2f"</span>, <span class="cn">19.999</span>)     <span class="cm">// "Price: $20.00"</span>
+<span class="kw">val</span> <span class="cn">formatted2</span> = <span class="st">"Score: %d/%d"</span>.<span class="fn">format</span>(<span class="cn">8</span>, <span class="cn">10</span>)               <span class="cm">// "Score: 8/10"</span>
+
+<span class="kw">class</span> <span class="ty">Point</span>(<span class="kw">val</span> x: <span class="ty">Int</span>, <span class="kw">val</span> y: <span class="ty">Int</span>) {
+    <span class="kw">override fun</span> <span class="fn">toString</span>() = <span class="st">"Point(</span><span class="cn">$x</span><span class="st">, </span><span class="cn">$y</span><span class="st">)"</span>              <span class="cm">// used by println(), string templates, etc.</span>
+}
+<span class="fn">println</span>(<span class="ty">Point</span>(<span class="cn">1</span>, <span class="cn">2</span>))     <span class="cm">// "Point(1, 2)" — toString() is called automatically</span>
+
+<span class="cm">// AVOID: '+=' in a loop reallocates a new String every iteration — O(n²) overall</span>
+<span class="kw">var</span> <span class="cn">result</span> = <span class="st">""</span>
+<span class="kw">for</span> (i <span class="kw">in</span> <span class="cn">1</span>..<span class="cn">1000</span>) result += i          <span class="cm">// slow for large n</span>
+
+<span class="cm">// PREFER: a single mutable buffer, or a purpose-built collection function</span>
+<span class="kw">val</span> <span class="cn">fast</span> = buildString { <span class="kw">for</span> (i <span class="kw">in</span> <span class="cn">1</span>..<span class="cn">1000</span>) <span class="fn">append</span>(i) }
+<span class="kw">val</span> <span class="cn">joined</span> = (<span class="cn">1</span>..<span class="cn">1000</span>).<span class="fn">joinToString</span>(separator = <span class="st">","</span>)    <span class="cm">// built-in, no manual loop needed</span></code></pre>
 </div>
 </details>
 </main>

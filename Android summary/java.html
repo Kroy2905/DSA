@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Java — Interview Q&A</title>
+<style>:root{--bg:#06090e;--s1:#0a0f18;--s2:#0e1520;--s3:#131d2a;--b1:#182030;--b2:#1e2c3e;--txt:#cce0ee;--muted:#4e6878;--grn:#10a060;--grnb:#031508;--grnl:#44d890;--blu:#1e60d8;--blub:#040e28;--blul:#6aaeff;--pur:#6848b8;--purb:#0f0828;--purl:#b090ff;--amb:#c09010;--ambb:#201500;--ambl:#f0c040;--red:#b03030;--redb:#1e0808;--redl:#f07070;--cya:#0e8898;--cyab:#041418;--cyal:#40d8e8;--ora:#c06020;--orab:#201008;--oral:#f0a060}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,sans-serif;font-size:13px;line-height:1.6;min-height:100vh}
+nav{background:var(--s1);border-bottom:1px solid var(--b1);position:sticky;top:0;z-index:100;overflow-x:auto}
+.nav-inner{display:flex;align-items:center;padding:0 12px;gap:0;min-width:max-content}
+nav a{color:var(--muted);text-decoration:none;font-size:11px;font-weight:500;padding:12px 9px;border-bottom:2px solid transparent;white-space:nowrap;display:block}
+nav a:hover{color:var(--txt)}
+nav a.active{color:var(--grnl);border-bottom-color:var(--grn)}
+main{max-width:980px;padding:28px 20px 80px;margin:0 auto}
+h1{font-size:20px;font-weight:700;margin-bottom:6px;letter-spacing:-.02em}
+.sub{font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.6}
+h2{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:24px 0 10px;display:flex;align-items:center;gap:8px}
+h2::after{content:'';flex:1;height:1px;background:var(--b2)}
+details{border-radius:9px;border:1px solid var(--b2);background:var(--s1);margin-bottom:7px;overflow:hidden}
+details[open]{border-color:#2e4458}
+summary{padding:12px 15px;cursor:pointer;display:flex;align-items:center;gap:9px;list-style:none;font-weight:500;font-size:13px;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:'\203A';font-size:16px;color:var(--muted);transition:.2s;flex-shrink:0;width:14px;display:inline-block}
+details[open] summary::before{transform:rotate(90deg);color:var(--grnl)}
+.qn{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;flex-shrink:0;font-family:monospace}
+.qt{flex:1}
+.dif{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;border:1px solid;flex-shrink:0;letter-spacing:.06em;text-transform:uppercase}
+.easy{background:var(--grnb);color:var(--grnl);border-color:var(--grn)}
+.med{background:var(--ambb);color:var(--ambl);border-color:var(--amb)}
+.hard{background:var(--redb);color:var(--redl);border-color:var(--red)}
+.goog{background:var(--purb);color:var(--purl);border-color:var(--pur)}
+.ans{padding:0 15px 14px;border-top:1px solid var(--b2)}
+.ans p{font-size:12px;color:var(--muted);line-height:1.7;margin:10px 0 0}
+.ans p strong{color:var(--txt)}
+.ans ul,.ans ol{padding-left:18px;font-size:12px;color:var(--muted);line-height:1.85;margin:8px 0}
+.ans li strong{color:var(--txt)}
+pre{background:#070d14;border:1px solid var(--b2);border-radius:7px;padding:12px 14px;overflow-x:auto;margin:10px 0;font-size:11px;line-height:1.7;color:#a8c8e8}
+code{font-family:'JetBrains Mono','Fira Mono',monospace;font-size:11px}
+.kw{color:#79b8ff}.cn{color:#44d890}.st{color:#f0a060}.cm{color:#4e6878}.fn{color:#40d8e8}.an{color:#f0c040}.ty{color:#b090ff}
+.note{border-radius:7px;border:1px solid;padding:9px 12px;font-size:11px;line-height:1.6;margin:10px 0}
+.ngrn{background:var(--grnb);border-color:var(--grn);color:var(--grnl)}
+.namb{background:var(--ambb);border-color:var(--amb);color:var(--ambl)}
+.nred{background:var(--redb);border-color:var(--red);color:var(--redl)}
+.nblu{background:var(--blub);border-color:var(--blu);color:var(--blul)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0}
+@media(max-width:680px){.g2,.g3{grid-template-columns:1fr}}
+.gc{background:var(--s2);border:1px solid var(--b2);border-radius:7px;padding:12px}
+.gc h4{font-size:11px;font-weight:700;margin-bottom:6px}
+.gc p,.gc li{font-size:11px;color:var(--muted);line-height:1.6}
+.ic{background:var(--s3);border:1px solid var(--b2);border-radius:4px;padding:1px 6px;font-family:monospace;font-size:11px;color:var(--blul)}
+a{color:var(--grnl)}
+</style>
+</head>
+<body>
+<nav><div class="nav-inner"><a href="roadmap.html">🗺 Roadmap</a><a href="android_core.html">📱 Android Core</a><a href="android_advanced.html">🔥 Advanced</a><a href="architecture.html">🏛 Architecture</a><a href="kotlin.html">🎯 Kotlin</a><a href="java.html" class="active">☕ Java</a><a href="coroutines_flow.html">⚡ Coroutines</a><a href="compose.html">🎨 Compose</a><a href="dependency_injection.html">💉 DI</a><a href="networking_storage.html">🌐 Net &amp; Storage</a><a href="testing.html">🧪 Testing</a><a href="system_design.html">🏗 System Design</a><a href="dsa_google.html">🧩 DSA</a></div></nav>
+<main>
+<h1>☕ Java — Interview Questions</h1>
+<p class="sub">Core Java, OOP, Collections, Concurrency, JVM internals — the Java foundations every Android interview still tests, even in a Kotlin-first codebase.</p>
+
+<h2>OOP Fundamentals</h2>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q1</span><span class="qt">Explain the four pillars of OOP — encapsulation, inheritance, polymorphism, abstraction</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<p><strong>Encapsulation</strong> hides internal state behind methods so invariants can't be violated from outside. <strong>Inheritance</strong> lets a class reuse and extend another's fields/behavior. <strong>Abstraction</strong> exposes "what" an object does while hiding "how". <strong>Polymorphism</strong> lets the same call site behave differently depending on the actual runtime type.</p>
+<pre><code><span class="cm">// Encapsulation: hide internal state behind methods</span>
+<span class="kw">public class</span> <span class="ty">BankAccount</span> {
+    <span class="kw">private double</span> balance; <span class="cm">// private = encapsulated</span>
+
+    <span class="kw">public void</span> <span class="fn">deposit</span>(<span class="kw">double</span> amount) {
+        <span class="kw">if</span> (amount &gt; <span class="cn">0</span>) balance += amount; <span class="cm">// controlled access</span>
+    }
+
+    <span class="kw">public double</span> <span class="fn">getBalance</span>() { <span class="kw">return</span> balance; }
+}
+
+<span class="cm">// Inheritance: SavingsAccount reuses BankAccount's state/behavior</span>
+<span class="kw">public class</span> <span class="ty">SavingsAccount</span> <span class="kw">extends</span> <span class="ty">BankAccount</span> {
+    <span class="kw">private double</span> interestRate;
+
+    <span class="kw">public void</span> <span class="fn">applyInterest</span>() {
+        <span class="fn">deposit</span>(<span class="fn">getBalance</span>() * interestRate); <span class="cm">// reuse via superclass</span>
+    }
+}
+
+<span class="cm">// Abstraction: expose "what", hide "how" via an abstract class</span>
+<span class="kw">public abstract class</span> <span class="ty">Shape</span> {
+    <span class="kw">abstract double</span> <span class="fn">area</span>(); <span class="cm">// no implementation here</span>
+}
+
+<span class="cm">// Polymorphism: same call, different behavior at runtime</span>
+<span class="kw">public class</span> <span class="ty">Circle</span> <span class="kw">extends</span> <span class="ty">Shape</span> {
+    <span class="kw">double</span> radius = <span class="cn">2.0</span>;
+    <span class="an">@Override</span>
+    <span class="kw">double</span> <span class="fn">area</span>() { <span class="kw">return</span> <span class="ty">Math</span>.PI * radius * radius; }
+}
+
+<span class="ty">Shape</span> s = <span class="kw">new</span> <span class="ty">Circle</span>(); <span class="cm">// reference type Shape, object type Circle</span>
+s.<span class="fn">area</span>(); <span class="cm">// JVM dispatches to Circle.area() at runtime</span></code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q2</span><span class="qt">Interface vs abstract class — and what changed with Java 8+ default/static methods</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="kw">interface</span> <span class="ty">Vehicle</span> {
+    <span class="kw">void</span> <span class="fn">start</span>(); <span class="cm">// implicitly public abstract</span>
+
+    <span class="kw">default void</span> <span class="fn">honk</span>() { <span class="cm">// Java 8+: default method, HAS a body</span>
+        <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Beep!"</span>);
+    }
+
+    <span class="kw">static</span> <span class="ty">Vehicle</span> <span class="fn">create</span>() { <span class="cm">// Java 8+: static factory method</span>
+        <span class="kw">return new</span> <span class="ty">Car</span>();
+    }
+}
+
+<span class="kw">abstract class</span> <span class="ty">AbstractVehicle</span> <span class="kw">implements</span> <span class="ty">Vehicle</span> {
+    <span class="kw">protected int</span> speed; <span class="cm">// abstract classes CAN hold instance state</span>
+
+    <span class="kw">abstract void</span> <span class="fn">accelerate</span>(); <span class="cm">// still abstract</span>
+
+    <span class="kw">void</span> <span class="fn">brake</span>() { speed = <span class="cn">0</span>; } <span class="cm">// concrete method with logic</span>
+}</code></pre>
+<ul>
+<li><strong>Multiple inheritance:</strong> a class can <span class="ic">implements</span> many interfaces but <span class="ic">extends</span> only one class.</li>
+<li><strong>State:</strong> interfaces can only hold <span class="ic">public static final</span> constants; abstract classes can hold real mutable fields.</li>
+<li><strong>Constructors:</strong> abstract classes can have constructors (run via <span class="ic">super()</span>); interfaces cannot.</li>
+<li><strong>Default methods</strong> let library authors add new methods to an interface without breaking every existing implementer.</li>
+</ul>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q3</span><span class="qt">Method overloading vs overriding — compile-time vs runtime polymorphism</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<pre><code><span class="kw">class</span> <span class="ty">Calculator</span> {
+    <span class="cm">// Overloading: same name, different parameter list — resolved at COMPILE time</span>
+    <span class="kw">int</span> <span class="fn">add</span>(<span class="kw">int</span> a, <span class="kw">int</span> b) { <span class="kw">return</span> a + b; }
+    <span class="kw">double</span> <span class="fn">add</span>(<span class="kw">double</span> a, <span class="kw">double</span> b) { <span class="kw">return</span> a + b; }
+    <span class="kw">int</span> <span class="fn">add</span>(<span class="kw">int</span> a, <span class="kw">int</span> b, <span class="kw">int</span> c) { <span class="kw">return</span> a + b + c; }
+}
+
+<span class="kw">class</span> <span class="ty">Animal</span> {
+    <span class="kw">void</span> <span class="fn">sound</span>() { <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Some sound"</span>); }
+}
+
+<span class="kw">class</span> <span class="ty">Dog</span> <span class="kw">extends</span> <span class="ty">Animal</span> {
+    <span class="an">@Override</span>
+    <span class="kw">void</span> <span class="fn">sound</span>() { <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"Bark"</span>); } <span class="cm">// Overriding: resolved at RUNTIME</span>
+}
+
+<span class="ty">Animal</span> a = <span class="kw">new</span> <span class="ty">Dog</span>();
+a.<span class="fn">sound</span>(); <span class="cm">// prints "Bark" — dynamic dispatch via the method table (vtable)</span></code></pre>
+<p>Overload resolution is decided purely from the <em>declared</em> argument types at compile time; overriding is decided from the object's <em>actual</em> runtime type via dynamic (virtual) dispatch. Overriding also requires the same signature and a covariant (or same) return type, and can't reduce visibility or add new checked exceptions.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--blub);color:var(--blul)">Q4</span><span class="qt">Constructors and constructor chaining with this() and super()</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<pre><code><span class="kw">class</span> <span class="ty">Person</span> {
+    <span class="ty">String</span> name;
+    <span class="kw">int</span> age;
+
+    <span class="ty">Person</span>() {
+        <span class="kw">this</span>(<span class="st">"Unknown"</span>, <span class="cn">0</span>); <span class="cm">// must be the FIRST statement — delegates to another ctor</span>
+    }
+
+    <span class="ty">Person</span>(<span class="ty">String</span> name, <span class="kw">int</span> age) {
+        <span class="kw">this</span>.name = name;
+        <span class="kw">this</span>.age = age;
+    }
+}
+
+<span class="kw">class</span> <span class="ty">Employee</span> <span class="kw">extends</span> <span class="ty">Person</span> {
+    <span class="kw">double</span> salary;
+
+    <span class="ty">Employee</span>(<span class="ty">String</span> name, <span class="kw">int</span> age, <span class="kw">double</span> salary) {
+        <span class="kw">super</span>(name, age); <span class="cm">// must be the FIRST statement — calls the parent ctor</span>
+        <span class="kw">this</span>.salary = salary;
+    }
+    <span class="cm">// If you don't call super() explicitly, the compiler inserts a no-arg super() call</span>
+    <span class="cm">// this() vs super(): 'this' reaches another constructor in the SAME class;</span>
+    <span class="cm">// 'super' reaches the immediate PARENT class — a constructor can call only one of them</span>
+}</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">Q5</span><span class="qt">Static vs instance members — memory, access, and initialization order</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<pre><code><span class="kw">class</span> <span class="ty">Counter</span> {
+    <span class="kw">static int</span> totalCount = <span class="cn">0</span>;   <span class="cm">// ONE copy shared by all instances, lives in the Metaspace</span>
+    <span class="kw">int</span> instanceId;               <span class="cm">// a separate copy per object, lives on the heap with it</span>
+
+    <span class="kw">static</span> {
+        <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"static block — runs ONCE, at class-load time"</span>);
+    }
+
+    {
+        <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"instance block — runs EVERY time, before the constructor body"</span>);
+    }
+
+    <span class="ty">Counter</span>() {
+        totalCount++;             <span class="cm">// shared state — visible to every instance</span>
+        instanceId = totalCount;  <span class="cm">// per-object state</span>
+    }
+
+    <span class="kw">static void</span> <span class="fn">printTotal</span>() { <span class="cm">// static method: no 'this', can't touch instance members directly</span>
+        <span class="ty">System</span>.out.<span class="fn">println</span>(totalCount);
+    }
+}</code></pre>
+<p><strong>Initialization order:</strong> static fields/blocks run once, in declaration order, the first time the class is loaded — before any instance exists. Instance fields/blocks run every time an object is constructed, in declaration order, immediately before the constructor body executes.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--cyab);color:var(--cyal)">Q6</span><span class="qt">The final keyword — final variable, method, and class</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<pre><code><span class="kw">final class</span> <span class="ty">ImmutablePoint</span> {       <span class="cm">// final class: cannot be subclassed at all</span>
+    <span class="kw">final int</span> x, y;                <span class="cm">// final field: must be assigned exactly once</span>
+
+    <span class="ty">ImmutablePoint</span>(<span class="kw">int</span> x, <span class="kw">int</span> y) {
+        <span class="kw">this</span>.x = x;
+        <span class="kw">this</span>.y = y;
+    }
+
+    <span class="kw">final int</span> <span class="fn">getX</span>() { <span class="kw">return</span> x; } <span class="cm">// final method: cannot be overridden by subclasses</span>
+}
+
+<span class="kw">final</span> <span class="ty">List</span>&lt;<span class="ty">String</span>&gt; names = <span class="kw">new</span> <span class="ty">ArrayList</span>&lt;&gt;(); <span class="cm">// the REFERENCE is final, not the contents</span>
+names.<span class="fn">add</span>(<span class="st">"Alice"</span>); <span class="cm">// legal — mutating the object, not reassigning the variable</span>
+<span class="cm">// names = new ArrayList&lt;&gt;(); // ERROR: cannot reassign a final variable</span></code></pre>
+<div class="note nblu">A <span class="ic">final</span> reference only freezes what the variable <em>points to</em> — the referenced object can still be fully mutable. Don't confuse "final" with "immutable"; true immutability requires the class itself to never expose mutating methods (see records, Q49).</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--orab);color:var(--oral)">Q7</span><span class="qt">Access modifiers (public/protected/default/private) and package visibility</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<ul>
+<li><strong>private:</strong> visible only within the declaring class (including inner classes of it).</li>
+<li><strong>default (package-private):</strong> no modifier written — visible only within the same package.</li>
+<li><strong>protected:</strong> visible within the same package, plus subclasses in <em>other</em> packages (accessible only through inheritance, not via an arbitrary instance).</li>
+<li><strong>public:</strong> visible from anywhere.</li>
+</ul>
+<pre><code><span class="kw">package</span> com.example.model;
+
+<span class="kw">public class</span> <span class="ty">User</span> {
+    <span class="kw">private</span> <span class="ty">String</span> ssn;         <span class="cm">// only User itself</span>
+    <span class="ty">String</span> nickname;                <span class="cm">// package-private: only com.example.model</span>
+    <span class="kw">protected</span> <span class="ty">String</span> email;    <span class="cm">// package + subclasses elsewhere</span>
+    <span class="kw">public</span> <span class="ty">String</span> username;     <span class="cm">// everyone</span>
+}</code></pre>
+</div>
+</details>
+
+<h2>Object Class &amp; Core Semantics</h2>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q8</span><span class="qt">What is the difference between == and .equals()?</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<pre><code><span class="ty">String</span> a = <span class="kw">new</span> <span class="ty">String</span>(<span class="st">"hello"</span>);
+<span class="ty">String</span> b = <span class="kw">new</span> <span class="ty">String</span>(<span class="st">"hello"</span>);
+a == b;        <span class="cm">// false — different objects on the heap</span>
+a.<span class="fn">equals</span>(b);   <span class="cm">// true — String overrides equals() to compare content</span>
+
+<span class="ty">Integer</span> x = <span class="cn">1000</span>, y = <span class="cn">1000</span>;
+x == y;        <span class="cm">// false — outside the Integer cache range, two distinct boxed objects</span>
+x.<span class="fn">equals</span>(y);   <span class="cm">// true</span>
+
+<span class="kw">int</span> p = <span class="cn">5</span>, q = <span class="cn">5</span>;
+p == q;        <span class="cm">// true — primitives always compare by VALUE, no boxing involved</span></code></pre>
+<p><span class="ic">==</span> on reference types always compares <strong>object identity</strong> (same memory address); it never calls any method. <span class="ic">.equals()</span> is a regular method that a class can override to compare <strong>logical/structural</strong> content — <span class="ic">Object</span>'s default implementation just falls back to <span class="ic">==</span>.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q9</span><span class="qt">The equals()/hashCode() contract — why breaking it corrupts HashMap/HashSet</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>The contract: if <span class="ic">a.equals(b)</span> is true, then <span class="ic">a.hashCode() == b.hashCode()</span> <strong>must</strong> also be true. The reverse isn't required — unequal objects are allowed to share a hash code (a collision), it's just slower to resolve.</p>
+<pre><code><span class="kw">class</span> <span class="ty">BadKey</span> {
+    <span class="kw">int</span> id;
+    <span class="ty">BadKey</span>(<span class="kw">int</span> id) { <span class="kw">this</span>.id = id; }
+
+    <span class="an">@Override</span>
+    <span class="kw">public boolean</span> <span class="fn">equals</span>(<span class="ty">Object</span> o) {
+        <span class="kw">if</span> (!(o <span class="kw">instanceof</span> <span class="ty">BadKey</span>)) <span class="kw">return false</span>;
+        <span class="kw">return</span> ((<span class="ty">BadKey</span>) o).id == id;
+    }
+    <span class="cm">// hashCode() NOT overridden — still uses Object's identity-based hash!</span>
+}
+
+<span class="ty">Map</span>&lt;<span class="ty">BadKey</span>, <span class="ty">String</span>&gt; map = <span class="kw">new</span> <span class="ty">HashMap</span>&lt;&gt;();
+map.<span class="fn">put</span>(<span class="kw">new</span> <span class="ty">BadKey</span>(<span class="cn">1</span>), <span class="st">"value"</span>);
+map.<span class="fn">get</span>(<span class="kw">new</span> <span class="ty">BadKey</span>(<span class="cn">1</span>)); <span class="cm">// returns null! Different hashCode -&gt; lands in a different bucket</span>
+
+<span class="kw">class</span> <span class="ty">GoodKey</span> {
+    <span class="kw">int</span> id;
+    <span class="ty">GoodKey</span>(<span class="kw">int</span> id) { <span class="kw">this</span>.id = id; }
+
+    <span class="an">@Override</span>
+    <span class="kw">public boolean</span> <span class="fn">equals</span>(<span class="ty">Object</span> o) {
+        <span class="kw">if</span> (<span class="kw">this</span> == o) <span class="kw">return true</span>;
+        <span class="kw">if</span> (!(o <span class="kw">instanceof</span> <span class="ty">GoodKey</span>)) <span class="kw">return false</span>;
+        <span class="kw">return</span> ((<span class="ty">GoodKey</span>) o).id == id;
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public int</span> <span class="fn">hashCode</span>() {
+        <span class="kw">return</span> <span class="ty">Objects</span>.<span class="fn">hash</span>(id); <span class="cm">// consistent with equals()</span>
+    }
+}</code></pre>
+<div class="note nred"><strong>Silent corruption, not a crash:</strong> breaking the contract doesn't throw anything. The object simply lands in the wrong bucket, so <span class="ic">get()</span>/<span class="ic">contains()</span> quietly return wrong results — one of the nastiest classes of bug to track down.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q10</span><span class="qt">toString() and clone() — shallow vs deep copy</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<pre><code><span class="kw">class</span> <span class="ty">Point</span> {
+    <span class="kw">int</span> x, y;
+    <span class="ty">Point</span>(<span class="kw">int</span> x, <span class="kw">int</span> y) { <span class="kw">this</span>.x = x; <span class="kw">this</span>.y = y; }
+
+    <span class="an">@Override</span>
+    <span class="kw">public</span> <span class="ty">String</span> <span class="fn">toString</span>() { <span class="kw">return</span> <span class="st">"Point("</span> + x + <span class="st">", "</span> + y + <span class="st">")"</span>; } <span class="cm">// used by println, +, debuggers</span>
+}
+
+<span class="kw">class</span> <span class="ty">Container</span> <span class="kw">implements</span> <span class="ty">Cloneable</span> {
+    <span class="kw">int</span>[] data;
+
+    <span class="an">@Override</span>
+    <span class="kw">protected</span> <span class="ty">Object</span> <span class="fn">clone</span>() <span class="kw">throws</span> <span class="ty">CloneNotSupportedException</span> {
+        <span class="ty">Container</span> copy = (<span class="ty">Container</span>) <span class="kw">super</span>.<span class="fn">clone</span>(); <span class="cm">// shallow copy: copies field references as-is</span>
+        copy.data = data.<span class="fn">clone</span>();                    <span class="cm">// manual deep copy of the mutable array field</span>
+        <span class="kw">return</span> copy;
+    }
+}</code></pre>
+<p>A default (shallow) <span class="ic">clone()</span> copies each field's bit pattern — primitives are duplicated, but reference fields still point at the <em>same</em> nested objects as the original. A deep copy requires manually cloning every mutable nested object too. In practice, most modern codebases avoid <span class="ic">Cloneable</span> entirely — it's a checked-exception-throwing, oddly-typed, constructor-skipping API — and prefer a copy constructor, a static factory, or a Builder instead.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--blub);color:var(--blul)">Q11</span><span class="qt">String immutability and the String pool — what does intern() do?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="ty">String</span> a = <span class="st">"hello"</span>;              <span class="cm">// literal — placed in the String pool</span>
+<span class="ty">String</span> b = <span class="st">"hello"</span>;              <span class="cm">// reuses the SAME pooled object</span>
+<span class="ty">String</span> c = <span class="kw">new</span> <span class="ty">String</span>(<span class="st">"hello"</span>);  <span class="cm">// forces a NEW object on the heap, outside the pool</span>
+<span class="ty">String</span> d = c.<span class="fn">intern</span>();           <span class="cm">// returns the pooled reference for this content</span>
+
+a == b;        <span class="cm">// true — same pooled reference</span>
+a == c;        <span class="cm">// false — c is a distinct heap object</span>
+a == d;        <span class="cm">// true — intern() looked it up in (or added it to) the pool</span></code></pre>
+<p><strong>Why String is immutable:</strong></p>
+<ul>
+<li><strong>Pool safety:</strong> many references can safely share one pooled instance only because nobody can mutate it out from under the others.</li>
+<li><strong>Security:</strong> class names, file paths, and network hosts are often passed as <span class="ic">String</span>; immutability prevents them from changing after being validated.</li>
+<li><strong>Hash caching:</strong> <span class="ic">String.hashCode()</span> is computed once and cached, since the value can never change — makes it a very cheap HashMap key.</li>
+<li><strong>Thread safety:</strong> an immutable object can be freely shared across threads with no synchronization.</li>
+</ul>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">Q12</span><span class="qt">String vs StringBuilder vs StringBuffer</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<pre><code><span class="ty">String</span> s = <span class="st">"a"</span>;
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="cn">0</span>; i &lt; <span class="cn">5</span>; i++) {
+    s += i; <span class="cm">// creates a NEW String object every iteration — O(n^2) for n concatenations</span>
+}
+
+<span class="ty">StringBuilder</span> sb = <span class="kw">new</span> <span class="ty">StringBuilder</span>();
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="cn">0</span>; i &lt; <span class="cn">5</span>; i++) {
+    sb.<span class="fn">append</span>(i); <span class="cm">// mutates an internal char[] buffer — O(n) amortized, NOT thread-safe</span>
+}
+
+<span class="ty">StringBuffer</span> sbuf = <span class="kw">new</span> <span class="ty">StringBuffer</span>(); <span class="cm">// same API as StringBuilder</span>
+sbuf.<span class="fn">append</span>(<span class="st">"x"</span>);                        <span class="cm">// but every method is synchronized — thread-safe, slower</span></code></pre>
+<p>Use <span class="ic">String</span> for fixed/rarely-changed text, <span class="ic">StringBuilder</span> for single-threaded mutation (loops, building output), and <span class="ic">StringBuffer</span> only when the same builder is genuinely shared across threads — which is rare enough that most code should just use <span class="ic">StringBuilder</span>.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--cyab);color:var(--cyal)">Q13</span><span class="qt">Autoboxing/unboxing pitfalls, Integer caching, and instanceof pattern matching</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="ty">Integer</span> a = <span class="cn">100</span>, b = <span class="cn">100</span>;
+a == b;          <span class="cm">// true — both fall inside the cached range [-128, 127]</span>
+
+<span class="ty">Integer</span> c = <span class="cn">200</span>, d = <span class="cn">200</span>;
+c == d;          <span class="cm">// false — outside the cache, two distinct Integer objects</span>
+
+<span class="ty">Integer</span> maybeNull = <span class="kw">null</span>;
+<span class="kw">int</span> crash = maybeNull; <span class="cm">// NullPointerException — auto-unboxing null throws NPE</span>
+
+<span class="kw">int</span> total = <span class="cn">0</span>;
+<span class="kw">for</span> (<span class="ty">Integer</span> n : <span class="ty">List</span>.<span class="fn">of</span>(<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">3</span>)) total += n; <span class="cm">// unboxing happens on every '+='</span>
+
+<span class="cm">// instanceof pattern matching (Java 16+): binds the cast variable directly</span>
+<span class="ty">Object</span> obj = <span class="st">"hello"</span>;
+<span class="kw">if</span> (obj <span class="kw">instanceof</span> <span class="ty">String</span> str) {       <span class="cm">// no separate cast statement needed</span>
+    <span class="ty">System</span>.out.<span class="fn">println</span>(str.<span class="fn">length</span>()); <span class="cm">// 'str' is already a String here</span>
+}</code></pre>
+<div class="note namb"><strong>Why the cache exists:</strong> the JVM pre-creates and reuses <span class="ic">Integer</span> objects for -128..127 (the range most programs use most often) purely as a memory optimization. Relying on <span class="ic">==</span> for boxed types is a bug waiting to surface the moment a value exceeds 127 — always use <span class="ic">.equals()</span> for boxed-type comparison.</div>
+</div>
+</details>
+
+<h2>Exception Handling</h2>
+
+<details><summary><span class="qn" style="background:var(--orab);color:var(--oral)">Q14</span><span class="qt">Checked vs unchecked exceptions and the exception hierarchy</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<pre><code>Throwable
+├── Error                     <span class="cm">// OutOfMemoryError, StackOverflowError — not meant to be caught/recovered from</span>
+└── Exception
+    ├── IOException, SQLException, ...     <span class="cm">// CHECKED — compiler forces you to catch or declare (throws)</span>
+    └── RuntimeException                    <span class="cm">// UNCHECKED — compiler does NOT enforce handling</span>
+        ├── NullPointerException
+        ├── IllegalArgumentException
+        └── IndexOutOfBoundsException</code></pre>
+<pre><code><span class="cm">// Checked: compiler forces you to handle or declare it</span>
+<span class="kw">void</span> <span class="fn">readFile</span>(<span class="ty">String</span> path) <span class="kw">throws</span> <span class="ty">IOException</span> {
+    <span class="ty">FileReader</span> fr = <span class="kw">new</span> <span class="ty">FileReader</span>(path); <span class="cm">// IOException is checked</span>
+}
+
+<span class="cm">// Unchecked: usually signals a programming bug, not a recoverable external condition</span>
+<span class="kw">void</span> <span class="fn">divide</span>(<span class="kw">int</span> a, <span class="kw">int</span> b) {
+    <span class="kw">int</span> result = a / b; <span class="cm">// ArithmeticException is unchecked</span>
+}</code></pre>
+<p>Checked exceptions represent conditions a well-written caller could reasonably recover from (a missing file, a network timeout). Unchecked exceptions typically represent bugs (a null you shouldn't have passed, an index that was never valid) — forcing every caller to declare or catch them would just add boilerplate without real safety.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q15</span><span class="qt">try-catch-finally execution order — what happens when finally meets return?</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="kw">static int</span> <span class="fn">test</span>() {
+    <span class="kw">try</span> {
+        <span class="kw">return</span> <span class="cn">1</span>;
+    } <span class="kw">finally</span> {
+        <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"finally runs even though try already returned"</span>);
+        <span class="cm">// return 2; // if uncommented, this SWALLOWS the try's return value — finally wins!</span>
+    }
+}
+<span class="cm">// test() returns 1</span>
+
+<span class="kw">static int</span> <span class="fn">trap</span>() {
+    <span class="kw">int</span> x = <span class="cn">10</span>;
+    <span class="kw">try</span> {
+        <span class="kw">return</span> x;      <span class="cm">// the value of x (10) is copied/saved BEFORE finally runs</span>
+    } <span class="kw">finally</span> {
+        x = <span class="cn">20</span>;        <span class="cm">// too late — the returned value was already captured</span>
+    }
+}
+<span class="cm">// trap() returns 10, NOT 20</span></code></pre>
+<div class="note namb"><span class="ic">finally</span> always runs — even after a <span class="ic">return</span>, <span class="ic">break</span>, <span class="ic">continue</span>, or an uncaught exception in <span class="ic">try</span>/<span class="ic">catch</span> — except if the JVM itself exits (<span class="ic">System.exit()</span>) or crashes. But a <span class="ic">return</span> or <span class="ic">throw</span> written directly inside <span class="ic">finally</span> silently discards whatever the <span class="ic">try</span>/<span class="ic">catch</span> was about to return or throw. Treat that as a bug pattern to avoid, not a feature.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q16</span><span class="qt">try-with-resources and AutoCloseable</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="kw">class</span> <span class="ty">DbConnection</span> <span class="kw">implements</span> <span class="ty">AutoCloseable</span> {
+    <span class="ty">DbConnection</span>() { <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"opened"</span>); }
+
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">close</span>() { <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"closed"</span>); } <span class="cm">// called automatically, even on exception</span>
+}
+
+<span class="kw">try</span> (<span class="ty">DbConnection</span> conn = <span class="kw">new</span> <span class="ty">DbConnection</span>();
+     <span class="ty">DbConnection</span> conn2 = <span class="kw">new</span> <span class="ty">DbConnection</span>()) { <span class="cm">// multiple resources: closed in REVERSE order</span>
+    <span class="cm">// use conn, conn2</span>
+} <span class="cm">// conn2.close() runs, then conn.close() — no explicit finally block needed</span></code></pre>
+<p>Any class implementing <span class="ic">AutoCloseable</span> (or the older, IO-specific <span class="ic">Closeable</span>) can be declared inside the parentheses of a <span class="ic">try</span>. The compiler guarantees <span class="ic">close()</span> runs, in reverse declaration order, no matter how the block exits. If the body throws <em>and</em> <span class="ic">close()</span> also throws, the close-time exception is attached to the original as a <strong>suppressed exception</strong> (retrievable via <span class="ic">getSuppressed()</span>) instead of masking it.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q17</span><span class="qt">Custom exceptions, exception chaining, and why finalize() is deprecated</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="kw">class</span> <span class="ty">InsufficientFundsException</span> <span class="kw">extends</span> <span class="ty">Exception</span> { <span class="cm">// a checked, domain-specific exception</span>
+    <span class="kw">public</span> <span class="ty">InsufficientFundsException</span>(<span class="ty">String</span> message, <span class="ty">Throwable</span> cause) {
+        <span class="kw">super</span>(message, cause); <span class="cm">// chaining: preserves the original low-level cause</span>
+    }
+}
+
+<span class="kw">try</span> {
+    <span class="fn">transfer</span>();
+} <span class="kw">catch</span> (<span class="ty">SQLException</span> e) {
+    <span class="kw">throw new</span> <span class="ty">InsufficientFundsException</span>(<span class="st">"Transfer failed"</span>, e); <span class="cm">// wrap, don't swallow</span>
+}
+<span class="cm">// e.getCause() on the new exception still returns the original SQLException + its stack trace</span></code></pre>
+<p><strong>finally vs finalize() vs try-with-resources:</strong> <span class="ic">finally</span> is a deterministic block that always runs right after <span class="ic">try</span>/<span class="ic">catch</span>. <span class="ic">finalize()</span> was <span class="ic">Object</span>'s hook for the garbage collector to run cleanup before reclaiming an object — but it's <strong>deprecated since Java 9 and removed in Java 18</strong>, because it runs on an unpredictable GC thread at an unpredictable time (or may never run at all), can resurrect "dead" objects, and can hang the collector. <span class="ic">try-with-resources</span> (Q16) is the deterministic, immediate replacement for cleanup logic that used to live in <span class="ic">finalize()</span>.</p>
+</div>
+</details>
+
+<h2>Collections Framework</h2>
+
+<details><summary><span class="qn" style="background:var(--blub);color:var(--blul)">Q18</span><span class="qt">ArrayList vs LinkedList — internals and when to use which</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<p>Quick hierarchy refresher: <span class="ic">Collection</span> branches into <span class="ic">List</span> (ArrayList, LinkedList, Vector), <span class="ic">Set</span> (HashSet, LinkedHashSet, TreeSet), and <span class="ic">Queue</span>/<span class="ic">Deque</span> (LinkedList, ArrayDeque, PriorityQueue). <span class="ic">Map</span> is a <strong>separate</strong> hierarchy — it does not extend <span class="ic">Collection</span> at all, since it stores key-value pairs, not single elements.</p>
+<pre><code><span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt; arrayList = <span class="kw">new</span> <span class="ty">ArrayList</span>&lt;&gt;(); <span class="cm">// backed by a resizable Object[] array</span>
+arrayList.<span class="fn">get</span>(<span class="cn">500</span>);      <span class="cm">// O(1) — direct index access</span>
+arrayList.<span class="fn">add</span>(x);        <span class="cm">// O(1) amortized; occasionally O(n) when the array must grow &amp; copy</span>
+arrayList.<span class="fn">add</span>(<span class="cn">0</span>, x);     <span class="cm">// O(n) — shifts every following element right</span>
+
+<span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt; linkedList = <span class="kw">new</span> <span class="ty">LinkedList</span>&lt;&gt;(); <span class="cm">// backed by a doubly-linked list of nodes</span>
+linkedList.<span class="fn">get</span>(<span class="cn">500</span>);           <span class="cm">// O(n) — must walk from head or tail</span>
+linkedList.<span class="fn">addFirst</span>(x);        <span class="cm">// O(1) — just relinks a couple of pointers</span>
+linkedList.<span class="fn">addLast</span>(x);         <span class="cm">// O(1)</span></code></pre>
+<p>Use <span class="ic">ArrayList</span> by default — it has better cache locality and is faster for nearly all real workloads, including most "insert in the middle" cases at typical sizes. Reach for <span class="ic">LinkedList</span> only when you need O(1) insertion/removal at both ends with no random access (e.g. implementing a <span class="ic">Deque</span>), and even then <span class="ic">ArrayDeque</span> usually wins.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">Q19</span><span class="qt">HashMap internals — buckets, hashing, resize, and Java 8+ treeification</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// Simplified internal structure</span>
+<span class="kw">class</span> <span class="ty">HashMap</span>&lt;K,V&gt; {
+    <span class="ty">Node</span>&lt;K,V&gt;[] table; <span class="cm">// array of buckets, default capacity 16</span>
+
+    <span class="kw">static class</span> <span class="ty">Node</span>&lt;K,V&gt; {
+        <span class="kw">final int</span> hash;
+        <span class="kw">final</span> K key;
+        V value;
+        <span class="ty">Node</span>&lt;K,V&gt; next; <span class="cm">// linked list for collisions within one bucket</span>
+    }
+}
+
+<span class="cm">// put(key, value):</span>
+<span class="cm">// 1. hash = key.hashCode() ^ (hash &gt;&gt;&gt; 16)     -- spreads high bits into low bits</span>
+<span class="cm">// 2. bucketIndex = hash &amp; (table.length - 1)    -- fast modulo since capacity is a power of 2</span>
+<span class="cm">// 3. bucket empty -&gt; insert a new Node</span>
+<span class="cm">// 4. collision -&gt; walk the bucket's list/tree, replace value if a key.equals() match is found,</span>
+<span class="cm">//    otherwise append</span></code></pre>
+<ul>
+<li><strong>Load factor (default 0.75):</strong> once <span class="ic">size &gt; capacity * loadFactor</span>, the table <strong>resizes</strong> — capacity doubles and every entry is rehashed into the new table.</li>
+<li><strong>Treeification (Java 8+):</strong> if a single bucket's linked list grows to <strong>8</strong> nodes <em>and</em> the table capacity is at least <strong>64</strong>, that bucket converts to a red-black tree — worst-case lookup becomes O(log n) instead of O(n). It untreeifies back to a list if the bucket shrinks to 6 nodes.</li>
+</ul>
+<div class="note nblu"><strong>Complexity summary:</strong> average-case <span class="ic">get</span>/<span class="ic">put</span> is O(1). Worst case (many collisions) is O(n) pre-Java-8 and O(log n) from Java 8 onward, thanks to treeification.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q20</span><span class="qt">HashMap vs Hashtable vs ConcurrentHashMap vs LinkedHashMap vs TreeMap</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<ul>
+<li><strong>HashMap:</strong> not synchronized, allows one <span class="ic">null</span> key and multiple <span class="ic">null</span> values, no ordering guarantee, best general-purpose performance.</li>
+<li><strong>Hashtable:</strong> legacy (JDK 1.0), synchronizes every method with one coarse lock, disallows <span class="ic">null</span> keys/values — effectively obsolete, kept only for backward compatibility.</li>
+<li><strong>ConcurrentHashMap:</strong> thread-safe via fine-grained locking / CAS on individual bins (not one global lock), disallows <span class="ic">null</span> keys/values, iterators are <strong>weakly consistent</strong> (never throw <span class="ic">ConcurrentModificationException</span>), far better concurrent throughput than <span class="ic">Hashtable</span>.</li>
+<li><strong>LinkedHashMap:</strong> a <span class="ic">HashMap</span> plus a doubly-linked list threading through the entries to preserve insertion order (or access order) — the standard base for building an LRU cache.</li>
+<li><strong>TreeMap:</strong> a red-black tree keeping keys in sorted order (natural ordering or a supplied <span class="ic">Comparator</span>), O(log n) operations, implements <span class="ic">NavigableMap</span> (<span class="ic">floorKey</span>, <span class="ic">ceilingKey</span>, <span class="ic">firstKey</span>, ...).</li>
+</ul>
+<pre><code><span class="cm">// LinkedHashMap as an LRU cache</span>
+<span class="kw">class</span> <span class="ty">LruCache</span>&lt;K,V&gt; <span class="kw">extends</span> <span class="ty">LinkedHashMap</span>&lt;K,V&gt; {
+    <span class="kw">private final int</span> maxSize;
+
+    <span class="ty">LruCache</span>(<span class="kw">int</span> maxSize) {
+        <span class="kw">super</span>(<span class="cn">16</span>, <span class="cn">0.75f</span>, <span class="kw">true</span>); <span class="cm">// accessOrder = true -&gt; re-orders on get(), not just put()</span>
+        <span class="kw">this</span>.maxSize = maxSize;
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">protected boolean</span> <span class="fn">removeEldestEntry</span>(<span class="ty">Map</span>.Entry&lt;K,V&gt; eldest) {
+        <span class="kw">return</span> <span class="fn">size</span>() &gt; maxSize; <span class="cm">// evict the least-recently-used entry automatically</span>
+    }
+}</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q21</span><span class="qt">Fail-fast vs fail-safe iterators, and Iterator vs ListIterator</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt; list = <span class="kw">new</span> <span class="ty">ArrayList</span>&lt;&gt;(<span class="ty">List</span>.<span class="fn">of</span>(<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">3</span>));
+<span class="kw">for</span> (<span class="ty">Integer</span> n : list) {
+    <span class="kw">if</span> (n == <span class="cn">2</span>) list.<span class="fn">remove</span>(n); <span class="cm">// ConcurrentModificationException — fail-fast!</span>
+}
+<span class="cm">// ArrayList's iterator tracks a modCount; a structural change made OUTSIDE the</span>
+<span class="cm">// iterator itself causes the next next()/hasNext() call to throw</span>
+
+<span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">String</span>&gt; map = <span class="kw">new</span> <span class="ty">ConcurrentHashMap</span>&lt;&gt;();
+<span class="kw">for</span> (<span class="ty">String</span> key : map.<span class="fn">keySet</span>()) {
+    map.<span class="fn">put</span>(<span class="st">"newKey"</span>, <span class="st">"value"</span>); <span class="cm">// NO exception — fail-safe, iterates a weakly-consistent view</span>
+}
+
+<span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt; nums = <span class="kw">new</span> <span class="ty">ArrayList</span>&lt;&gt;(<span class="ty">List</span>.<span class="fn">of</span>(<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">3</span>));
+<span class="ty">ListIterator</span>&lt;<span class="ty">Integer</span>&gt; it = nums.<span class="fn">listIterator</span>();
+<span class="kw">while</span> (it.<span class="fn">hasNext</span>()) {
+    <span class="kw">int</span> val = it.<span class="fn">next</span>();
+    it.<span class="fn">set</span>(val * <span class="cn">2</span>);      <span class="cm">// ListIterator supports set()/add(), plus backward traversal</span>
+}</code></pre>
+<p><span class="ic">Iterator</span> is forward-only with <span class="ic">hasNext()</span>/<span class="ic">next()</span>/<span class="ic">remove()</span>, and works on any <span class="ic">Collection</span>. <span class="ic">ListIterator</span> (available only on <span class="ic">List</span>) is bidirectional (<span class="ic">hasPrevious()</span>/<span class="ic">previous()</span>) and additionally supports <span class="ic">set()</span> and <span class="ic">add()</span> during traversal.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--blub);color:var(--blul)">Q22</span><span class="qt">Comparable vs Comparator</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="kw">class</span> <span class="ty">Employee</span> <span class="kw">implements</span> <span class="ty">Comparable</span>&lt;<span class="ty">Employee</span>&gt; { <span class="cm">// natural ordering — exactly ONE per class</span>
+    <span class="kw">int</span> salary;
+
+    <span class="an">@Override</span>
+    <span class="kw">public int</span> <span class="fn">compareTo</span>(<span class="ty">Employee</span> other) {
+        <span class="kw">return</span> <span class="ty">Integer</span>.<span class="fn">compare</span>(<span class="kw">this</span>.salary, other.salary); <span class="cm">// ascending by salary</span>
+    }
+}
+<span class="ty">Collections</span>.<span class="fn">sort</span>(employees); <span class="cm">// uses compareTo() automatically</span>
+
+<span class="ty">Comparator</span>&lt;<span class="ty">Employee</span>&gt; byName = <span class="ty">Comparator</span>.<span class="fn">comparing</span>(e -&gt; e.name); <span class="cm">// external — as many as you like</span>
+<span class="ty">Comparator</span>&lt;<span class="ty">Employee</span>&gt; byNameThenAge = byName.<span class="fn">thenComparing</span>(e -&gt; e.age);
+employees.<span class="fn">sort</span>(byNameThenAge.<span class="fn">reversed</span>());</code></pre>
+<p><span class="ic">Comparable</span> defines a class's single "natural" ordering, implemented inside the class itself. <span class="ic">Comparator</span> is an external strategy object — use it whenever you need multiple orderings, or need to sort a type you don't own/can't modify.</p>
+</div>
+</details>
+
+<h2>Generics</h2>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">Q23</span><span class="qt">Type erasure and its consequences</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="ty">List</span>&lt;<span class="ty">String</span>&gt; strings = <span class="kw">new</span> <span class="ty">ArrayList</span>&lt;&gt;();
+<span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt; ints = <span class="kw">new</span> <span class="ty">ArrayList</span>&lt;&gt;();
+strings.<span class="fn">getClass</span>() == ints.<span class="fn">getClass</span>(); <span class="cm">// true! Both are just ArrayList at runtime</span>
+
+<span class="cm">// Consequence: no runtime type checks on a generic type parameter</span>
+<span class="cm">// if (list instanceof List&lt;String&gt;) {} // ERROR: illegal generic type for instanceof</span>
+
+<span class="cm">// Consequence: overloading on erased types collides</span>
+<span class="cm">// void process(List&lt;String&gt; l) {}</span>
+<span class="cm">// void process(List&lt;Integer&gt; l) {} // ERROR: identical erasure -&gt; duplicate method</span>
+
+<span class="kw">public class</span> <span class="ty">Box</span>&lt;T&gt; {
+    <span class="kw">private</span> T value;
+    <span class="kw">public</span> T <span class="fn">get</span>() { <span class="kw">return</span> value; }
+    <span class="cm">// compiled bytecode roughly becomes:</span>
+    <span class="cm">// public class Box { private Object value; public Object get() { return value; } }</span>
+    <span class="cm">// with compiler-inserted casts at every call site</span>
+}</code></pre>
+<p>Generics exist only at compile time, for type-checking; the JVM sees raw, erased types (bounded by their first bound, or <span class="ic">Object</span> if unbounded). This is why generics were "free" to retrofit onto the JVM in Java 5 without a bytecode format change — but it also means you can never reliably ask "what T is this at runtime" without external help.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q24</span><span class="qt">Bounded type parameters and wildcards — the PECS principle</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// Bounded type parameter: T must be a Number or a subtype of it</span>
+<span class="kw">static</span> &lt;T <span class="kw">extends</span> <span class="ty">Number</span>&gt; <span class="kw">double</span> <span class="fn">sum</span>(<span class="ty">List</span>&lt;T&gt; list) {
+    <span class="kw">double</span> total = <span class="cn">0</span>;
+    <span class="kw">for</span> (T n : list) total += n.<span class="fn">doubleValue</span>(); <span class="cm">// Number's methods are now available</span>
+    <span class="kw">return</span> total;
+}
+
+<span class="cm">// Upper-bounded wildcard (? extends): a PRODUCER — safe to READ, not to write</span>
+<span class="kw">static double</span> <span class="fn">sumAll</span>(<span class="ty">List</span>&lt;? <span class="kw">extends</span> <span class="ty">Number</span>&gt; list) {
+    <span class="kw">double</span> total = <span class="cn">0</span>;
+    <span class="kw">for</span> (<span class="ty">Number</span> n : list) total += n.<span class="fn">doubleValue</span>(); <span class="cm">// fine — reading as Number</span>
+    <span class="cm">// list.add(1); // ERROR — compiler can't prove which exact subtype it holds</span>
+    <span class="kw">return</span> total;
+}
+
+<span class="cm">// Lower-bounded wildcard (? super): a CONSUMER — safe to WRITE, reads come out as Object</span>
+<span class="kw">static void</span> <span class="fn">addNumbers</span>(<span class="ty">List</span>&lt;? <span class="kw">super</span> <span class="ty">Integer</span>&gt; list) {
+    list.<span class="fn">add</span>(<span class="cn">1</span>);          <span class="cm">// fine — an Integer fits any supertype's slot</span>
+    <span class="cm">// Integer x = list.get(0); // ERROR — could really be a List&lt;Number&gt; or List&lt;Object&gt;</span>
+}</code></pre>
+<p><strong>PECS:</strong> <em>Producer <span class="ic">extends</span>, Consumer <span class="ic">super</span></em>. If a parameterized collection only feeds values <em>out</em> to you, use <span class="ic">? extends</span>. If you only push values <em>into</em> it, use <span class="ic">? super</span>. If you do both, don't use a wildcard at all.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q25</span><span class="qt">Why can't you create generic arrays in Java?</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// List&lt;String&gt;[] arr = new List&lt;String&gt;[10]; // COMPILE ERROR: generic array creation</span>
+
+<span class="cm">// Why: arrays are covariant and are REIFIABLE — they know their element type at runtime</span>
+<span class="cm">// and enforce it on every store. Generics are ERASED. If array creation were allowed:</span>
+<span class="ty">Object</span>[] objects = <span class="kw">new</span> <span class="ty">List</span>[<span class="cn">10</span>];             <span class="cm">// hypothetically, if this compiled</span>
+objects[<span class="cn">0</span>] = <span class="kw">new</span> <span class="ty">ArrayList</span>&lt;<span class="ty">Integer</span>&gt;();   <span class="cm">// array store check can't catch this —</span>
+                                            <span class="cm">// List&lt;String&gt; and List&lt;Integer&gt; look IDENTICAL at runtime</span>
+<span class="cm">// -&gt; would silently corrupt type safety, defeating the entire purpose of generics</span>
+
+<span class="cm">// Workaround: an unchecked cast (with a compiler warning), or keep the array as Object[] internally</span>
+<span class="an">@SuppressWarnings</span>(<span class="st">"unchecked"</span>)
+T[] arr = (T[]) <span class="kw">new</span> <span class="ty">Object</span>[<span class="cn">10</span>];</code></pre>
+</div>
+</details>
+
+<h2>Multithreading &amp; Concurrency</h2>
+
+<details><summary><span class="qn" style="background:var(--blub);color:var(--blul)">Q26</span><span class="qt">Thread vs Runnable vs Callable</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="kw">class</span> <span class="ty">MyThread</span> <span class="kw">extends</span> <span class="ty">Thread</span> {           <span class="cm">// extends Thread: uses up your one shot at extending a class</span>
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">run</span>() { <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"running"</span>); }
+}
+
+<span class="kw">class</span> <span class="ty">MyRunnable</span> <span class="kw">implements</span> <span class="ty">Runnable</span> {     <span class="cm">// implements Runnable: preferred — free to extend something else too</span>
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">run</span>() { <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"running"</span>); }
+}
+<span class="kw">new</span> <span class="ty">Thread</span>(<span class="kw">new</span> <span class="ty">MyRunnable</span>()).<span class="fn">start</span>();
+
+<span class="ty">Callable</span>&lt;<span class="ty">Integer</span>&gt; task = () -&gt; {           <span class="cm">// Callable: CAN return a value AND throw checked exceptions</span>
+    <span class="kw">return</span> <span class="cn">42</span>;
+};
+<span class="ty">ExecutorService</span> executor = <span class="ty">Executors</span>.<span class="fn">newSingleThreadExecutor</span>();
+<span class="ty">Future</span>&lt;<span class="ty">Integer</span>&gt; future = executor.<span class="fn">submit</span>(task);
+future.<span class="fn">get</span>(); <span class="cm">// 42 — blocks the caller until the result is ready</span></code></pre>
+<p><span class="ic">run()</span> returns <span class="ic">void</span> and can't throw checked exceptions; <span class="ic">call()</span> returns a value and can throw. Prefer <span class="ic">Runnable</span>/<span class="ic">Callable</span> submitted to an <span class="ic">ExecutorService</span> over directly extending <span class="ic">Thread</span> — it decouples the task from the execution mechanism and lets you reuse thread pools.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">Q27</span><span class="qt">Thread lifecycle states</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<ul>
+<li><strong>NEW:</strong> created but <span class="ic">start()</span> not yet called.</li>
+<li><strong>RUNNABLE:</strong> executing, or eligible to run and waiting for CPU time from the OS scheduler.</li>
+<li><strong>BLOCKED:</strong> waiting to acquire an intrinsic lock (a <span class="ic">synchronized</span> block/method held by another thread).</li>
+<li><strong>WAITING:</strong> waiting indefinitely for another thread's signal — via <span class="ic">Object.wait()</span>, <span class="ic">Thread.join()</span>, or <span class="ic">LockSupport.park()</span> with no timeout.</li>
+<li><strong>TIMED_WAITING:</strong> same as WAITING but with a timeout — <span class="ic">sleep(ms)</span>, <span class="ic">wait(ms)</span>, <span class="ic">join(ms)</span>.</li>
+<li><strong>TERMINATED:</strong> <span class="ic">run()</span> has completed (normally or via an uncaught exception).</li>
+</ul>
+<pre><code><span class="ty">Thread</span> t = <span class="kw">new</span> <span class="ty">Thread</span>(() -&gt; {});
+t.<span class="fn">getState</span>();  <span class="cm">// Thread.State.NEW</span>
+t.<span class="fn">start</span>();
+t.<span class="fn">getState</span>();  <span class="cm">// Thread.State.RUNNABLE (typically)</span></code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q28</span><span class="qt">The synchronized keyword — method vs block, intrinsic locks and monitors</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="kw">class</span> <span class="ty">Counter</span> {
+    <span class="kw">private int</span> count = <span class="cn">0</span>;
+
+    <span class="kw">public synchronized void</span> <span class="fn">increment</span>() {  <span class="cm">// method-level lock: acquires 'this' as the monitor</span>
+        count++;
+    }
+
+    <span class="kw">public void</span> <span class="fn">incrementBlock</span>() {
+        <span class="kw">synchronized</span> (<span class="kw">this</span>) {                <span class="cm">// block-level lock: same monitor, finer-grained scope</span>
+            count++;
+        }
+    }
+
+    <span class="kw">public static synchronized void</span> <span class="fn">staticMethod</span>() { <span class="cm">// locks the Class object itself, not an instance</span>
+        <span class="cm">// ...</span>
+    }
+}</code></pre>
+<p>Every Java object has an associated <strong>intrinsic lock (monitor)</strong>. Entering a <span class="ic">synchronized</span> region acquires that object's monitor; leaving it (normally or via exception) releases it automatically. The lock is <strong>reentrant</strong> — a thread already holding it can enter another <span class="ic">synchronized</span> block guarded by the same monitor without deadlocking itself. Block-level synchronization is generally preferred over method-level because it locks the smallest critical section necessary, reducing contention.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q29</span><span class="qt">volatile and the Java Memory Model — visibility vs atomicity</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="kw">class</span> <span class="ty">Flag</span> {
+    <span class="kw">private volatile boolean</span> running = <span class="kw">true</span>; <span class="cm">// guarantees VISIBILITY across threads</span>
+
+    <span class="kw">public void</span> <span class="fn">stop</span>() { running = <span class="kw">false</span>; }   <span class="cm">// the write is immediately visible to other threads</span>
+
+    <span class="kw">public void</span> <span class="fn">run</span>() {
+        <span class="kw">while</span> (running) {                     <span class="cm">// without volatile, a thread might cache 'running' in a</span>
+            <span class="cm">// do work</span>                         <span class="cm">// register/CPU cache and loop forever, never seeing the write</span>
+        }
+    }
+}
+
+<span class="cm">// volatile does NOT guarantee atomicity for compound actions:</span>
+<span class="kw">private volatile int</span> counter = <span class="cn">0</span>;
+counter++; <span class="cm">// NOT atomic! read-modify-write is 3 separate steps — still needs</span>
+           <span class="cm">// synchronized or an Atomic class (Q35) even though it's volatile</span></code></pre>
+<p>The <strong>Java Memory Model (JMM)</strong> defines when writes by one thread are guaranteed to become visible to another. Without synchronization, the compiler, CPU, and cache hierarchy are all free to reorder or locally cache reads/writes for performance — perfectly legal for single-threaded correctness, but dangerous across threads. <span class="ic">volatile</span> establishes a <strong>happens-before</strong> relationship: every write to a volatile field happens-before every subsequent read of it, and the JVM disables reordering around it. The same happens-before guarantee is also established by entering/exiting a <span class="ic">synchronized</span> block and by <span class="ic">Thread.start()</span>/<span class="ic">Thread.join()</span>.</p>
+<div class="note nblu"><strong>Rule of thumb:</strong> use <span class="ic">volatile</span> for a simple flag or a "publish this reference once" pattern. The moment you need to read-then-write based on the current value, you need real mutual exclusion (<span class="ic">synchronized</span> or an <span class="ic">Atomic*</span> class), because visibility alone doesn't prevent a race between two threads' read-modify-write sequences.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--blub);color:var(--blul)">Q30</span><span class="qt">wait()/notify()/notifyAll() vs modern concurrency utilities</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="kw">class</span> <span class="ty">SharedBuffer</span> {
+    <span class="kw">private final</span> <span class="ty">Object</span> lock = <span class="kw">new</span> <span class="ty">Object</span>();
+    <span class="kw">private int</span> data;
+    <span class="kw">private boolean</span> available = <span class="kw">false</span>;
+
+    <span class="kw">void</span> <span class="fn">produce</span>(<span class="kw">int</span> value) {
+        <span class="kw">synchronized</span> (lock) {
+            <span class="kw">while</span> (available) {          <span class="cm">// ALWAYS a while loop, never 'if' — guards against spurious wakeups</span>
+                <span class="kw">try</span> { lock.<span class="fn">wait</span>(); } <span class="kw">catch</span> (<span class="ty">InterruptedException</span> e) { <span class="ty">Thread</span>.<span class="fn">currentThread</span>().<span class="fn">interrupt</span>(); }
+            }
+            data = value;
+            available = <span class="kw">true</span>;
+            lock.<span class="fn">notifyAll</span>();            <span class="cm">// wake ALL waiters — plain notify() risks missed/starved signals</span>
+        }
+    }
+}
+
+<span class="cm">// Modern alternative — prefer this in real code:</span>
+<span class="ty">BlockingQueue</span>&lt;<span class="ty">Integer</span>&gt; queue = <span class="kw">new</span> <span class="ty">LinkedBlockingQueue</span>&lt;&gt;();
+queue.<span class="fn">put</span>(value);   <span class="cm">// blocks internally if full — no manual wait/notify needed</span>
+queue.<span class="fn">take</span>();        <span class="cm">// blocks internally if empty</span></code></pre>
+<p><span class="ic">wait()</span>/<span class="ic">notify()</span>/<span class="ic">notifyAll()</span> must be called from inside a <span class="ic">synchronized</span> block on that exact object, or the JVM throws <span class="ic">IllegalMonitorStateException</span>. They're low-level and easy to misuse; <span class="ic">java.util.concurrent</span> (<span class="ic">BlockingQueue</span>, <span class="ic">CountDownLatch</span>, <span class="ic">Semaphore</span>, <span class="ic">CompletableFuture</span>, locks/conditions) provides the same coordination with far fewer footguns and should be the default choice today.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">Q31</span><span class="qt">Deadlock — causes, a code example, and prevention</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="ty">Object</span> lockA = <span class="kw">new</span> <span class="ty">Object</span>();
+<span class="ty">Object</span> lockB = <span class="kw">new</span> <span class="ty">Object</span>();
+
+<span class="ty">Thread</span> t1 = <span class="kw">new</span> <span class="ty">Thread</span>(() -&gt; {
+    <span class="kw">synchronized</span> (lockA) {
+        <span class="fn">sleep</span>(<span class="cn">100</span>);
+        <span class="kw">synchronized</span> (lockB) { <span class="cm">/* ... */</span> }   <span class="cm">// t1 waits for lockB, held by t2</span>
+    }
+});
+
+<span class="ty">Thread</span> t2 = <span class="kw">new</span> <span class="ty">Thread</span>(() -&gt; {
+    <span class="kw">synchronized</span> (lockB) {
+        <span class="fn">sleep</span>(<span class="cn">100</span>);
+        <span class="kw">synchronized</span> (lockA) { <span class="cm">/* ... */</span> }   <span class="cm">// t2 waits for lockA, held by t1 -&gt; DEADLOCK</span>
+    }
+});</code></pre>
+<p>Deadlock requires all four <strong>Coffman conditions</strong> at once: <strong>mutual exclusion</strong> (locks aren't shareable), <strong>hold-and-wait</strong> (a thread holds one lock while waiting for another), <strong>no preemption</strong> (a lock can't be forcibly taken away), and <strong>circular wait</strong> (a cycle of threads each waiting on the next).</p>
+<p><strong>Prevention:</strong> always acquire multiple locks in the same fixed global order across all threads (breaks circular wait); use <span class="ic">tryLock(timeout)</span> from <span class="ic">java.util.concurrent.locks</span> to back off instead of blocking forever; keep critical sections small and avoid nested locks where possible; prefer higher-level, deadlock-resistant utilities (concurrent collections, executors) over hand-rolled locking.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q32</span><span class="qt">ExecutorService and thread pools</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="ty">ExecutorService</span> fixed = <span class="ty">Executors</span>.<span class="fn">newFixedThreadPool</span>(<span class="cn">4</span>);  <span class="cm">// fixed thread count, unbounded queue — CPU-bound work with known parallelism</span>
+<span class="ty">ExecutorService</span> cached = <span class="ty">Executors</span>.<span class="fn">newCachedThreadPool</span>();  <span class="cm">// grows unbounded, reuses idle threads, 60s keep-alive — many short-lived tasks</span>
+<span class="ty">ScheduledExecutorService</span> sched = <span class="ty">Executors</span>.<span class="fn">newScheduledThreadPool</span>(<span class="cn">2</span>); <span class="cm">// delayed / periodic tasks</span>
+sched.<span class="fn">scheduleAtFixedRate</span>(() -&gt; <span class="fn">poll</span>(), <span class="cn">0</span>, <span class="cn">5</span>, <span class="ty">TimeUnit</span>.SECONDS);
+
+fixed.<span class="fn">submit</span>(() -&gt; <span class="fn">doWork</span>());
+fixed.<span class="fn">shutdown</span>();          <span class="cm">// stop accepting new tasks, let running ones finish</span>
+fixed.<span class="fn">awaitTermination</span>(<span class="cn">10</span>, <span class="ty">TimeUnit</span>.SECONDS);</code></pre>
+<div class="note namb">Both <span class="ic">newFixedThreadPool</span> and <span class="ic">newCachedThreadPool</span> use an effectively unbounded queue or unbounded thread growth — under sustained load that can exhaust memory or thread handles. In production it's generally safer to construct a <span class="ic">ThreadPoolExecutor</span> directly with an explicit bounded queue and a rejection policy.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q33</span><span class="qt">java.util.concurrent essentials — CountDownLatch, Semaphore, ConcurrentHashMap</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="ty">CountDownLatch</span> latch = <span class="kw">new</span> <span class="ty">CountDownLatch</span>(<span class="cn">3</span>);  <span class="cm">// wait for 3 events, then proceed — a ONE-TIME gate</span>
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="cn">0</span>; i &lt; <span class="cn">3</span>; i++) {
+    executor.<span class="fn">submit</span>(() -&gt; { <span class="fn">doWork</span>(); latch.<span class="fn">countDown</span>(); });
+}
+latch.<span class="fn">await</span>();               <span class="cm">// blocks the caller until the count reaches 0</span>
+
+<span class="ty">Semaphore</span> semaphore = <span class="kw">new</span> <span class="ty">Semaphore</span>(<span class="cn">2</span>);    <span class="cm">// only 2 concurrent permits allowed</span>
+semaphore.<span class="fn">acquire</span>();
+<span class="kw">try</span> { <span class="fn">accessLimitedResource</span>(); }
+<span class="kw">finally</span> { semaphore.<span class="fn">release</span>(); }
+
+<span class="ty">ConcurrentHashMap</span>&lt;<span class="ty">String</span>, <span class="ty">Integer</span>&gt; map = <span class="kw">new</span> <span class="ty">ConcurrentHashMap</span>&lt;&gt;();
+map.<span class="fn">compute</span>(<span class="st">"key"</span>, (k, v) -&gt; (v == <span class="kw">null</span>) ? <span class="cn">1</span> : v + <span class="cn">1</span>); <span class="cm">// atomic read-modify-write, no external lock needed</span></code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--blub);color:var(--blul)">Q34</span><span class="qt">ThreadLocal — use case and pitfalls</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="kw">private static final</span> <span class="ty">ThreadLocal</span>&lt;<span class="ty">SimpleDateFormat</span>&gt; dateFormat =
+    <span class="ty">ThreadLocal</span>.<span class="fn">withInitial</span>(() -&gt; <span class="kw">new</span> <span class="ty">SimpleDateFormat</span>(<span class="st">"yyyy-MM-dd"</span>)); <span class="cm">// SimpleDateFormat isn't thread-safe</span>
+
+<span class="kw">void</span> <span class="fn">formatDate</span>(<span class="ty">Date</span> d) {
+    <span class="ty">String</span> result = dateFormat.<span class="fn">get</span>().<span class="fn">format</span>(d); <span class="cm">// each thread gets its OWN private instance</span>
+}
+
+<span class="cm">// Common pitfall in thread-POOL environments: pooled threads are reused across many tasks,</span>
+<span class="cm">// so a value left behind leaks for the thread's entire lifetime — ALWAYS clean up:</span>
+dateFormat.<span class="fn">remove</span>();</code></pre>
+<p><span class="ic">ThreadLocal</span> gives each thread its own isolated copy of a variable — useful for per-thread state like date formatters, database connections, or request-scoped context (e.g. a logging trace ID) without passing it through every method signature.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">Q35</span><span class="qt">Atomic classes (AtomicInteger) vs synchronized</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="kw">private</span> <span class="ty">AtomicInteger</span> counter = <span class="kw">new</span> <span class="ty">AtomicInteger</span>(<span class="cn">0</span>);
+
+<span class="kw">void</span> <span class="fn">increment</span>() {
+    counter.<span class="fn">incrementAndGet</span>();      <span class="cm">// lock-free — uses CAS (compare-and-swap) at the hardware level</span>
+}
+
+<span class="cm">// vs the synchronized version — an OS-level monitor lock, heavier under contention</span>
+<span class="kw">private int</span> syncCounter = <span class="cn">0</span>;
+<span class="kw">synchronized void</span> <span class="fn">incrementSync</span>() { syncCounter++; }
+
+<span class="cm">// CAS loop, conceptually:</span>
+<span class="kw">int</span> prev, next;
+<span class="kw">do</span> {
+    prev = counter.<span class="fn">get</span>();
+    next = prev + <span class="cn">1</span>;
+} <span class="kw">while</span> (!counter.<span class="fn">compareAndSet</span>(prev, next)); <span class="cm">// retry if another thread won the race</span></code></pre>
+<p>Atomic classes are typically faster under low-to-moderate contention because they never block a thread or trigger an OS context switch — a losing thread just retries the CAS. <span class="ic">synchronized</span> is simpler to reason about when multiple related fields must change together as one atomic unit, since a CAS only protects a single variable.</p>
+</div>
+</details>
+
+<h2>Java 8+ Functional Features</h2>
+
+<details><summary><span class="qn" style="background:var(--cyab);color:var(--cyal)">Q36</span><span class="qt">Functional interfaces — @FunctionalInterface and the core java.util.function types</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<pre><code><span class="an">@FunctionalInterface</span>
+<span class="kw">interface</span> <span class="ty">Calculator</span> {           <span class="cm">// exactly ONE abstract method — the compiler enforces this</span>
+    <span class="kw">int</span> <span class="fn">calculate</span>(<span class="kw">int</span> a, <span class="kw">int</span> b);
+    <span class="kw">default void</span> <span class="fn">log</span>() { <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"calculating"</span>); } <span class="cm">// default methods don't count against the "one" rule</span>
+}
+
+<span class="ty">Supplier</span>&lt;<span class="ty">String</span>&gt; supplier = () -&gt; <span class="st">"hello"</span>;           <span class="cm">// () -&gt; T</span>
+<span class="ty">Function</span>&lt;<span class="ty">Integer</span>, <span class="ty">String</span>&gt; fn = i -&gt; <span class="st">"Value: "</span> + i;    <span class="cm">// T -&gt; R</span>
+<span class="ty">Predicate</span>&lt;<span class="ty">String</span>&gt; isEmpty = <span class="ty">String</span>::isEmpty;          <span class="cm">// T -&gt; boolean</span>
+<span class="ty">Consumer</span>&lt;<span class="ty">String</span>&gt; printer = <span class="ty">System</span>.out::println;       <span class="cm">// T -&gt; void</span>
+<span class="ty">BiFunction</span>&lt;<span class="ty">Integer</span>, <span class="ty">Integer</span>, <span class="ty">Integer</span>&gt; add = (a, b) -&gt; a + b; <span class="cm">// (T,U) -&gt; R</span></code></pre>
+<p><span class="ic">Runnable</span> (<span class="ic">() -&gt; void</span>) and <span class="ic">Callable&lt;V&gt;</span> (<span class="ic">() -&gt; V</span>, throws checked exceptions) are also functional interfaces — that's exactly why a lambda can be passed anywhere either is expected.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--orab);color:var(--oral)">Q37</span><span class="qt">Lambda expression syntax and the effectively-final capture rule</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="kw">int</span> base = <span class="cn">10</span>;
+<span class="ty">Function</span>&lt;<span class="ty">Integer</span>, <span class="ty">Integer</span>&gt; addBase = x -&gt; x + base; <span class="cm">// 'base' is captured by value — must be effectively final</span>
+
+<span class="cm">// base = 20; // if uncommented: COMPILE ERROR — "base" is no longer effectively final</span>
+
+<span class="ty">List</span>&lt;<span class="ty">Runnable</span>&gt; tasks = <span class="kw">new</span> <span class="ty">ArrayList</span>&lt;&gt;();
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="cn">0</span>; i &lt; <span class="cn">3</span>; i++) {
+    <span class="kw">int</span> copy = i;                       <span class="cm">// must copy the loop variable into its own local</span>
+    tasks.<span class="fn">add</span>(() -&gt; <span class="ty">System</span>.out.<span class="fn">println</span>(copy)); <span class="cm">// each lambda captures its OWN 'copy'</span>
+}</code></pre>
+<p>A lambda captures local variables from its enclosing scope <strong>by value</strong>, at creation time. If Java allowed the captured variable to change afterward, the lambda's snapshot and the outer variable would silently drift apart — a common source of subtle bugs in languages that allow it. Requiring the captured variable to be <strong>effectively final</strong> (never reassigned after initialization, even without the <span class="ic">final</span> keyword) makes that class of bug impossible by construction.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--grnb);color:var(--grnl)">Q38</span><span class="qt">Method references — the four kinds</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// 1. Static method reference</span>
+<span class="ty">Function</span>&lt;<span class="ty">String</span>, <span class="ty">Integer</span>&gt; parse = <span class="ty">Integer</span>::parseInt;
+
+<span class="cm">// 2. Instance method reference on a PARTICULAR object (bound)</span>
+<span class="ty">String</span> prefix = <span class="st">"Hello, "</span>;
+<span class="ty">Function</span>&lt;<span class="ty">String</span>, <span class="ty">String</span>&gt; greet = prefix::concat;
+
+<span class="cm">// 3. Instance method reference on an ARBITRARY object of a type (unbound)</span>
+<span class="ty">Function</span>&lt;<span class="ty">String</span>, <span class="ty">Integer</span>&gt; len = <span class="ty">String</span>::length; <span class="cm">// the receiver becomes the first parameter</span>
+
+<span class="cm">// 4. Constructor reference</span>
+<span class="ty">Supplier</span>&lt;<span class="ty">ArrayList</span>&lt;<span class="ty">String</span>&gt;&gt; listFactory = <span class="ty">ArrayList</span>::new;</code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q39</span><span class="qt">Stream API basics — pipeline, laziness, intermediate vs terminal operations</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="ty">List</span>&lt;<span class="ty">String</span>&gt; names = <span class="ty">List</span>.<span class="fn">of</span>(<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">"Charlie"</span>, <span class="st">"Dave"</span>);
+
+<span class="ty">List</span>&lt;<span class="ty">String</span>&gt; result = names.<span class="fn">stream</span>()
+    .<span class="fn">filter</span>(n -&gt; n.<span class="fn">length</span>() &gt; <span class="cn">3</span>)   <span class="cm">// intermediate — LAZY, does nothing yet</span>
+    .<span class="fn">map</span>(<span class="ty">String</span>::toUpperCase)      <span class="cm">// intermediate — LAZY</span>
+    .<span class="fn">sorted</span>()                       <span class="cm">// intermediate — LAZY</span>
+    .<span class="fn">collect</span>(<span class="ty">Collectors</span>.toList()); <span class="cm">// TERMINAL — triggers the whole pipeline to actually run, once</span>
+
+<span class="kw">int</span> totalLength = names.<span class="fn">stream</span>()
+    .<span class="fn">mapToInt</span>(<span class="ty">String</span>::length)
+    .<span class="fn">reduce</span>(<span class="cn">0</span>, <span class="ty">Integer</span>::sum);       <span class="cm">// terminal — folds all elements into a single result</span></code></pre>
+<p>Intermediate operations (<span class="ic">filter</span>, <span class="ic">map</span>, <span class="ic">sorted</span>, <span class="ic">peek</span>) are <strong>lazy</strong> — they just build up a pipeline description and return a new <span class="ic">Stream</span>. Nothing actually executes until a <strong>terminal</strong> operation (<span class="ic">collect</span>, <span class="ic">forEach</span>, <span class="ic">reduce</span>, <span class="ic">count</span>) is called, at which point the whole pipeline runs element-by-element in a single pass.</p>
+<div class="note namb">A <span class="ic">Stream</span> is single-use — calling a terminal operation twice on the same stream throws <span class="ic">IllegalStateException</span>. Streams also don't mutate their source collection; they produce new results.</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q40</span><span class="qt">Optional, and the java.time API vs legacy Date/Calendar</span><span class="dif easy">Easy</span></summary>
+<div class="ans">
+<pre><code><span class="ty">Optional</span>&lt;<span class="ty">String</span>&gt; maybeName = <span class="ty">Optional</span>.<span class="fn">ofNullable</span>(<span class="fn">getName</span>());
+<span class="ty">String</span> name = maybeName.<span class="fn">orElse</span>(<span class="st">"Unknown"</span>);          <span class="cm">// default when empty</span>
+maybeName.<span class="fn">ifPresent</span>(n -&gt; <span class="ty">System</span>.out.<span class="fn">println</span>(n));  <span class="cm">// run only if present</span>
+<span class="ty">String</span> upper = maybeName.<span class="fn">map</span>(<span class="ty">String</span>::toUpperCase).<span class="fn">orElseThrow</span>(); <span class="cm">// chain, then throw if empty</span>
+
+<span class="cm">// Misuse to avoid: calling .get() without checking isPresent() first — defeats the whole point</span>
+<span class="cm">// Misuse to avoid: using Optional as a field type or a method PARAMETER — it's meant as a RETURN type only</span>
+
+<span class="ty">LocalDate</span> date = <span class="ty">LocalDate</span>.<span class="fn">of</span>(<span class="cn">2024</span>, <span class="cn">1</span>, <span class="cn">15</span>);          <span class="cm">// immutable, thread-safe</span>
+<span class="ty">LocalDateTime</span> dt = <span class="ty">LocalDateTime</span>.<span class="fn">now</span>();
+<span class="ty">Instant</span> instant = <span class="ty">Instant</span>.<span class="fn">now</span>();                     <span class="cm">// machine timestamp, UTC-based</span>
+
+<span class="ty">Date</span> legacyDate = <span class="kw">new</span> <span class="ty">Date</span>();       <span class="cm">// mutable, NOT thread-safe</span>
+<span class="ty">Calendar</span> cal = <span class="ty">Calendar</span>.<span class="fn">getInstance</span>(); <span class="cm">// clunky API, also mutable — months are 0-indexed, a classic bug source</span></code></pre>
+</div>
+</details>
+
+<h2>JVM &amp; Memory</h2>
+
+<details><summary><span class="qn" style="background:var(--blub);color:var(--blul)">Q41</span><span class="qt">JVM architecture, and how it relates to ART on Android</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<ul>
+<li><strong>Class Loader Subsystem:</strong> loads <span class="ic">.class</span> files via Bootstrap → Extension/Platform → Application class loaders (delegation model), then links (verify, prepare, resolve) and initializes each class.</li>
+<li><strong>Runtime Data Areas:</strong> the <strong>Method Area/Metaspace</strong> (class metadata, static fields), the <strong>Heap</strong> (all objects, shared across threads), per-thread <strong>Stacks</strong> (frames of local variables/call state), <strong>PC registers</strong>, and <strong>native method stacks</strong>.</li>
+<li><strong>Execution Engine:</strong> an interpreter runs bytecode directly; the JIT (Just-In-Time) compiler profiles hot methods and compiles them to native machine code for speed; the garbage collector reclaims unreachable heap objects.</li>
+</ul>
+<p><strong>Relation to ART:</strong> Android apps don't run on a standard JVM at all. Source compiles to <span class="ic">.class</span> files, which are then converted to <strong>DEX</strong> bytecode — a register-based instruction set (vs the JVM's stack-based one), optimized for a constrained mobile environment. <strong>ART</strong> (Android Runtime, which replaced Dalvik starting with Android 5.0) executes that DEX code using a hybrid of <strong>AOT</strong> (ahead-of-time) compilation at install/idle time and <strong>JIT</strong> profiling at runtime (since Android 7/Nougat) to balance install time, storage, and steady-state performance. The Java <em>language</em> semantics, garbage collection concepts, and memory model you're tested on all still apply — only the bytecode format and runtime differ.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">Q42</span><span class="qt">Stack vs heap memory</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="kw">void</span> <span class="fn">method</span>() {
+    <span class="kw">int</span> localVar = <span class="cn">5</span>;               <span class="cm">// primitive -&gt; lives on the STACK frame for this call</span>
+    <span class="ty">Person</span> p = <span class="kw">new</span> <span class="ty">Person</span>(<span class="st">"Alice"</span>); <span class="cm">// 'p' (the reference) is on the stack;</span>
+                                     <span class="cm">// the actual Person OBJECT is on the HEAP</span>
+} <span class="cm">// when method() returns, its whole stack frame is popped instantly — localVar and 'p' vanish;</span>
+  <span class="cm">// the Person object on the heap survives until the GC decides nothing references it anymore</span></code></pre>
+<div class="g2">
+<div class="gc"><h4>Stack</h4><p>Per-thread, LIFO. Stores local variables, references, and call frames. Extremely fast to allocate/deallocate (just move a pointer). Fixed size per thread — exceeding it throws <span class="ic">StackOverflowError</span> (classic cause: unbounded recursion).</p></div>
+<div class="gc"><h4>Heap</h4><p>Shared across all threads. Stores every object and array. Managed by the garbage collector, larger and slower to allocate than the stack. Exhausting it throws <span class="ic">OutOfMemoryError</span>.</p></div>
+</div>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q43</span><span class="qt">Garbage collection basics — generational GC and common algorithms</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<p>GC is built on the <strong>generational hypothesis</strong>: most objects die young, so it's cheaper to collect young objects frequently and cheaply, and old objects rarely.</p>
+<ul>
+<li><strong>Young Generation</strong> (Eden + two Survivor spaces, S0/S1): new objects are allocated in Eden. A <strong>Minor GC</strong> runs often, is fast, and uses a copying algorithm — live objects are copied between Eden/Survivor spaces; objects that survive enough cycles get <strong>promoted</strong> to the Old Generation.</li>
+<li><strong>Old Generation:</strong> holds long-lived objects. A <strong>Major/Full GC</strong> runs far less often but is much more expensive since it scans a much larger heap region.</li>
+</ul>
+<p><strong>Common collectors:</strong> <strong>Serial</strong> (single-threaded, small heaps); <strong>Parallel</strong> (multi-threaded, throughput-focused, tolerates longer pauses); <strong>CMS</strong> (Concurrent Mark-Sweep — low pause but deprecated/removed, suffered from fragmentation); <strong>G1</strong> (Garbage First — the default since Java 9, splits the heap into regions and prioritizes collecting the regions with the most garbage first, aiming for predictable pause-time targets); <strong>ZGC</strong>/<strong>Shenandoah</strong> (very low, near-constant pause times, designed to scale to huge multi-GB heaps concurrently with the application).</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q44</span><span class="qt">Common memory leak patterns in Java</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// 1. Static reference holding on to objects forever</span>
+<span class="kw">class</span> <span class="ty">Cache</span> {
+    <span class="kw">static</span> <span class="ty">List</span>&lt;<span class="ty">Bitmap</span>&gt; bitmaps = <span class="kw">new</span> <span class="ty">ArrayList</span>&lt;&gt;(); <span class="cm">// static -&gt; lives for the whole process</span>
+    <span class="kw">static void</span> <span class="fn">add</span>(<span class="ty">Bitmap</span> b) { bitmaps.<span class="fn">add</span>(b); }      <span class="cm">// never removed -&gt; unbounded growth</span>
+}
+
+<span class="cm">// 2. Unclosed resources</span>
+<span class="ty">FileInputStream</span> fis = <span class="kw">new</span> <span class="ty">FileInputStream</span>(<span class="st">"file.txt"</span>);
+<span class="cm">// if an exception is thrown before fis.close(), the file handle leaks — FIX: try-with-resources (Q16)</span>
+
+<span class="cm">// 3. A non-static inner class holding an implicit reference to its outer instance</span>
+<span class="kw">class</span> <span class="ty">Activity</span> {
+    <span class="kw">class</span> <span class="ty">Listener</span> {                 <span class="cm">// non-static inner class</span>
+        <span class="kw">void</span> <span class="fn">onEvent</span>() { <span class="cm">/* implicitly uses Activity.this */</span> }
+    }
+    <span class="kw">void</span> <span class="fn">register</span>() {
+        someLongLivedBus.<span class="fn">subscribe</span>(<span class="kw">new</span> <span class="ty">Listener</span>()); <span class="cm">// Listener holds Activity.this</span>
+    }                                                 <span class="cm">// -&gt; Activity can't be GC'd while the bus holds the Listener</span>
+}
+<span class="cm">// FIX: make it a static nested class, or hold the outer reference via a WeakReference</span></code></pre>
+<div class="note nred">Pattern 3 is one of the most common real-world Android leaks: a non-static inner <span class="ic">Handler</span>, listener, or anonymous callback registered with a long-lived object (an event bus, a static singleton) silently keeps the enclosing <span class="ic">Activity</span>/<span class="ic">Fragment</span> alive long after it should have been garbage collected.</div>
+</div>
+</details>
+
+<h2>Advanced Java &amp; Design Patterns</h2>
+
+<details><summary><span class="qn" style="background:var(--blub);color:var(--blul)">Q45</span><span class="qt">Inner class types — static nested, inner, local, and anonymous</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="kw">class</span> <span class="ty">Outer</span> {
+    <span class="kw">int</span> outerField = <span class="cn">10</span>;
+
+    <span class="kw">static class</span> <span class="ty">StaticNested</span> {              <span class="cm">// doesn't need an Outer instance; can't touch outerField directly</span>
+        <span class="kw">void</span> <span class="fn">show</span>() { <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"static nested"</span>); }
+    }
+
+    <span class="kw">class</span> <span class="ty">Inner</span> {                             <span class="cm">// needs an Outer instance — holds an implicit Outer.this reference</span>
+        <span class="kw">void</span> <span class="fn">show</span>() { <span class="ty">System</span>.out.<span class="fn">println</span>(outerField); } <span class="cm">// can access the outer's members directly</span>
+    }
+
+    <span class="kw">void</span> <span class="fn">method</span>() {
+        <span class="kw">class</span> <span class="ty">Local</span> {                          <span class="cm">// local class: scoped entirely to this method</span>
+            <span class="kw">void</span> <span class="fn">show</span>() { <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"local"</span>); }
+        }
+        <span class="kw">new</span> <span class="ty">Local</span>().<span class="fn">show</span>();
+
+        <span class="ty">Runnable</span> r = <span class="kw">new</span> <span class="ty">Runnable</span>() {          <span class="cm">// anonymous class: no name, a one-off implementation</span>
+            <span class="an">@Override</span>
+            <span class="kw">public void</span> <span class="fn">run</span>() { <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="st">"anonymous"</span>); }
+        };
+        r.<span class="fn">run</span>();
+    }
+}
+
+<span class="ty">Outer</span>.StaticNested sn = <span class="kw">new</span> <span class="ty">Outer</span>.StaticNested();     <span class="cm">// no outer instance needed</span>
+<span class="ty">Outer</span> outer = <span class="kw">new</span> <span class="ty">Outer</span>();
+<span class="ty">Outer</span>.Inner inner = outer.<span class="kw">new</span> Inner();                <span class="cm">// needs an outer instance to construct</span></code></pre>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">Q46</span><span class="qt">Enum in Java — fields, methods, constructors, EnumMap and EnumSet</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="kw">enum</span> <span class="ty">Planet</span> {
+    MERCURY(<span class="cn">3.3e23</span>, <span class="cn">2.4e6</span>), EARTH(<span class="cn">5.97e24</span>, <span class="cn">6.4e6</span>); <span class="cm">// constants call the constructor below</span>
+
+    <span class="kw">private final double</span> mass;   <span class="cm">// enums CAN have fields</span>
+    <span class="kw">private final double</span> radius;
+
+    <span class="ty">Planet</span>(<span class="kw">double</span> mass, <span class="kw">double</span> radius) {  <span class="cm">// and constructors (implicitly private)</span>
+        <span class="kw">this</span>.mass = mass;
+        <span class="kw">this</span>.radius = radius;
+    }
+
+    <span class="kw">double</span> <span class="fn">surfaceGravity</span>() {              <span class="cm">// and regular methods</span>
+        <span class="kw">return</span> <span class="cn">6.674e-11</span> * mass / (radius * radius);
+    }
+}
+
+<span class="ty">EnumMap</span>&lt;<span class="ty">Planet</span>, <span class="ty">String</span>&gt; notes = <span class="kw">new</span> <span class="ty">EnumMap</span>&lt;&gt;(<span class="ty">Planet</span>.class); <span class="cm">// backed by an array, ordered by ordinal — very fast</span>
+<span class="ty">EnumSet</span>&lt;<span class="ty">Planet</span>&gt; inner = <span class="ty">EnumSet</span>.<span class="fn">of</span>(<span class="ty">Planet</span>.MERCURY);            <span class="cm">// a bitset internally — extremely memory-efficient</span></code></pre>
+<p>Every enum implicitly extends <span class="ic">java.lang.Enum</span>, so it automatically gets <span class="ic">Comparable</span> (ordering by declaration order) and <span class="ic">Serializable</span> for free. Enum constants can even override a method per-constant with a constant-specific class body — a clean alternative to a <span class="ic">switch</span> for behavior that varies per case.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--ambb);color:var(--ambl)">Q47</span><span class="qt">Annotations basics, and how reflection uses them</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="an">@Retention</span>(RetentionPolicy.RUNTIME)    <span class="cm">// must be RUNTIME to be readable via reflection</span>
+<span class="an">@Target</span>(ElementType.METHOD)
+<span class="kw">@interface</span> <span class="ty">Benchmark</span> { }               <span class="cm">// a custom annotation definition</span>
+
+<span class="kw">class</span> <span class="ty">Service</span> {
+    <span class="an">@Benchmark</span>
+    <span class="kw">void</span> <span class="fn">slowMethod</span>() { <span class="cm">/* ... */</span> }
+}
+
+<span class="cm">// Reflection reads the annotation and invokes the method dynamically</span>
+<span class="kw">for</span> (<span class="ty">Method</span> m : <span class="ty">Service</span>.class.<span class="fn">getDeclaredMethods</span>()) {
+    <span class="kw">if</span> (m.<span class="fn">isAnnotationPresent</span>(Benchmark.class)) {
+        <span class="kw">long</span> start = <span class="ty">System</span>.<span class="fn">nanoTime</span>();
+        m.<span class="fn">invoke</span>(<span class="kw">new</span> <span class="ty">Service</span>());               <span class="cm">// dynamic invocation — bypasses compile-time type checks</span>
+        <span class="ty">System</span>.out.<span class="fn">println</span>(<span class="ty">System</span>.<span class="fn">nanoTime</span>() - start);
+    }
+}</code></pre>
+<p>Built-in annotations like <span class="ic">@Override</span>, <span class="ic">@Deprecated</span>, <span class="ic">@SuppressWarnings</span>, and <span class="ic">@FunctionalInterface</span> are checked by the compiler itself. Custom annotations are inert metadata by default — they only <em>do</em> something once a tool reads them, either at compile time (an annotation processor generating code, e.g. Dagger/Room) or at runtime via reflection (e.g. Gson, older Retrofit). Reflection is powerful but costly: it skips JIT inlining, performs extra security/access checks, boxes primitives, and breaks encapsulation when combined with <span class="ic">setAccessible(true)</span> — which is exactly why performance-sensitive Android libraries increasingly favor compile-time codegen over runtime reflection.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">Q48</span><span class="qt">Serializable and serialVersionUID</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="kw">class</span> <span class="ty">User</span> <span class="kw">implements</span> <span class="ty">Serializable</span> {
+    <span class="kw">private static final long</span> serialVersionUID = <span class="cn">1L</span>; <span class="cm">// explicit version — pins compatibility across builds</span>
+    <span class="ty">String</span> name;
+    <span class="kw">transient</span> <span class="ty">String</span> password;                          <span class="cm">// 'transient' fields are SKIPPED during serialization</span>
+}
+<span class="cm">// after deserializing, user.password is null — it was never written out</span>
+
+<span class="kw">try</span> (<span class="ty">ObjectOutputStream</span> oos = <span class="kw">new</span> <span class="ty">ObjectOutputStream</span>(<span class="kw">new</span> <span class="ty">FileOutputStream</span>(<span class="st">"user.ser"</span>))) {
+    oos.<span class="fn">writeObject</span>(<span class="kw">new</span> <span class="ty">User</span>());
+}</code></pre>
+<p><span class="ic">serialVersionUID</span> is a version stamp the JVM uses to verify that a serialized object on disk matches the class definition currently loaded. If you omit it, the compiler generates one implicitly from the class's fields/methods — which silently changes if you so much as add a method, causing <span class="ic">InvalidClassException</span> on deserialization of old data. Declaring it explicitly avoids that fragility whenever a class might need to evolve.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--blub);color:var(--blul)">Q49</span><span class="qt">Records as immutable data carriers (vs Kotlin data classes), and switch expressions</span><span class="dif med">Medium</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// Record (Java 16+ stable): auto-generates constructor, accessors, equals/hashCode/toString</span>
+<span class="kw">record</span> <span class="ty">Point</span>(<span class="kw">int</span> x, <span class="kw">int</span> y) { }               <span class="cm">// immutable by construction — fields are implicitly final</span>
+
+<span class="ty">Point</span> p = <span class="kw">new</span> <span class="ty">Point</span>(<span class="cn">1</span>, <span class="cn">2</span>);
+p.<span class="fn">x</span>();          <span class="cm">// accessor is named after the field — NOT getX()</span>
+p.<span class="fn">equals</span>(<span class="kw">new</span> <span class="ty">Point</span>(<span class="cn">1</span>, <span class="cn">2</span>)); <span class="cm">// true — structural equality, like Kotlin's data class</span>
+
+<span class="cm">// Compact constructor for validation</span>
+<span class="kw">record</span> <span class="ty">Range</span>(<span class="kw">int</span> start, <span class="kw">int</span> end) {
+    <span class="ty">Range</span> {                                    <span class="cm">// no parameter list repeated — the 'compact' form</span>
+        <span class="kw">if</span> (start &gt; end) <span class="kw">throw new</span> <span class="ty">IllegalArgumentException</span>(<span class="st">"invalid range"</span>);
+    }
+}
+
+<span class="cm">// Switch expression (Java 14+): no fall-through, returns a value, arrow form needs no 'break'</span>
+<span class="ty">String</span> desc = <span class="kw">switch</span> (day) {
+    <span class="kw">case</span> MONDAY, FRIDAY, SUNDAY -&gt; <span class="st">"short"</span>;
+    <span class="kw">case</span> TUESDAY -&gt; <span class="st">"long"</span>;
+    <span class="kw">default</span> -&gt; {
+        <span class="ty">String</span> s = <span class="st">"other"</span>;
+        <span class="kw">yield</span> s;                                 <span class="cm">// 'yield' returns a value from a block branch</span>
+    }
+};</code></pre>
+<p>Compared to a Kotlin <span class="ic">data class</span>: both auto-generate <span class="ic">equals()</span>/<span class="ic">hashCode()</span>/<span class="ic">toString()</span> and per-field accessors. Records are always fully immutable (only <span class="ic">final</span> components, no <span class="ic">var</span> equivalent) and have no built-in <span class="ic">copy()</span> — replicate-with-a-change has to be written by hand or via a builder. A classic switch <em>statement</em> falls through by default and returns nothing; a switch <em>expression</em> is exhaustiveness-checked by the compiler for enums and produces a value directly.</p>
+</div>
+</details>
+
+<details><summary><span class="qn" style="background:var(--purb);color:var(--purl)">Q50</span><span class="qt">Singleton pattern implementations, and the Builder pattern</span><span class="dif hard">Hard</span></summary>
+<div class="ans">
+<pre><code><span class="cm">// 1. Eager initialization — instance created at class-load time; thread-safe by the JVM's class-init</span>
+<span class="cm">// guarantee, but wastes memory/startup time if the instance is never actually used</span>
+<span class="kw">class</span> <span class="ty">EagerSingleton</span> {
+    <span class="kw">private static final</span> <span class="ty">EagerSingleton</span> INSTANCE = <span class="kw">new</span> <span class="ty">EagerSingleton</span>();
+    <span class="kw">private</span> <span class="ty">EagerSingleton</span>() {}
+    <span class="kw">public static</span> <span class="ty">EagerSingleton</span> <span class="fn">getInstance</span>() { <span class="kw">return</span> INSTANCE; }
+}
+
+<span class="cm">// 2. Lazy initialization — NOT thread-safe as written; two threads can both pass the null check</span>
+<span class="kw">class</span> <span class="ty">LazySingleton</span> {
+    <span class="kw">private static</span> <span class="ty">LazySingleton</span> instance;
+    <span class="kw">private</span> <span class="ty">LazySingleton</span>() {}
+    <span class="kw">public static</span> <span class="ty">LazySingleton</span> <span class="fn">getInstance</span>() {
+        <span class="kw">if</span> (instance == <span class="kw">null</span>) instance = <span class="kw">new</span> <span class="ty">LazySingleton</span>(); <span class="cm">// race condition!</span>
+        <span class="kw">return</span> instance;
+    }
+}
+
+<span class="cm">// 3. Double-checked locking — lazy AND thread-safe, minimal synchronization overhead after warm-up</span>
+<span class="kw">class</span> <span class="ty">DclSingleton</span> {
+    <span class="kw">private static volatile</span> <span class="ty">DclSingleton</span> instance; <span class="cm">// volatile stops other threads seeing a half-built object</span>
+    <span class="kw">private</span> <span class="ty">DclSingleton</span>() {}
+    <span class="kw">public static</span> <span class="ty">DclSingleton</span> <span class="fn">getInstance</span>() {
+        <span class="kw">if</span> (instance == <span class="kw">null</span>) {                      <span class="cm">// first check — skip locking on the common warm path</span>
+            <span class="kw">synchronized</span> (DclSingleton.class) {
+                <span class="kw">if</span> (instance == <span class="kw">null</span>) {                <span class="cm">// second check — only one thread actually constructs it</span>
+                    instance = <span class="kw">new</span> <span class="ty">DclSingleton</span>();
+                }
+            }
+        }
+        <span class="kw">return</span> instance;
+    }
+}
+
+<span class="cm">// 4. Enum singleton — considered the SAFEST: the JVM guarantees a single instance, it's</span>
+<span class="cm">// serialization-safe out of the box, and immune to reflection-based attacks that can normally</span>
+<span class="cm">// force a "private" constructor to run a second time</span>
+<span class="kw">enum</span> <span class="ty">EnumSingleton</span> {
+    INSTANCE;
+    <span class="kw">void</span> <span class="fn">doWork</span>() { <span class="cm">/* ... */</span> }
+}</code></pre>
+<pre><code><span class="cm">// Builder pattern — readable construction when a class has many optional parameters</span>
+<span class="kw">class</span> <span class="ty">Pizza</span> {
+    <span class="kw">private final</span> <span class="ty">String</span> size;       <span class="cm">// required</span>
+    <span class="kw">private final boolean</span> cheese;    <span class="cm">// optional</span>
+    <span class="kw">private final boolean</span> pepperoni; <span class="cm">// optional</span>
+
+    <span class="kw">private</span> <span class="ty">Pizza</span>(<span class="ty">Builder</span> b) {
+        <span class="kw">this</span>.size = b.size;
+        <span class="kw">this</span>.cheese = b.cheese;
+        <span class="kw">this</span>.pepperoni = b.pepperoni;
+    }
+
+    <span class="kw">static class</span> <span class="ty">Builder</span> {
+        <span class="kw">private final</span> <span class="ty">String</span> size;
+        <span class="kw">private boolean</span> cheese = <span class="kw">false</span>;
+        <span class="kw">private boolean</span> pepperoni = <span class="kw">false</span>;
+
+        <span class="ty">Builder</span>(<span class="ty">String</span> size) { <span class="kw">this</span>.size = size; }
+        <span class="ty">Builder</span> <span class="fn">cheese</span>(<span class="kw">boolean</span> v) { <span class="kw">this</span>.cheese = v; <span class="kw">return this</span>; }     <span class="cm">// fluent chaining</span>
+        <span class="ty">Builder</span> <span class="fn">pepperoni</span>(<span class="kw">boolean</span> v) { <span class="kw">this</span>.pepperoni = v; <span class="kw">return this</span>; }
+        <span class="ty">Pizza</span> <span class="fn">build</span>() { <span class="kw">return new</span> <span class="ty">Pizza</span>(<span class="kw">this</span>); }
+    }
+}
+
+<span class="ty">Pizza</span> pizza = <span class="kw">new</span> <span class="ty">Pizza</span>.Builder(<span class="st">"large"</span>)
+    .<span class="fn">cheese</span>(<span class="kw">true</span>)
+    .<span class="fn">pepperoni</span>(<span class="kw">true</span>)
+    .<span class="fn">build</span>(); <span class="cm">// avoids telescoping constructors while staying fully immutable</span></code></pre>
+</div>
+</details>
+
+</main>
+</body>
+</html>

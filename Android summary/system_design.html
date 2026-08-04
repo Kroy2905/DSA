@@ -62,6 +62,7 @@ a{color:var(--grnl)}
 <h2>The Framework</h2>
 <details open><summary><span class="qn" style="background:var(--purb);color:var(--purl)">★</span><span class="qt">Framework for ANY mobile system design question</span><span class="dif goog">Must Know</span></summary>
 <div class="ans">
+<p>Mobile system design questions are deliberately open-ended — "design Instagram's feed" has no single right answer, and candidates who don't bring their own structure either freeze up or ramble through implementation details without ever stating what they're building or why. Having a fixed, rehearsed sequence of steps solves that: it forces you to nail down requirements before you start solving anything, it moves top-down from architecture to specifics so the interviewer can follow your reasoning, and it guarantees you reach offline behavior and edge cases instead of running out of time deep in one layer. It also mirrors how a senior engineer actually approaches ambiguous work — clarify scope, sketch the shape of the system, then drill into the parts that matter most — which is exactly the signal the interviewer is grading for.</p>
 <ol>
 <li><strong>Clarify requirements (5 min):</strong> Functional (what features?), Non-functional (scale, offline, latency), Platform (Android only? iOS too?)</li>
 <li><strong>High-level architecture (5 min):</strong> Layers — Presentation, Domain, Data. Draw the box diagram.</li>
@@ -112,6 +113,7 @@ a{color:var(--grnl)}
 <h2>Design: Instagram Feed</h2>
 <details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">D1</span><span class="qt">Design Instagram-style infinite scroll feed for Android</span><span class="dif hard">Hard</span></summary>
 <div class="ans">
+<p>An infinite-scroll feed is really three problems stacked on top of each other: cursor-based pagination that fetches posts in pages without the client hand-rolling offset math, a local cache that stays in sync with the network so the feed still shows something useful the moment the app opens offline, and an image pipeline that has to keep loading and recycling bitmaps without ever dropping below 60fps while the user flings through the list. The interviewer is really checking whether you reach for the Paging library instead of writing your own pagination state machine, whether you make Room the single source of truth so the UI never blocks on a network call, and whether you can talk concretely about memory pressure and cancellation once dozens of images are streaming in and out of view.</p>
 <p><strong>Requirements:</strong> Infinite scroll, images, likes/comments, offline support, smooth 60fps scroll</p>
 <div class="gc" style="overflow-x:auto;padding:14px">
 <svg viewBox="0 0 660 130" style="width:100%;height:auto">
@@ -201,6 +203,7 @@ a{color:var(--grnl)}
 <h2>Design: Chat Application</h2>
 <details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">D2</span><span class="qt">Design a WhatsApp-style chat app</span><span class="dif hard">Hard</span></summary>
 <div class="ans">
+<p>A chat app is fundamentally a state-sync problem wearing a UI: every message a user sends has to appear in their own screen instantly, survive them going offline mid-send, get delivered to the other device exactly once, and settle into an order both sides agree on even though the network can deliver things late or out of order. The interviewer wants to see you cleanly separate "what the UI is showing right now" from "what the server has actually confirmed" — using a local Room row with an explicit status field (PENDING → SENT → DELIVERED → READ) as the source of truth the UI observes — and pick the right transport for each job rather than defaulting to polling: a persistent WebSocket for messages while the app is open, FCM to wake a killed app when one arrives.</p>
 <p><strong>Key challenges:</strong> Real-time messages, delivery receipts, offline queue, message ordering</p>
 <div class="gc" style="overflow-x:auto;padding:14px">
 <svg viewBox="0 0 660 130" style="width:100%;height:auto">
@@ -264,6 +267,7 @@ a{color:var(--grnl)}
 <h2>Design: Image Loading Library</h2>
 <details><summary><span class="qn" style="background:var(--redb);color:var(--redl)">D3</span><span class="qt">Design an image loading library (like Coil/Glide) from scratch</span><span class="dif hard">Hard — Google Favorite</span></summary>
 <div class="ans">
+<p>An image-loading library exists to answer one question as cheaply as possible: "do I already have this bitmap, and if not, where's the least expensive place to get it from?" That answer is a layered lookup — an in-memory LRU cache for bitmaps you just displayed, a disk cache for bitmaps you've downloaded before but evicted from memory, and the network only as a last resort — where each layer is only touched on a miss from the one above it. On top of that layering you need request deduplication, so that ten ImageViews binding the same URL in a fast-scrolling list don't trigger ten separate downloads, and cancellation, so an ImageView that's already been recycled doesn't keep fetching a bitmap nobody will ever see.</p>
 <p>This is a classic Google interview question. They want to see you think in layers.</p>
 <div class="gc" style="overflow-x:auto;padding:14px">
 <svg viewBox="0 0 660 150" style="width:100%;height:auto">
